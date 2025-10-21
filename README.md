@@ -17,12 +17,12 @@ This service is designed to handle data submitted from an HTML form on a website
 
 - [ ] Write a spec for Clojure HTTP server
 - [ ] Implement Clojure HTTP server - a simple HTTP server that responds to a get request with a hello world.
-- [ ] Setup a development environment using NixOS
+- [ ] Setup a development environment using Nix
 - [ ] Run the app on local machine
 
 ### Day 3
 
-- [ ] Setup VPS on Hetzner with NixOS
+- [ ] Setup VPS on Hetzner with Nix
 - [ ] Deploy form to mail to the server
 
 ### Day 4
@@ -34,7 +34,6 @@ This service is designed to handle data submitted from an HTML form on a website
 ### Day 5
 
 - [ ] Start coding the program
-- [ ] Create publisher registration form
 - [ ] Implement publisher registration form
 - [ ] Research transaction email provider
     - [ ] must be European 
