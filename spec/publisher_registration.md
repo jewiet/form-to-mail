@@ -1,4 +1,8 @@
-# Publisher Registration
+# Publisher Registration 
 
-
-A user accesses the form to mail registration form, which includes fields for the publisher's name, the form's title, and an email address, along with a "Register" button. After completing the form and clicking "Register," the user receives a confirmation message: "Thank you for registration! We have sent you an email for verification, please check your inbox and verify your email to continue the service." 
+- Navigate to "/register"
+- Enter "publisher-one@example.com" into the "Email Address" input field of type "email"
+- Enter "Secret password 12" into the "Password" input field of type "password"
+- Enter "Secret password 12" into the "Repeat Password" input field of type "password"
+- Click the "Register" button.
+- See the message "Thank you for the registration! We have sent an email to publisher-one@example.com for verification. Please check your inbox and click the link to continue."
