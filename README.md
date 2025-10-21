@@ -7,8 +7,8 @@ This service is designed to handle data submitted from an HTML form on a website
 ### Day 1
 - [x] Create Repository
 - [x] Write a README.md
-- [ ] Write a spec
-     - [ ] Publisher registration
+- [x] Write a spec
+     - [x] Publisher registration
      - [ ] Publisher login
      - [ ] Form creation
      - [ ] Form submitting
