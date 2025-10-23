@@ -9,9 +9,9 @@ This service is designed to handle data submitted from an HTML form on a website
 - [x] Write a README.md
 - [x] Write a spec
      - [x] Publisher registration
-     - [ ] Publisher login
-     - [ ] Form creation
-     - [ ] Form submitting
+     - [x] Publisher login
+     - [x] Form creation
+     - [x] Form submitting
 
 ### Day 2
 
