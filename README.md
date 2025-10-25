@@ -15,7 +15,7 @@ This service is designed to handle data submitted from an HTML form on a website
 
 ### Day 2
 
-- [ ] Write a spec for Clojure HTTP server
+- [x] Write a spec for Clojure HTTP server
 - [x] Setup Clojure program
 - [ ] Implement Clojure HTTP server - a simple HTTP server that responds to a get request with a hello world.
 - [x] Setup a development environment using Nix
