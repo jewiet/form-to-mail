@@ -28,7 +28,7 @@
                 {
                   # https://devenv.sh/reference/options/
                   languages.clojure.enable = true;
-                  packages = [];
+                  packages = [pkgs.httpie];
                 }
               ];
             };

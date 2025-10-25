@@ -1,4 +1,7 @@
-(ns app.core)
+(ns app.core
+  (:require
+   [app.server :as server])
+  (:gen-class))
 
-(defn -main []
-  (println "Hello, World!"))
+(defn -main [& args]
+  (server/start))
