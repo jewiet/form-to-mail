@@ -27,13 +27,8 @@
               modules = [
                 {
                   # https://devenv.sh/reference/options/
-                  packages = [ pkgs.hello ];
-
-                  enterShell = ''
-                    hello
-                  '';
-
-                  processes.hello.exec = "hello";
+                  languages.clojure.enable = true;
+                  packages = [];
                 }
               ];
             };
