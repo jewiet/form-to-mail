@@ -41,7 +41,7 @@ java -jar target/form-to-mail-0.1.19-standalone.jar
 
 ### Day 3
 
-- [ ] Setup VPS on Hetzner with Nix
+- [x] Setup VPS on Hetzner with Nix
 - [ ] Deploy form to mail to the server
 
 ### Day 4
