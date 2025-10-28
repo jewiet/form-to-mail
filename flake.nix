@@ -28,7 +28,13 @@
                 {
                   # https://devenv.sh/reference/options/
                   languages.clojure.enable = true;
-                  packages = [pkgs.httpie];
+                  packages = with pkgs; [
+                    httpie
+                    clj-kondo
+                    babashka
+                    cljstyle
+                    clojure-lsp
+                  ];
                 }
               ];
             };

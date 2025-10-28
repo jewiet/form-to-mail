@@ -1,0 +1,38 @@
+{:paths
+ ["src"]
+
+ :tasks
+ {:requires
+  ([clojure.edn :as edn])
+
+  run:app
+  {:doc  "Run the Form to Mail locally"
+   :task (clojure "-M" "-m" "app.core")}
+
+  rebel
+  {:doc "Run rebl repl"
+   :task (clojure "-Xrebel")}
+
+  build:uberjar
+  {:doc  "Package the app in an uberjar"
+   :task (clojure "-T:build" "uber")}
+
+  run:uberjar
+  {:doc     "Run the uberjar locally"
+   :task (java "-jar" "target/form-to-mail-0.1.19-standalone.jar")}
+
+  style:check
+  {:doc  "Check code style"
+   :task (clojure "-Sdeps" "{:deps {mvxcvi/cljstyle {:mvn/version \"0.15.0\"}}}" "-m" "cljstyle.main" "check" "src")}
+
+  style:fix
+  {:doc  "Fix code style"
+   :task (clojure "-Sdeps" "{:deps {mvxcvi/cljstyle {:mvn/version \"0.15.0\"}}}" "-m" "cljstyle.main" "fix" "src")}
+
+  lint
+  {:doc  "Lint with clj-kondo"
+   :task (clojure "-M:clj-kondo" "--lint" "src")}
+
+  test
+  {:doc  "Run tests"
+   :task (clojure "-X:test")}}}

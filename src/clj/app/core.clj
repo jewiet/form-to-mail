@@ -1,7 +1,9 @@
 (ns app.core
+  (:gen-class)
   (:require
-   [app.server :as server])
-  (:gen-class))
+    [app.server :as server]))
 
-(defn -main [& args]
+(defn -main
+  "Form to Mail app"
+  [& args]
   (server/start))
