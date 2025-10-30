@@ -37,10 +37,10 @@ java -jar target/form-to-mail-0.1.19-standalone.jar
 - [x] Run the app on local machine
 - [x] Setup VPS on Hetzner with Nix
 - [x] Create Babashkla tasks to run and build the application
-- [ ] Deploy form to mail to the server
+- [x] Deploy form to mail to the server
   - [x] Setup Systemd service
   - [x] Run it as a dedicated user
-  - [ ] Deploy using Nix
+  - [x] Deploy using Nix
 
 - [ ] Setup CI pipeline
 - [ ] Convert spec to Gauge
