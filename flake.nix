@@ -4,6 +4,7 @@
     systems.url = "github:nix-systems/default";
     devenv.url = "github:cachix/devenv";
     devenv.inputs.nixpkgs.follows = "nixpkgs";
+    clj-nix.url = "github:jlesquembre/clj-nix";
   };
 
   nixConfig = {
@@ -11,7 +12,7 @@
     extra-substituters = "https://devenv.cachix.org";
   };
 
-  outputs = { self, nixpkgs, devenv, systems, ... } @ inputs:
+  outputs = { self, nixpkgs, devenv, systems, clj-nix, ... } @ inputs:
     let
       forEachSystem = nixpkgs.lib.genAttrs (import systems);
     in
@@ -44,4 +45,27 @@
             };
           });
     };
+        packages = forEachSystem
+          (system:
+            let
+              pkgs = nixpkgs.legacyPackages.${system};
+            in
+              {
+                default = clj-nix.lib.mkCljApp {
+                  inherit pkgs;
+                  modules = [
+                    # Option list:
+                    # https://jlesquembre.github.io/clj-nix/options/
+                    {
+                      projectSrc = ./.;
+                      name = "form-to-mail";
+                      main-ns = "app.core";
+
+                      # nativeImage.enable = true;
+
+                      # customJdk.enable = true;
+                    }
+                  ];
+                }; 
+              });
 }
