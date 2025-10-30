@@ -28,6 +28,10 @@
                 {
                   # https://devenv.sh/reference/options/
                   languages.clojure.enable = true;
+                  languages.java = {
+                    enable  = true;
+                    jdk.package = pkgs.temurin-bin;
+                  };
                   packages = with pkgs; [
                     httpie
                     clj-kondo

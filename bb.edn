@@ -3,7 +3,8 @@
 
  :tasks
  {:requires
-  ([clojure.edn :as edn])
+  ([clojure.edn :as edn]
+   [babashka.fs :as fs])
 
   run:app
   {:doc  "Run the Form to Mail locally"
@@ -15,11 +16,24 @@
 
   build:uberjar
   {:doc  "Package the app in an uberjar"
-   :task (clojure "-T:build" "uber")}
+   :task (do
+           (println "Building uberjar")
+           (clojure "-T:build" "uber"))}
+
+  clean
+  {:doc "Remove target folder"
+   :task (do
+           (println "Removing target folder.")
+           (fs/delete-tree "target"))}
+
+  uberjar:clean
+  {:doc "Run clean uberjar"
+   :task (do (run 'clean)
+             (run 'build:uberjar))}
 
   run:uberjar
   {:doc     "Run the uberjar locally"
-   :task (java "-jar" "target/form-to-mail-0.1.19-standalone.jar")}
+   :task (shell "java" "-jar" "target/form-to-mail-0.1.25-standalone.jar")}
 
   style:check
   {:doc  "Check code style"
