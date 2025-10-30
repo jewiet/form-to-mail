@@ -7,7 +7,7 @@
   [req]
   {:status 200
    :headers {"content-type" "text/plain"}
-   :body "Hello, form!"})
+   :body "Hello form, we love Nix!"})
 
 
 (defn start
