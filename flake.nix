@@ -18,35 +18,34 @@
     let
       forEachSystem = nixpkgs.lib.genAttrs (import systems);
     in
-    {
-      devShells = forEachSystem
-        (system:
-          let
-            pkgs = nixpkgs.legacyPackages.${system};
-          in
-          {
-            default = devenv.lib.mkShell {
-              inherit inputs pkgs;
-              modules = [
-                {
-                  # https://devenv.sh/reference/options/
-                  languages.clojure.enable = true;
-                  languages.java = {
-                    enable  = true;
-                    jdk.package = pkgs.temurin-bin;
-                  };
-                  packages = with pkgs; [
-                    httpie
-                    clj-kondo
-                    babashka
-                    cljstyle
-                    clojure-lsp
+      {
+        devShells = forEachSystem
+          (system:
+            let
+              pkgs = nixpkgs.legacyPackages.${system};
+            in
+              {
+                default = devenv.lib.mkShell {
+                  inherit inputs pkgs;
+                  modules = [
+                    {
+                      # https://devenv.sh/reference/options/
+                      languages.clojure.enable = true;
+                      languages.java = {
+                        enable  = true;
+                        jdk.package = pkgs.temurin-bin;
+                      };
+                      packages = with pkgs; [
+                        httpie
+                        clj-kondo
+                        babashka
+                        cljstyle
+                        clojure-lsp
+                      ];
+                    }
                   ];
-                }
-              ];
-            };
-          });
-    };
+                };
+              });
         packages = forEachSystem
           (system:
             let
@@ -70,4 +69,5 @@
                   ];
                 }; 
               });
+      };
 }
