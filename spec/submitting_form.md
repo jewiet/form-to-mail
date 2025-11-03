@@ -4,16 +4,29 @@
 
 This is a temporary spec describing a proof of concept for form submission. Its goal is to guide early step of development. In the future it will be modified or removed.
 
-* Given there is a sample form at "http://localhost:1234/poc-form.html"
+* Serve "spec/samples" on port "1234" 
+
+  Run the command `miniserve --port 1234 spec/samples`
+
+* Navigate to "http://localhost:1234/poc-form.html"
 * the form "action" is set to "http://localhost:8080/poc-submit"
+   
+  Query for `form`, e.g. `$("form")`.
+  
 * the form "method" is set to "POST"
 * There is a field "email" of type "email"
+  
+  Query for `[name="email"]`. Check the type attribute.
+
 * There is a field "message" of type "textarea"
+
+  Query for `[name="message"]`. Check the element name.
+
 * Type "user-one@example.com" in the "email" field
 * Type "Hello dear receiver!" in the "message" field
 * Click "Send" button
-* Form to Mail service will print "Form submitted by user-one@example.com"
-* Form to Mail service will print "message: Hello dear receiver!"
+* Form to Mail service will log "Form submitted by user-one@example.com"
+* Form to Mail service will log "message: Hello dear receiver!"
 
 
 ## Successful form submission

@@ -41,6 +41,7 @@
                         babashka
                         cljstyle
                         clojure-lsp
+                        miniserve
                         (gauge.withPlugins (_: [
                           gaugePlugins.java
                           gaugePlugins.html-report
