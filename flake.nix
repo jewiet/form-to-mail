@@ -41,6 +41,11 @@
                         babashka
                         cljstyle
                         clojure-lsp
+                        (gauge.withPlugins (_: [
+                          gaugePlugins.java
+                          gaugePlugins.html-report
+                          gaugePlugins.screenshot
+                        ]))
                       ];
                     }
                   ];
