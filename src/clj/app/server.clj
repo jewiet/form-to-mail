@@ -1,16 +1,25 @@
 (ns app.server
   (:require
-    [aleph.http :as http]))
+   [aleph.http :as http]
+   [ring.middleware.params :refer [wrap-params]]))
 
 
-(defn handler
-  [req]
-  {:status 200
-   :headers {"content-type" "text/plain"}
-   :body "Hello form, we love Nix!"})
 
+(defn form-handler
+  [{:keys [params]}]
+  (let [message (get params "message")
+        email   (get params "email")]
+    (println (str "Form submitted by " email))
+    (println (str "message: " message))
+    {:status  200
+     :headers {"Content-Type" "text/html"}
+     :body    "Hello form,  We love Nix!"}))
+
+(def http-handler
+  (-> form-handler
+      wrap-params))
 
 (defn start
   []
-  (http/start-server handler {:port 8080}))
+  (http/start-server http-handler {:port 8080}))
 

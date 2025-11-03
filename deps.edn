@@ -1,6 +1,7 @@
 {:paths   ["src/clj"]
  :deps    {com.bhauman/rebel-readline {:mvn/version "0.1.5"}
            aleph/aleph                {:mvn/version "0.9.3"}
+           ring/ring                  {:mvn/version "1.15.3"}
            babashka/fs                {:mvn/version "0.5.27"}}
  :aliases {:test  {:extra-paths ["test/clj"]
                    :extra-deps  {io.github.cognitect-labs/test-runner 
