@@ -42,10 +42,10 @@ java -jar target/form-to-mail-0.1.19-standalone.jar
   - [x] Run it as a dedicated user
   - [x] Deploy using Nix
 
+- [x] Implement proof of concept for form submission. See <spec/submitting_form.md> 
+- [ ] Implement publisher registration form
 - [ ] Setup CI pipeline
 - [ ] Convert spec to Gauge
-- [ ] Start coding the program
-- [ ] Implement publisher registration form
 - [ ] Research transaction email provider
   - [ ] must be European
   - [ ] cheap
