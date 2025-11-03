@@ -44,6 +44,10 @@ java -jar target/form-to-mail-0.1.19-standalone.jar
 
 - [x] Implement proof of concept for form submission. See <spec/submitting_form.md> 
 - [ ] Implement publisher registration form
+- [ ] Add clj-nix#deps-lock to development environment
+- [ ] Improve PoC spec
+  - [ ] The email field is required
+  - [ ] Handle any other field
 - [ ] Setup CI pipeline
 - [ ] Convert spec to Gauge
 - [ ] Research transaction email provider
