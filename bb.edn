@@ -53,4 +53,8 @@
 
   nix:update-deps
   {:doc "Update deps-lock.json based on deps.edn"
-   :task (shell "deps-lock")}}}
+   :task (shell "deps-lock")}
+
+  serve:samples
+  {:doc "Serves spec/samples on :1234/"
+   :task (shell "miniserve --port 1234 spec/samples")}}}
