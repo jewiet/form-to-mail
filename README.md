@@ -8,11 +8,13 @@ This service is designed to handle data submitted from an HTML form on a website
 clojure -M -m app.core
 ```
 
+
 ## Build uberjar
 
 ``` shell
 clj -T:build uber
 ```
+
 
 ## Run the uberjar
 
@@ -43,11 +45,11 @@ java -jar target/form-to-mail-0.1.19-standalone.jar
   - [x] Deploy using Nix
 
 - [x] Implement proof of concept for form submission. See <spec/submitting_form.md> 
-- [ ] Implement publisher registration form
 - [x] Add clj-nix#deps-lock to development environment
 - [ ] Improve PoC spec
-  - [ ] The email field is required
+  - [x] The email field is required
   - [ ] Handle any other field
+- [ ] Implement publisher registration form
 - [ ] Setup CI pipeline
 - [ ] Convert spec to Gauge
 - [ ] Research transaction email provider
