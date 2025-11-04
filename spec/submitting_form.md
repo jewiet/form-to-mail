@@ -32,7 +32,7 @@ tags: proof-of-concept covered
 * Click "Send" button
 * Form to Mail service will log "Form submitted by user-one@example.com"
 * Form to Mail service will log "message: Hello dear receiver!"
-
+* There will be a text "Thank you for sending the form. We have sent you an email with confirmation link to user-one@example.com"
 
 ## Form submission without email
 
