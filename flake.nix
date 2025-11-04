@@ -23,6 +23,7 @@
           (system:
             let
               pkgs = nixpkgs.legacyPackages.${system};
+              clj-nix-pkgs = inputs.clj-nix.packages.${system};
             in
               {
                 default = devenv.lib.mkShell {
@@ -41,6 +42,7 @@
                         babashka
                         cljstyle
                         clojure-lsp
+                        clj-nix-pkgs.deps-lock
                         miniserve
                         (gauge.withPlugins (_: [
                           gaugePlugins.java

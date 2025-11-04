@@ -49,4 +49,8 @@
 
   test
   {:doc  "Run tests"
-   :task (clojure "-X:test")}}}
+   :task (clojure "-X:test")}
+
+  nix:update-deps
+  {:doc "Update deps-lock.json based on deps.edn"
+   :task (shell "deps-lock")}}}
