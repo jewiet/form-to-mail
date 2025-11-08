@@ -37,7 +37,7 @@
 
 (defn create-connector
   []
-  (-> (conn/default-connector-map 8080)
+  (-> (conn/default-connector-map "0.0.0.0" 8080)
       (conn/with-default-interceptors)
       (conn/with-routes routes)
       (hk/create-connector nil)))
