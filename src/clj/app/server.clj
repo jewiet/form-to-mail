@@ -1,10 +1,8 @@
 (ns app.server
   (:require
-   [aleph.http :as http]
-   [clojure.string :as string]
-   [clojure.pprint :refer [pprint]]
-   [ring.middleware.params :refer [wrap-params]]))
-
+    [clojure.string :as string]
+    [io.pedestal.connector :as conn]
+    [io.pedestal.http.http-kit :as hk]))
 
 
 (defn form-handler
@@ -22,7 +20,8 @@
         (println "Missing required field email")
         {:status  422
          :headers {"Content-Type" "text/plain"}
-         :body  "Missing required field email"}))))
+         :body    "Missing required field email"}))))
+
 
 (defn home-handler
   [_request]
@@ -30,23 +29,20 @@
    :headers {"Content-Type" "text/plain"}
    :body "Hello, form!"})
 
-(defn router
-  [request]
-  (let [route (select-keys request [:uri :request-method])]
-    (case route
-      {:uri "/"
-       :request-method :get} (home-handler request)
-      {:uri "/poc-submit"
-       :request-method :post} (form-handler request)
-      {:status  404
-       :headers {"Content-Type" "text/plain"}
-       :body "Not Found"})))
 
-(def http-handler
-  (-> router
-      wrap-params))
+(def routes
+  #{["/" :get home-handler :route-name :home]
+    ["/poc-submit" :post form-handler :route-name :form-submit]})
+
+
+(defn create-connector
+  []
+  (-> (conn/default-connector-map 8080)
+      (conn/with-default-interceptors)
+      (conn/with-routes routes)
+      (hk/create-connector nil)))
+
 
 (defn start
   []
-  (http/start-server http-handler {:port 8080}))
-
+  (conn/start! (create-connector)))
