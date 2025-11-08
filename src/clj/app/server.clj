@@ -2,6 +2,7 @@
   (:require
     [clojure.string :as string]
     [io.pedestal.connector :as conn]
+    [clojure.pprint :refer [pprint]]
     [io.pedestal.http.http-kit :as hk]))
 
 
@@ -34,12 +35,17 @@
   #{["/" :get home-handler :route-name :home]
     ["/poc-submit" :post form-handler :route-name :form-submit]})
 
+(defn log-connector [{:keys [host port] :as connector-map}]
+  (-> (str "Starting Form to Mail on " host ":" port)
+      (println))
+  connector-map)
 
 (defn create-connector
   []
   (-> (conn/default-connector-map "0.0.0.0" 8080)
       (conn/with-default-interceptors)
       (conn/with-routes routes)
+      (log-connector)
       (hk/create-connector nil)))
 
 
