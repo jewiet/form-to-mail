@@ -1,0 +1,62 @@
+<!doctype html>
+<html class="no-js" lang="">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <title>Order form</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="css/pico.min.css">
+        <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+        <!-- Place favicon.ico in the root directory -->
+
+    </head>
+    <body>
+        <main class="container">
+            <form method="POST" action="http://localhost:8080/poc-submit">
+                <label for="address">Street and house number</label>
+                <input type="text" name="address" id="address">
+
+                <label for="city">City</label>
+                <input type="text" name="city" id="city">
+
+                <label for="country">Country</label>
+                <input type="text" name="country" id="country">
+
+                <label for="">Email</label>
+                <input type="email" name="email" id="email">
+
+                <fieldset>
+                    <legend>Delivery method</legend>
+                    <input type="radio" name="delivery-method" id="home-delivery" value="home-delivery" checked/>
+                    <label for="home-delivery">Home Delivery</label>
+
+                    <input type="radio" name="delivery-method" id="pickup" value="pickup">
+                    <label for="pickup">Pickup</label>
+                </fieldset>
+
+                <label for="wood-type">Select type of wood</label>
+                <select name="wood-type" id="wood-type">
+                    <option value="oak">Oak</option>
+                    <option value="birch">Birch</option>
+                    <option value="pine">Pine</option>
+                </select>
+
+                <label for="coating">Select coating</label>
+                <select name="coating" id="coating">
+                    <option value="clear">Clear</option>
+                    <option value="red">Red</option>
+                    <option value="black">Black</option>
+                </select>
+
+                <label for="chairs">Number of chairs</label>
+                <input type="number" name="chairs" id="chairs">
+
+                <label for="high-chairs">Number of high chairs</label>
+                <input type="number" name="high-chairs" id="high-chairs">
+
+                <button type="submit">Send</button>
+            </form>
+        </main>
+    </body>
+</html>

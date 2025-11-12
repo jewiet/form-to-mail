@@ -34,6 +34,47 @@ tags: proof-of-concept covered
 * Form to Mail service will log "message: Hello dear receiver!"
 * There will be a text "Thank you for sending the form. We have sent you an email with confirmation link to user-one@example.com"
 
+
+## Order form submission
+
+This scenario simulates a complex form with many different inputs. It's a fictional small carpentry website. Form is used to order a dining room set (a table, number of chairs and number of high chairs).
+
+* Serve "spec/samples" on port "1234" 
+* Navigate to "http://localhost:1234/order-form.html"
+* the form "action" is set to "http://localhost:8080/poc-submit"
+* the form "method" is set to "POST"
+* There is a field "Street and house number" of type "text"
+* There is a field "City" of type "text"
+* There is a field "Country" of type "text"
+* There is a field "Email" of type "email"
+* There is a radio button labeled "Home Delivery"
+* There is a radio button labeled "Pickup"
+* There is a field "Select type of wood" of type "select"
+* There is a field "Select coating" of type "select"
+* There is a field "Number of chairs" of type "number"
+* There is a field "Number of high chairs" of type "number"
+* Type "Verycoolstreet 1" in the "Street and house number" field
+* Type "Kittentown" in the "City" field
+* Type "Katcountry" in the "Country" field
+* Type "szara@muchu.com" in the "Email" field
+* Press "Pickup" radio button
+* Select "Pine" in the "Select type of wood" field
+* Select "Red" in the "Select coating" field
+* Type 3 in the "Number of chairs" field
+* Type 4 in the "Number of high chairs" field
+* Click "Send" button
+* Form to Mail service will log "Form submitted by szara@muchu.com" 
+* Form to Mail service will log "address: Verycoolstreet 1"
+* Form to Mail service will log "city: Kittentown"
+* Form to Mail service will log "country: Katcountry"
+* Form to Mail service will log "delivery method: Pickup"
+* Form to Mail service will log "type of wood: Pine"
+* Form to Mail service will log "coating color: Red"
+* Form to Mail service will log "number of chairs: 3"
+* Form to Mail service will log "number of high chairs: 4" 
+* There will be a text "Thank you for sending the form. We have sent you an email with confirmation link to szara@muchu.com"
+ 
+
 ## Form submission without email
 
 tags: proof-of-concept covered
