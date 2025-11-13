@@ -33,10 +33,9 @@ tags: proof-of-concept covered
 * Form to Mail service will log "Form submitted by user-one@example.com"
 * Form to Mail service will log "Sending confirmation link: http://localhost:8080/confirm-submission/<submission-uuid>" 
 * Open the confirmation link in the browser.
-* There is a message "Thank you for confirmation, your form is delivered".
+* There is a message "Thank you for confirmation. Your form is delivered."
 * Form to Mail service will log "Sending the form <submission-uuid> to publisher-one@example.com".
 * Form to Mail service will log "message: Hello dear receiver!"
-* There will be a text "Thank you for sending the form. We have sent you an email with confirmation link to user-one@example.com"
 
 
 ## Order form submission
@@ -72,7 +71,7 @@ This scenario simulates a complex form with many different inputs. It's a fictio
 * Form to Mail service will log "Form submitted by szara@muchu.com" 
 * Form to Mail service will log "Sending confirmation link: http://localhost:8080/confirm-submission/<submission-uuid>" 
 * Open the confirmation link in the browser.
-* There is a message "Thank you for confirmation, your form is delivered".
+* There is a message "Thank you for confirmation. Your form is delivered."
 * Form to Mail service will log "Sending the form <submission-uuid> to publisher-one@example.com" 
 * Form to Mail service will log "address: Verycoolstreet 1"
 * Form to Mail service will log "city: Kittentown"
@@ -83,8 +82,7 @@ This scenario simulates a complex form with many different inputs. It's a fictio
 * Form to Mail service will log "chairs: 3"
 * Form to Mail service will log "high-chairs: 4" 
 * Form to Mail service will log "notes: Can I pick up the items before christmas?" 
-* There will be a text "Thank you for sending the form. We have sent you an email with confirmation link to szara@muchu.com"
- 
+
 
 ## Form submission without email
 
