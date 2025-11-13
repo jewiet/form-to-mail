@@ -102,6 +102,30 @@ The email field is the only required field. Submission without email should be r
 * Form to Mail service will log "Missing required field email"
 
 
+## Wrong verification url
+
+In this scenario we prove that submission won't be verified unless sender knows its UUID.
+
+* Follow the steps from "Form submission with email and message" untile verification
+* Navigate to "http://localhost:8080/confirm-submission/8a9de9a5-21a7-4e0a-9cc1-754c0d03abdd"
+
+  The UUID is intentionally wrong.
+  
+* There will be a message "Submission not found"
+
+
+## Invalid verification url
+
+In this scenario we prove that submission won't be verified unless sender knows its UUID.
+
+* Follow the steps from "Form submission with email and message" untile verification
+* Navigate to "http://localhost:8080/confirm-submission/bla-bla"
+
+  The UUID is intentionally invalid.
+  
+* There will be a message "Invalid submission uuid"
+
+
 ## Successful form submission
 
 tags: not-implemented
