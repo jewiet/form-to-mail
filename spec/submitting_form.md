@@ -53,6 +53,7 @@ This scenario simulates a complex form with many different inputs. It's a fictio
 * There is a field "Select coating" of type "select"
 * There is a field "Number of chairs" of type "number"
 * There is a field "Number of high chairs" of type "number"
+* There is a field "Notes" of type "textarea"
 * Type "Verycoolstreet 1" in the "Street and house number" field
 * Type "Kittentown" in the "City" field
 * Type "Katcountry" in the "Country" field
@@ -62,16 +63,18 @@ This scenario simulates a complex form with many different inputs. It's a fictio
 * Select "Red" in the "Select coating" field
 * Type 3 in the "Number of chairs" field
 * Type 4 in the "Number of high chairs" field
+* Type "Can I pick up the items before christmas?" in the "Notes" field
 * Click "Send" button
 * Form to Mail service will log "Form submitted by szara@muchu.com" 
 * Form to Mail service will log "address: Verycoolstreet 1"
 * Form to Mail service will log "city: Kittentown"
 * Form to Mail service will log "country: Katcountry"
-* Form to Mail service will log "delivery method: Pickup"
-* Form to Mail service will log "type of wood: Pine"
-* Form to Mail service will log "coating color: Red"
-* Form to Mail service will log "number of chairs: 3"
-* Form to Mail service will log "number of high chairs: 4" 
+* Form to Mail service will log "delivery-method: Pickup"
+* Form to Mail service will log "wood-type: Pine"
+* Form to Mail service will log "coating: Red"
+* Form to Mail service will log "chairs: 3"
+* Form to Mail service will log "high-chairs: 4" 
+* Form to Mail service will log "notes: Can I pick up the items before christmas?" 
 * There will be a text "Thank you for sending the form. We have sent you an email with confirmation link to szara@muchu.com"
  
 
