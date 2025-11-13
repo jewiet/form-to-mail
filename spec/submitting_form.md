@@ -31,6 +31,10 @@ tags: proof-of-concept covered
 * Type "Hello dear receiver!" in the "message" field
 * Click "Send" button
 * Form to Mail service will log "Form submitted by user-one@example.com"
+* Form to Mail service will log "Sending confirmation link: http://localhost:8080/confirm-submission/<submission-uuid>" 
+* Open the confirmation link in the browser.
+* There is a message "Thank you for confirmation, your form is delivered".
+* Form to Mail service will log "Sending the form <submission-uuid> to publisher-one@example.com".
 * Form to Mail service will log "message: Hello dear receiver!"
 * There will be a text "Thank you for sending the form. We have sent you an email with confirmation link to user-one@example.com"
 
@@ -66,6 +70,10 @@ This scenario simulates a complex form with many different inputs. It's a fictio
 * Type "Can I pick up the items before christmas?" in the "Notes" field
 * Click "Send" button
 * Form to Mail service will log "Form submitted by szara@muchu.com" 
+* Form to Mail service will log "Sending confirmation link: http://localhost:8080/confirm-submission/<submission-uuid>" 
+* Open the confirmation link in the browser.
+* There is a message "Thank you for confirmation, your form is delivered".
+* Form to Mail service will log "Sending the form <submission-uuid> to publisher-one@example.com" 
 * Form to Mail service will log "address: Verycoolstreet 1"
 * Form to Mail service will log "city: Kittentown"
 * Form to Mail service will log "country: Katcountry"
