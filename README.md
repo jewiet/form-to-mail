@@ -48,7 +48,8 @@ java -jar target/form-to-mail-0.1.19-standalone.jar
 - [x] Add clj-nix#deps-lock to development environment
 - [ ] Improve PoC spec
   - [x] The email field is required
-  - [ ] Handle any other field
+  - [x] Handle any other field
+  - [ ] TODO: Preserve order of params
 - [ ] Implement publisher registration form
 - [ ] Setup CI pipeline
 - [ ] Convert spec to Gauge

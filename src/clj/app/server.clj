@@ -2,18 +2,18 @@
   (:require
     [clojure.string :as string]
     [io.pedestal.connector :as conn]
-    [clojure.pprint :refer [pprint]]
+    ;; [clojure.pprint :refer [pprint]]
     [io.pedestal.http.http-kit :as hk]))
 
 
 (defn form-handler
   [{:keys [params]}]
-  (let [message (get params "message")
-        email   (get params "email")]
-
+  (let [email   (get params "email")]
     (if-not (string/blank? email)
       (do (println (str "Form submitted by " email))
-          (println (str "message: " message))
+          (doseq [param (dissoc params "email")]
+            (println (str (key param) ": " (val param)))
+               params)
           {:status  200
            :headers {"Content-Type" "text/plain"}
            :body    (str "Thank you for sending the form. We have sent you an email with confirmation link to " email)})
