@@ -67,7 +67,7 @@
 
 (defn log-connector [{:keys [host port] :as connector-map}]
   (-> (str "Starting Form to Mail on " host ":" port)
-      (println))
+      (#(.println *err* %)))
   connector-map)
 
 (defn create-connector
