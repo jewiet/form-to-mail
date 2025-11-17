@@ -12,6 +12,7 @@ This spec covers direct use of HTTP endpoints, i.e. without a web browser.
 
 tags: proof-of-concept covered
 
+- Run the app
 - Make a `GET` request to `http://localhost:8080/`.
 
   `http GET :8080/`
@@ -25,6 +26,7 @@ tags: proof-of-concept covered
 
 tags: proof-of-concept covered
 
+- Run the app
 - Make a `POST` request to `http://localhost:8080/poc-submit`.
 
   `http --form POST http://localhost:8080/poc-submit`
