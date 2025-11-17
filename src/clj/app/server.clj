@@ -79,6 +79,17 @@
       (hk/create-connector nil)))
 
 
-(defn start
-  []
-  (conn/start! (create-connector)))
+;; For interactive development
+(defonce *connector (atom nil))
+
+(defn start []
+  (reset! *connector
+          (conn/start! (create-connector))))
+
+(defn stop []
+  (conn/stop! @*connector)
+  (reset! *connector nil))
+
+(defn restart []
+  (stop)
+  (start))
