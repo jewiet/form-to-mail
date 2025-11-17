@@ -1,13 +1,43 @@
 (ns http-spec-interpreter
   (:require
+   [app.server :as server]
    [clojure.data.json :as json]
-   [clojure.string :refer [blank?]]
-   ;; [clojure.pprint :refer [pprint]]
-   ))
+   [clojure.pprint :as pprint]
+   [clojure.string :refer [blank? lower-case]]
+   [org.httpkit.client :as hk-client]))
+
+(defonce response (atom nil))
 
 (def steps-implementation
-  {"Make a {0} request to {1}."
-   (fn [method url] (.println *err* "running step"))})
+  {"Run the app"
+   (fn []
+     (server/start))
+
+   "Make a {0} request to {1}."
+   (fn [method url]
+     (.println *err* (str "making http request " method " " url))
+     (let [method (keyword (lower-case method))]
+       (-> {:method method
+            :url url}
+           hk-client/request
+           deref
+           (#(reset! response %))
+           (#(pprint/write % :pretty true :stream *err*)))))
+
+   "The response has a {0} status code."
+   (fn [status]
+     (let [actual (:status @response)
+           expected (read-string status)]
+         (assert  (= expected actual) "Stupid status")))
+
+   "The response body is {0}."
+   (fn [body]
+     (assert (= body (:body @response))))
+
+   "The response {0} header is {1}."
+   (fn [header-name header-value]
+     (let [header-key (keyword header-name)]
+       (assert (= header-value (get-in @response [:headers header-key])))))})
 
 (println (json/write-str {:type "InterpreterState"
                           :ready true}))
@@ -22,5 +52,13 @@
       (if (nil? implmentation)
         (println (json/write-str {:type   "Failure"
                                   :reason "Not implemented"}))
-        (do (apply implmentation arguments)
-            (println (json/write-str {:type "Success"})))))))
+        (try
+          (apply implmentation arguments)
+          (println (json/write-str {:type "Success"}))
+          (catch AssertionError e
+            (println (json/write-str {:type   "Failure"
+                                      :reason (.getMessage e)}))))))))
+
+
+(.println *err* "Done reading from tbb. Stopping the server.")
+(server/stop)

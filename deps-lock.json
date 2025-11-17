@@ -367,14 +367,14 @@
       "hash": "sha256-M+OK7KqWzeLkgCwUlM+vQV/GKhxKYDYHbBqlJ8VtHMM="
     },
     {
-      "mvn-path": "http-kit/http-kit/2.8.1/http-kit-2.8.1.jar",
+      "mvn-path": "http-kit/http-kit/2.9.0-beta3/http-kit-2.9.0-beta3.jar",
       "mvn-repo": "https://repo.clojars.org/",
-      "hash": "sha256-BeYy+bCNo86+/VHDNMyrZQs7i8QwaEQ2YUcmBrgE0vI="
+      "hash": "sha256-ojmz8v2U1+LNjuAnGbsZYyplXxQrUhthcLE1jQIprBU="
     },
     {
-      "mvn-path": "http-kit/http-kit/2.8.1/http-kit-2.8.1.pom",
+      "mvn-path": "http-kit/http-kit/2.9.0-beta3/http-kit-2.9.0-beta3.pom",
       "mvn-repo": "https://repo.clojars.org/",
-      "hash": "sha256-9UlzjE2vhRSWxHXsjOf82/PH9L3M1f53B0P7P3XaYdw="
+      "hash": "sha256-qyfkCKQBQYzQm5Ks1khIIs40+ZmXnovL9Nr+ZHpuybE="
     },
     {
       "mvn-path": "io/github/clojure/tools.build/0.10.10/tools.build-0.10.10.jar",
