@@ -6,6 +6,7 @@
       url = "github:cachix/devenv";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    tad-better-behavior.url = "git+https://codeberg.org/tad-lispy/tad-better-behavior.git";
     clj-nix.url = "github:jlesquembre/clj-nix";
   };
 
@@ -14,7 +15,7 @@
     extra-substituters = "https://devenv.cachix.org";
   };
 
-  outputs = { self, nixpkgs, devenv, systems, clj-nix, ... } @ inputs:
+  outputs = { self, nixpkgs, devenv, systems, clj-nix, tad-better-behavior, ... } @ inputs:
     let
       forEachSystem = nixpkgs.lib.genAttrs (import systems);
     in
@@ -42,6 +43,7 @@
                         babashka
                         cljstyle
                         clojure-lsp
+                        tad-better-behavior.packages.${system}.default
                         clj-nix-pkgs.deps-lock
                         miniserve
                         (gauge.withPlugins (_: [

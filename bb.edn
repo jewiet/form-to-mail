@@ -57,4 +57,8 @@
 
   serve:samples
   {:doc "Serves spec/samples on :1234/"
-   :task (shell "miniserve --port 1234 spec/samples")}}}
+   :task (shell "miniserve --port 1234 spec/samples")}
+
+  spec:run
+  {:doc "Evaluate the system against the specification"
+   :task (shell "tbb")}}}
