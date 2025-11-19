@@ -52,8 +52,12 @@ java -jar target/form-to-mail-0.1.19-standalone.jar
   - [ ] TODO: Preserve order of params
 - [ ] Implement publisher registration form
 - [ ] Setup CI pipeline
-- [ ] Convert spec to Gauge
+- [ ] Convert spec to Tad Better Behavior
 - [ ] Research transaction email provider
   - [ ] must be European
   - [ ] cheap
+- [ ] Improve logging
+    - [x] Log to stderr
+    - [x] Use logging library
+    - [ ] Allow changing the log level
 

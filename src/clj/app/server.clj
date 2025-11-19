@@ -3,56 +3,54 @@
    [clojure.string :as string]
    [io.pedestal.connector :as conn]
    [clojure.pprint :refer [pprint]]
+   [io.pedestal.log :refer [debug info spy]]
    [io.pedestal.http.http-kit :as hk]))
 
 (defonce submissions (atom {}))
 
-
 ;; TODO: Implement
 (defn submission-verification [{:keys [path-params]}]
-  (pprint @submissions)
+  (debug :prose "verifying submission" :submissions @submissions :path-params path-params)
   (if-let [submission-uuid (parse-uuid (:submission-uuid path-params))]
     (do
-      (with-out-str (println "Verifying submission id" submission-uuid))
+      (info :prose "verifying submission id"  :submission-uuid submission-uuid)
       (if-let [submission (get @submissions submission-uuid)]
         (do
-          (doseq [param (dissoc submission "email")]
-            (with-out-str (println (str (key param) ": " (val param))))
-            submission)
-          {:status  200
-           :headers {"Content-Type" "text/plain"}
-           :body  "Thank you for confirmation. Your form is delivered."})
-        {:status  404
-         :headers {"Content-Type" "text/plain"}
-         :body    "Submission not found"}))
-    {:status  422
-     :headers {"Content-Type" "text/plain"}
-     :body    "Invalid submission uuid"}))
+          (info :prose "found submission" :submission submission)
+          (spy {:status  200
+                :headers {"Content-Type" "text/plain"}
+                :body  "Thank you for confirmation. Your form is delivered."}))
+        (spy {:status  404
+              :headers {"Content-Type" "text/plain"}
+              :body    "Submission not found"})))
+    (spy {:status  422
+          :headers {"Content-Type" "text/plain"}
+          :body    "Invalid submission uuid"})))
 
 (defn form-handler
   [{:keys [params]}]
+  (debug :prose "form received" :params params)
   (let [email   (get params "email")]
     (if-not (string/blank? email)
-      (let [submission-uuid (random-uuid)]
-        (with-out-str (println (str "Form submitted by " email)))
+      (let [submission-uuid  (random-uuid)
+            confirmation-url (str "http://localhost:8080/confirm-submission/" submission-uuid)]
+        (info :prose "valid form submitted" :by email)
         (swap! submissions assoc submission-uuid params)
-        (with-out-str (println (str "Sending confirmation link: http://localhost:8080/confirm-submission/" submission-uuid)))
-        {:status  200
-         :headers {"Content-Type" "text/plain"}
-         :body    (str "Thank you for sending the form. We have sent you an email with confirmation link to " email)})
+        (info :prose "sending confirmation link" :url confirmation-url)
+        (spy {:status  200
+              :headers {"Content-Type" "text/plain"}
+              :body    (str "Thank you for sending the form. We have sent you an email with confirmation link to " email)}))
       (do
-        (with-out-str (println "Missing required field email"))
-        {:status  422
-         :headers {"Content-Type" "text/plain"}
-         :body    "Missing required field email"}))))
-
+        (info :prose "Missing required field" :field "email")
+        (spy {:status  422
+              :headers {"Content-Type" "text/plain"}
+              :body    "Missing required field email"})))))
 
 (defn home-handler
   [_request]
-  {:status  200
-   :headers {"Content-Type" "text/plain"}
-   :body "Hello, form!"})
-
+  (spy {:status  200
+        :headers {"Content-Type" "text/plain"}
+        :body "Hello, form!"}))
 
 (def routes
   #{["/"
@@ -66,8 +64,7 @@
      :route-name :submission-verification]})
 
 (defn log-connector [{:keys [host port] :as connector-map}]
-  (-> (str "Starting Form to Mail on " host ":" port)
-      (#(.println *err* %)))
+  (info :prose "Starting Form to Mail" :host host :port port)
   connector-map)
 
 (defn create-connector
@@ -77,7 +74,6 @@
       (conn/with-routes routes)
       (log-connector)
       (hk/create-connector nil)))
-
 
 ;; For interactive development
 (defonce *connector (atom nil))
@@ -93,3 +89,4 @@
 (defn restart []
   (stop)
   (start))
+
