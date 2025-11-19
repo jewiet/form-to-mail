@@ -7,8 +7,13 @@
    [babashka.fs :as fs])
 
   run:app
-  {:doc  "Run the Form to Mail locally"
-   :task (clojure "-M" "-m" "app.core")}
+  {:doc  "Run the Form to Mail locally. Optional argument is log level"
+   :task (let [log-level (first *command-line-args*)]
+           (clojure
+            (when log-level (str  "-J-Dorg.slf4j.simpleLogger.defaultLogLevel=" log-level))
+            "-M"
+            "-m"
+            "app.core"))}
 
   rebel
   {:doc "Run rebl repl"

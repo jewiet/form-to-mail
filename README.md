@@ -59,5 +59,5 @@ java -jar target/form-to-mail-0.1.19-standalone.jar
 - [ ] Improve logging
     - [x] Log to stderr
     - [x] Use logging library
-    - [ ] Allow changing the log level
+    - [x] Allow changing the log level
 
