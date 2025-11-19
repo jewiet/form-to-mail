@@ -13,11 +13,11 @@
   (pprint @submissions)
   (if-let [submission-uuid (parse-uuid (:submission-uuid path-params))]
     (do
-      (println "Verifying submission id" submission-uuid)
+      (with-out-str (println "Verifying submission id" submission-uuid))
       (if-let [submission (get @submissions submission-uuid)]
         (do
           (doseq [param (dissoc submission "email")]
-            (println (str (key param) ": " (val param)))
+            (with-out-str (println (str (key param) ": " (val param))))
             submission)
           {:status  200
            :headers {"Content-Type" "text/plain"}
@@ -34,14 +34,14 @@
   (let [email   (get params "email")]
     (if-not (string/blank? email)
       (let [submission-uuid (random-uuid)]
-        (println (str "Form submitted by " email))
+        (with-out-str (println (str "Form submitted by " email)))
         (swap! submissions assoc submission-uuid params)
-        (println (str "Sending confirmation link: http://localhost:8080/confirm-submission/" submission-uuid))
+        (with-out-str (println (str "Sending confirmation link: http://localhost:8080/confirm-submission/" submission-uuid)))
         {:status  200
          :headers {"Content-Type" "text/plain"}
          :body    (str "Thank you for sending the form. We have sent you an email with confirmation link to " email)})
       (do
-        (println "Missing required field email")
+        (with-out-str (println "Missing required field email"))
         {:status  422
          :headers {"Content-Type" "text/plain"}
          :body    "Missing required field email"}))))
