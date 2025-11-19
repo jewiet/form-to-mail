@@ -2,9 +2,9 @@
   (:require
    [app.server :as server]
    [clojure.string :refer [lower-case]]
-   [io.pedestal.log :refer [info spy]]
+   [io.pedestal.log :refer [debug info spy]]
    [org.httpkit.client :as hk-client]
-   [tbb.core :refer [tis implement-step ready]]))
+   [tbb.core :refer [implement-step ready tis]]))
 
 (defonce response (atom nil))
 
@@ -14,9 +14,8 @@
 
 (implement-step  "Make a {0} request to {1}."
                  (fn [method url]
-                   (info :prose "making http request" :method method :url url)
+                   (debug :prose "making http request" :method method :url url)
                    (let [method (keyword (lower-case method))]
-                     (info :method method :url url)
                      (-> {:method method
                           :url url}
                          hk-client/request
@@ -42,7 +41,7 @@
 
 
 (defn -main []
-  (info :prose "starting web automation")
+  (debug :prose "starting http interpreter")
   (ready)
-  (info :prose "Done reading from tbb. Stopping the server.")
+  (debug :prose "Stopping the server.")
   (server/stop))

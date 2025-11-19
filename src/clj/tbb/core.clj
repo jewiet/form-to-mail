@@ -2,7 +2,7 @@
   (:require
    [clojure.data.json :as json]
    [clojure.string :refer [blank?]]
-   [io.pedestal.log :refer [info]]))
+   [io.pedestal.log :refer [debug info]]))
 
 
 (defonce ^:private steps-implementation (atom {}))
@@ -28,7 +28,7 @@
             variant       (get-in message [:step :variant])
             arguments     (get-in message [:step :arguments])
             implmentation (get @steps-implementation variant)]
-        (info :prose "got a message from tbb" :message message)
+        (debug :prose "got a message from tbb" :message message)
         (if (nil? implmentation)
           (println (json/write-str {:type   "Failure"
                                     :reason "Not implemented"}))
@@ -39,4 +39,4 @@
               (println (json/write-str {:type   "Failure"
                                         :reason (.getMessage e)}))))))))
 
-  (info :prose "Done reading from tbb."))
+  (debug :prose "Done reading from tbb."))
