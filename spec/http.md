@@ -1,5 +1,5 @@
 ---
-interpreter: clj -M ./src/http_spec_interpreter.clj
+interpreter: clj -M -m interpreters.http
 ---
 
 

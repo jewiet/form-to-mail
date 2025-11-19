@@ -2,7 +2,6 @@
   (:require
    [clojure.string :as string]
    [io.pedestal.connector :as conn]
-   [clojure.pprint :refer [pprint]]
    [io.pedestal.log :refer [debug info spy]]
    [io.pedestal.http.http-kit :as hk]))
 
