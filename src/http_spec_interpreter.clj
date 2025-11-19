@@ -4,7 +4,8 @@
    [clojure.data.json :as json]
    [clojure.pprint :as pprint]
    [clojure.string :refer [blank? lower-case]]
-   [org.httpkit.client :as hk-client]))
+   [org.httpkit.client :as hk-client]
+   [tbb.core :refer [tis]]))
 
 (defonce response (atom nil))
 
@@ -28,16 +29,16 @@
    (fn [status]
      (let [actual (:status @response)
            expected (read-string status)]
-         (assert  (= expected actual) "Stupid status")))
+       (tis = expected actual)))
 
    "The response body is {0}."
    (fn [body]
-     (assert (= body (:body @response))))
+     (tis = body (:body @response)))
 
    "The response {0} header is {1}."
    (fn [header-name header-value]
      (let [header-key (keyword header-name)]
-       (assert (= header-value (get-in @response [:headers header-key])))))})
+       (tis = header-value (get-in @response [:headers header-key]))))})
 
 (println (json/write-str {:type "InterpreterState"
                           :ready true}))
@@ -58,7 +59,6 @@
           (catch AssertionError e
             (println (json/write-str {:type   "Failure"
                                       :reason (.getMessage e)}))))))))
-
 
 (.println *err* "Done reading from tbb. Stopping the server.")
 (server/stop)
