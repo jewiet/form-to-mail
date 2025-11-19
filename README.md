@@ -56,7 +56,7 @@ java -jar target/form-to-mail-0.1.19-standalone.jar
 - [ ] Research transaction email provider
   - [ ] must be European
   - [ ] cheap
-- [ ] Improve logging
+- [x] Improve logging
     - [x] Log to stderr
     - [x] Use logging library
     - [x] Allow changing the log level

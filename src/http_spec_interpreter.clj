@@ -2,8 +2,8 @@
   (:require
    [app.server :as server]
    [clojure.data.json :as json]
-   [clojure.pprint :as pprint]
    [clojure.string :refer [blank? lower-case]]
+   [io.pedestal.log :refer [info spy]]
    [org.httpkit.client :as hk-client]
    [tbb.core :refer [tis]]))
 
@@ -16,14 +16,14 @@
 
    "Make a {0} request to {1}."
    (fn [method url]
-     (.println *err* (str "making http request " method " " url))
+     (info :prose "making http request" :method method :url url)
      (let [method (keyword (lower-case method))]
        (-> {:method method
             :url url}
            hk-client/request
            deref
            (#(reset! response %))
-           (#(pprint/write % :pretty true :stream *err*)))))
+           (spy))))
 
    "The response has a {0} status code."
    (fn [status]
@@ -49,7 +49,7 @@
           variant       (get-in message [:step :variant])
           arguments     (get-in message [:step :arguments])
           implmentation (get steps-implementation variant)]
-      (.println *err* message)
+      (info :prose "got a message from tbb" :message message)
       (if (nil? implmentation)
         (println (json/write-str {:type   "Failure"
                                   :reason "Not implemented"}))
@@ -60,5 +60,5 @@
             (println (json/write-str {:type   "Failure"
                                       :reason (.getMessage e)}))))))))
 
-(.println *err* "Done reading from tbb. Stopping the server.")
+(info :prose "Done reading from tbb. Stopping the server.")
 (server/stop)
