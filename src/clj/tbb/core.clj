@@ -1,8 +1,9 @@
 (ns tbb.core
   (:require
    [clojure.data.json :as json]
+   [clojure.pprint :refer [pprint]]
    [clojure.string :refer [blank?]]
-   [io.pedestal.log :refer [debug info]]))
+   [io.pedestal.log :refer [debug error]]))
 
 
 (defonce ^:private steps-implementation (atom {}))
@@ -39,7 +40,7 @@
                             arguments)]
                    (tis ~'= "cat" "dog")))]
 
-            (error :missing-step-implemntation variant)
+            (error :missing-step-implemnetation variant)
             (println (json/write-str {:type   "Failure"
                                       :reason "Not implemented"
                                       :hint (str "To get started put this in your interpreter:\n\n"

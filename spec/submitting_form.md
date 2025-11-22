@@ -1,3 +1,7 @@
+---
+interpreter: clj -J-Dorg.slf4j.simpleLogger.defaultLogLevel=info -M -m interpreters.web-automation
+---
+
 # Submitting Form
 
 The tag proof-of-concept denotes a temporary spec describing a proof of concept for form submission. Its goal is to guide early step of development. In the future it will be modified or removed.
@@ -9,33 +13,38 @@ The tag covered denotes a spec that is expected to be already implemented, or is
 
 tags: proof-of-concept covered
 
-* Serve "spec/samples" on port "1234" 
+* Run the app
+* Serve `spec/samples` on port `1234`
 
   Run the command `miniserve --port 1234 spec/samples`
 
-* Navigate to "http://localhost:1234/poc-form.html"
-* the form "action" is set to "http://localhost:8080/poc-submit"
+* Navigate to `http://localhost:1234/poc-form.html`
+* the form `action` is set to `http://localhost:8080/poc-submit`
 
   Query for `form`, e.g. `$("form")`.
 
-* the form "method" is set to "POST"
-* There is a field "email" of type "email"
+* the form `method` is set to `POST`
+* There is a field `Your email address` of type `email`
 
   Query for `[name="email"]`. Check the type attribute.
 
-* There is a field "message" of type "textarea"
+* There is a field `Your message` of element `textarea`
 
   Query for `[name="message"]`. Check the element name.
 
-* Type "user-one@example.com" in the "email" field
-* Type "Hello dear receiver!" in the "message" field
-* Click "Send" button
-* Form to Mail service will log "Form submitted by user-one@example.com"
-* Form to Mail service will log "Sending confirmation link: http://localhost:8080/confirm-submission/<submission-uuid>" 
+* Type `user-one@example.com` in the `Your email address` field
+* Type `Hello dear receiver!` in the `Your message` field
+* Click `Send` button
+* Form to Mail service will log `Form submitted by user-one@example.com`
+  
+  The interpreter can't test this currently.
+  
+* Form to Mail service will log `Sending confirmation link: http://localhost:8080/confirm-submission/<submission-uuid>` 
 * Open the confirmation link in the browser.
-* There is a message "Thank you for confirmation. Your form is delivered."
-* Form to Mail service will log "Sending the form <submission-uuid> to publisher-one@example.com".
-* Form to Mail service will log "message: Hello dear receiver!"
+* There is a message `Thank you for confirmation. Your form is delivered.`
+* Form to Mail service will log `Sending the form <submission-uuid> to publisher-one@example.com`.
+* Form to Mail service will log `message: Hello dear receiver!`
+
 
 
 ## Order form submission

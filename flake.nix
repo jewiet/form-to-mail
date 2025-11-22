@@ -43,6 +43,7 @@
                         babashka
                         cljstyle
                         clojure-lsp
+                        geckodriver
                         tad-better-behavior.packages.${system}.default
                         clj-nix-pkgs.deps-lock
                         miniserve
