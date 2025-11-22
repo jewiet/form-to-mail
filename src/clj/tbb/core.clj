@@ -30,13 +30,29 @@
             implmentation (get @steps-implementation variant)]
         (debug :prose "got a message from tbb" :message message)
         (if (nil? implmentation)
-          (println (json/write-str {:type   "Failure"
-                                    :reason "Not implemented"}))
+          (let [suggestion
+                `(tbb/implement-step
+                  ~variant
+                  (~'fn [~@(map-indexed
+                            (fn [indx _]
+                              (symbol (str "arg-" indx)))
+                            arguments)]
+                   (tis ~'= "cat" "dog")))]
+
+            (error :missing-step-implemntation variant)
+            (println (json/write-str {:type   "Failure"
+                                      :reason "Not implemented"
+                                      :hint (str "To get started put this in your interpreter:\n\n"
+                                                 "``` clojure\n"
+                                                 (with-out-str (pprint suggestion))
+                                                 "```")})))
           (try
             (apply implmentation arguments)
             (println (json/write-str {:type "Success"}))
-            (catch AssertionError e
+            (catch Throwable e
               (println (json/write-str {:type   "Failure"
                                         :reason (.getMessage e)}))))))))
 
   (debug :prose "Done reading from tbb."))
+
+
