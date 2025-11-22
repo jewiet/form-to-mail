@@ -12,10 +12,10 @@
   (debug :prose "verifying submission" :submissions @submissions :path-params path-params)
   (if-let [submission-uuid (parse-uuid (:submission-uuid path-params))]
     (do
-      (info :prose "verifying submission id"  :submission-uuid submission-uuid)
+      (debug :prose "verifying submission id"  :submission-uuid submission-uuid)
       (if-let [submission (get @submissions submission-uuid)]
         (do
-          (info :prose "found submission" :submission submission)
+          (debug :prose "found submission" :submission submission)
           (spy {:status  200
                 :headers {"Content-Type" "text/plain"}
                 :body  "Thank you for confirmation. Your form is delivered."}))
