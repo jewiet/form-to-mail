@@ -46,11 +46,6 @@
                         tad-better-behavior.packages.${system}.default
                         clj-nix-pkgs.deps-lock
                         miniserve
-                        (gauge.withPlugins (_: [
-                          gaugePlugins.java
-                          gaugePlugins.html-report
-                          gaugePlugins.screenshot
-                        ]))
                       ];
                     }
                   ];
