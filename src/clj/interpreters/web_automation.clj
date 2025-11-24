@@ -78,12 +78,27 @@
        (map read-string)
        doall))
 
+(defn map-includes? [small big]
+ (->> small
+    keys
+    (select-keys big)
+    (= small)))
+
+(defn- find-matching [small coll]
+  (first (filter #(map-includes? small %) coll)))
+
+(defn has-matching?
+  "Takes a small map and a collection of maps, checks if any matches"
+  [small coll]
+  (not-empty (find-matching small coll)))
+
 (tbb/implement-step
  "Form to Mail service will log {0}"
- (fn [text]
-   (warn :todo "Currently the interpreter can't assert content of server logs."
-         :variant  "Form to Mail service will log {0}"
-         :asserting text)))
+ (fn [str-entry]
+   (let [expected (read-string str-entry)]
+     (->> (get-form-to-mail-logs)
+         (tbb/tis has-matching? expected)))))
+
 
 
 (defn get-current-namespace []
