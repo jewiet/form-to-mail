@@ -25,6 +25,7 @@
                       (let [command (str "bb run:app 2> " server-log-file)]
                        (reset! form-to-mail-process
                               (future (sh "sh" "-c" command)))
+                       ;; TODO: Be smarter about waiting. Use logs.
                        (Thread/sleep 5000))))
 
 
