@@ -1,9 +1,13 @@
 (ns interpreters.web-automation
   (:require
    [clojure.java.shell :refer [sh]]
+   [clojure.string :refer [split-lines]]
    [etaoin.api :as e]
    [io.pedestal.log :refer [debug info warn]]
-   [tbb.core :as tbb]))
+   [tbb.core :as tbb])
+  (:import
+   (java.nio.file Files)
+   (java.nio.file.attribute FileAttribute)))
 
 (def driver (e/firefox)) ;; a Firefox window should appear
 
@@ -11,11 +15,16 @@
 (def miniserve-process (atom nil))
 (def form-to-mail-process (atom nil))
 
+
+(def server-log-file (Files/createTempFile "form-to-mail" ".log" (into-array FileAttribute [])))
+
 (tbb/implement-step "Run the app"
                     (fn []
-                      (reset! form-to-mail-process
-                              (future (sh "bb" "run:app" "debug")))
-                      (Thread/sleep 5000)))
+                      (debug "server-log-file" server-log-file)
+                      (let [command (str "bb run:app 2> " server-log-file)]
+                       (reset! form-to-mail-process
+                              (future (sh "sh" "-c" command)))
+                       (Thread/sleep 5000))))
 
 
 (tbb/implement-step "Serve {0} on port {1}"
@@ -58,6 +67,16 @@
  "Click {0} button"
  (fn [button-label]
    (e/click driver [{:tag :button :fn/text button-label}])))
+
+;; TODO: Move to a different namespace or to the top
+(defn get-form-to-mail-logs []
+  (->> server-log-file
+       str
+       slurp
+       split-lines
+       (keep #(re-find #"\{.*\}" %))
+       (map read-string)
+       doall))
 
 (tbb/implement-step
  "Form to Mail service will log {0}"
