@@ -37,7 +37,9 @@
             confirmation-url (str "http://localhost:8080/confirm-submission/" submission-uuid)]
         (info :prose "valid form submitted" :by email)
         (swap! submissions assoc submission-uuid params)
-        (info :prose "sending confirmation link" :url confirmation-url)
+        (info :prose "sending confirmation link"
+              :confirmation-url confirmation-url
+              :submission-uuid submission-uuid)
         (spy {:status  200
               :headers {"Content-Type" "text/plain"}
               :body    (str "Thank you for sending the form. We have sent you an email with confirmation link to " email)}))
