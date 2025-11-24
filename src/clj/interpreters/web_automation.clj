@@ -112,6 +112,12 @@
      (reset! confirmation-url value)
      (debug :looking-for query :extracting extract-key :found found :value value))))
 
+(tbb/implement-step
+ "Open the confirmation link in the browser."
+ (fn []
+   (e/go driver @confirmation-url)))
+
+
 
 
 (defn get-current-namespace []
