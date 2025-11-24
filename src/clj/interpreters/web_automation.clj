@@ -15,6 +15,7 @@
 (def miniserve-process (atom nil))
 (def form-to-mail-process (atom nil))
 
+(def confirmation-url (atom nil))
 
 (def server-log-file (Files/createTempFile "form-to-mail" ".log" (into-array FileAttribute [])))
 
@@ -98,6 +99,18 @@
    (let [expected (read-string str-entry)]
      (->> (get-form-to-mail-logs)
          (tbb/tis has-matching? expected)))))
+
+(tbb/implement-step
+ "From a log line matching {0} extract {1}"
+ (fn [query extract-key]
+   (let [query       (read-string query)
+         extract-key (read-string extract-key)
+         found       (find-matching query (get-form-to-mail-logs))
+         value       (extract-key found)]
+     ;; TODO: Do a helpful assertion that something was found
+     ;; TODO: Rename confirmation-url to something generic
+     (reset! confirmation-url value)
+     (debug :looking-for query :extracting extract-key :found found :value value))))
 
 
 
