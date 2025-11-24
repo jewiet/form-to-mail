@@ -16,6 +16,8 @@
       (if-let [submission (get @submissions submission-uuid)]
         (do
           (debug :prose "found submission" :submission submission)
+          ;; TODO: Simplify this hack
+          (eval `(info ~@(flatten (into [] submission))))
           (spy {:status  200
                 :headers {"Content-Type" "text/plain"}
                 :body  "Thank you for confirmation. Your form is delivered."}))
