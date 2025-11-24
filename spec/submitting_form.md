@@ -35,16 +35,12 @@ tags: proof-of-concept covered
 * Type `user-one@example.com` in the `Your email address` field
 * Type `Hello dear receiver!` in the `Your message` field
 * Click `Send` button
-* Form to Mail service will log `Form submitted by user-one@example.com`
-  
-  The interpreter can't test this currently.
-  
-* Form to Mail service will log `Sending confirmation link: http://localhost:8080/confirm-submission/<submission-uuid>` 
+* Form to Mail service will log `{:prose "valid form submitted" :by "user-one@example.com"}`
+* Form to Mail service will log `{:prose "sending confirmation link"}` 
+* From a log line matching `{:prose "sending confirmation link"}` extract `:confirmation-url`
 * Open the confirmation link in the browser.
 * There is a message `Thank you for confirmation. Your form is delivered.`
-* Form to Mail service will log `Sending the form <submission-uuid> to publisher-one@example.com`.
-* Form to Mail service will log `message: Hello dear receiver!`
-
+* Form to Mail service will log `{"email" "user-one@example.com", "message" "Hello dear receiver!"}`
 
 
 ## Order form submission
