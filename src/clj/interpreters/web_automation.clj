@@ -117,6 +117,11 @@
  (fn []
    (e/go driver @confirmation-url)))
 
+(tbb/implement-step
+ "There is a message {0}"
+ (fn [message]
+   (tbb/tis = message (e/get-element-text driver {:tag :body}))))
+
 
 
 
