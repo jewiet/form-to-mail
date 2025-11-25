@@ -1,39 +1,34 @@
 (ns interpreters.web-automation
   (:require
-   [clojure.java.shell :refer [sh]]
    [clojure.string :refer [split-lines]]
    [etaoin.api :as e]
    [io.pedestal.log :refer [debug info warn]]
-   [tbb.core :as tbb])
-  (:import
-   (java.nio.file Files)
-   (java.nio.file.attribute FileAttribute)))
+   [babashka.fs :as fs]
+   [babashka.process :as p :refer [process destroy-tree]]
+   [tbb.core :as tbb]))
 
 (def driver (e/firefox)) ;; a Firefox window should appear
 
-;; The future is here
-(def miniserve-process (atom nil))
-(def form-to-mail-process (atom nil))
-
 (def confirmation-url (atom nil))
 
-(def server-log-file (Files/createTempFile "form-to-mail" ".log" (into-array FileAttribute [])))
+(def server-log-file (fs/create-temp-file {:prefix "form-to-mail" :suffix ".log"}))
+
+(def form-to-mail-process (process {:err :write :err-file server-log-file} "bb run:app"))
+
+(def miniserve-process (process {:err :write :err-file server-log-file} "bb serve:samples"))
 
 (tbb/implement-step "Run the app"
                     (fn []
                       (debug "server-log-file" server-log-file)
-                      (let [command (str "bb run:app 2> " server-log-file)]
-                       (reset! form-to-mail-process
-                              (future (sh "sh" "-c" command)))
-                       ;; TODO: Be smarter about waiting. Use logs.
-                       (Thread/sleep 5000))))
+                      form-to-mail-process
+                      ;; TODO: Be smarter about waiting. Use logs.
+                      (Thread/sleep 5000)))
 
 
 (tbb/implement-step "Serve {0} on port {1}"
                     (fn [path port]
                       (debug :serving path :port port)
-                      (reset! miniserve-process
-                              (future (sh "miniserve" "--port" "1234" "spec/samples")) )))
+                      miniserve-process))
 
 (tbb/implement-step "Navigate to {0}"
                     (fn [url]
@@ -133,7 +128,6 @@
   (debug :prose "starting web automation")
   (tbb/ready)
   (e/close-window driver)
-  (future-cancel @miniserve-process)
-  (future-cancel @form-to-mail-process)
-  (shutdown-agents)
+  (destroy-tree form-to-mail-process)
+  (destroy-tree miniserve-process)
   (info :done (get-current-namespace)))
