@@ -130,6 +130,11 @@
  (fn [field-label]
    (e/click driver [{:tag :label :fn/text field-label}])))
 
+(tbb/implement-step
+ "Select {0} in the {1} field"
+ (fn [user-input field-label]
+   (-> (e/get-element-attr driver [{:tag :label :fn/text field-label}] "for")
+       (#(e/fill driver [{:id %}] user-input)))))
 
 (defn get-current-namespace []
   (-> #'get-current-namespace meta :ns str))
