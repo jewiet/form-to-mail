@@ -76,10 +76,10 @@
        doall))
 
 (defn map-includes? [small big]
- (->> small
-    keys
-    (select-keys big)
-    (= small)))
+  (->> small
+       keys
+       (select-keys big)
+       (= small)))
 
 (defn- find-matching [small coll]
   (first (filter #(map-includes? small %) coll)))
@@ -94,7 +94,7 @@
  (fn [str-entry]
    (let [expected (read-string str-entry)]
      (->> (get-form-to-mail-logs)
-         (tbb/tis has-matching? expected)))))
+          (tbb/tis has-matching? expected)))))
 
 (tbb/implement-step
  "From a log line matching {0} extract {1}"
