@@ -125,6 +125,10 @@
        (#(e/get-element-attr driver [{:tag :input :id %}] "type"))
        (#(tbb/tis = "radio" %)))))
 
+(tbb/implement-step
+ "Click {0} radio button"
+ (fn [field-label]
+   (e/click driver [{:tag :label :fn/text field-label}])))
 
 
 (defn get-current-namespace []
