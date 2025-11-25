@@ -44,14 +44,14 @@
  "There is a field {0} of type {1}"
  (fn [field-label field-type]
    (-> (e/get-element-attr driver [{:tag :label :fn/text field-label}] "for")
-       (#(e/get-element-attr driver [{:tag :input :id %}] "type"))
+       (#(e/get-element-attr driver [{:id %}] "type"))
        (#(tbb/tis = field-type %)))))
 
 (tbb/implement-step
  "There is a field {0} of element {1}"
  (fn [field-label tag-name]
    (-> (e/get-element-attr driver [{:tag :label :fn/text field-label}] "for")
-       (#(e/get-element-tag driver [{:tag :textarea :id %}]))
+       (#(e/get-element-tag driver [{:id %}]))
        (#(tbb/tis = tag-name %)))))
 
 (tbb/implement-step
