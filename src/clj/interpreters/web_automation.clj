@@ -118,6 +118,12 @@
  (fn [message]
    (tbb/tis = message (e/get-element-text driver {:tag :body}))))
 
+(tbb/implement-step
+ "There is a radio button labeled {0}"
+ (fn [field-label]
+   (-> (e/get-element-attr driver [{:tag :label :fn/text field-label}] "for")
+       (#(e/get-element-attr driver [{:tag :input :id %}] "type"))
+       (#(tbb/tis = "radio" %)))))
 
 
 
