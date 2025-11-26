@@ -1,3 +1,7 @@
+---
+interpreter: clj -J-Dorg.slf4j.simpleLogger.defaultLogLevel=info -M -m interpreters.web-automation
+---
+
 # Publisher Registration 
 
 - Navigate to "/register".

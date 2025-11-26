@@ -1,3 +1,7 @@
+---
+interpreter: clj -J-Dorg.slf4j.simpleLogger.defaultLogLevel=info -M -m interpreters.web-automation
+---
+
 # Publisher Login
 
 - Given that a publisher is registered with email "publisher-one@example.com" and password "Secret password 12".

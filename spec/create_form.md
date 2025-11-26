@@ -1,3 +1,7 @@
+---
+interpreter: clj -J-Dorg.slf4j.simpleLogger.defaultLogLevel=info -M -m interpreters.web-automation
+---
+
 # Create form
 
 - Given that the publisher is logged in using publisher-one@example.com.
