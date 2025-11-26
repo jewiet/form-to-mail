@@ -11,7 +11,9 @@ The tag covered denotes a spec that is expected to be already implemented, or is
 
 ## Form submission with email and message
 
-tags: proof-of-concept covered
+``` yaml tbb
+tags: [proof-of-concept, covered]
+```
 
 * Run the app
 * Serve `spec/samples` on port `1234`
