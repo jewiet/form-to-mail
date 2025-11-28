@@ -37,9 +37,11 @@
             confirmation-url (str "http://localhost:8080/confirm-submission/" submission-uuid)]
         (info :prose "valid form submitted" :by email)
         (swap! submissions assoc submission-uuid params)
-        (info :prose "sending confirmation link"
-              :confirmation-url confirmation-url
-              :submission-uuid submission-uuid)
+        (info :prose "sending an email"
+              :to email
+              :subject "Form to Mail confirmation"
+              ;; Use a templating library
+              :body (str "Please <a href='" confirmation-url "'>confirm your submission</a>"))
         (spy {:status  200
               :headers {"Content-Type" "text/plain"}
               :body    (str "Thank you for sending the form. We have sent you an email with confirmation link to " email)}))

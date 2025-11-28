@@ -7,8 +7,13 @@
    [babashka.process :as p :refer [process destroy-tree]]
    [tbb.core :as tbb]))
 
+(def current-inbox (atom nil))
+
+(def current-message (atom nil))
+
 (def driver (e/firefox)) ;; a Firefox window should appear
 
+;; TODO: Remove it in favor of reading information from inboxes
 (def confirmation-url (atom nil))
 
 (def server-log-file (fs/create-temp-file {:prefix "form-to-mail" :suffix ".log"}))
@@ -75,14 +80,24 @@
        (map read-string)
        doall))
 
+;; Make a smart-spy that takes the level
+(defn info-spy [prose value]
+  (info :prose prose :value value)
+  value)
+
 (defn map-includes? [small big]
   (->> small
        keys
        (select-keys big)
        (= small)))
 
+(defn- filter-matching [small coll]
+  (filter #(map-includes? small %) coll))
+
 (defn- find-matching [small coll]
-  (first (filter #(map-includes? small %) coll)))
+  (->> coll
+       (filter-matching small)
+       (first)))
 
 (defn has-matching?
   "Takes a small map and a collection of maps, checks if any matches"
@@ -96,6 +111,7 @@
      (->> (get-form-to-mail-logs)
           (tbb/tis has-matching? expected)))))
 
+;; TODO: Remove it in favor of reading information from inboxes
 (tbb/implement-step
  "From a log line matching {0} extract {1}"
  (fn [query extract-key]
@@ -105,9 +121,9 @@
          value       (extract-key found)]
      ;; TODO: Do a helpful assertion that something was found
      ;; TODO: Rename confirmation-url to something generic
-     (reset! confirmation-url value)
-     (debug :looking-for query :extracting extract-key :found found :value value))))
+     (reset! confirmation-url value))))
 
+;; TODO: Remove it in favor of reading information from inboxes
 (tbb/implement-step
  "Open the confirmation link in the browser."
  (fn []
@@ -135,6 +151,37 @@
  (fn [user-input field-label]
    (-> (e/get-element-attr driver [{:tag :label :fn/text field-label}] "for")
        (#(e/fill driver [{:id %}] user-input)))))
+
+(tbb/implement-step
+ "Open the inbox of {0}"
+ (fn [email-address]
+   (->> (get-form-to-mail-logs)
+        (info-spy "All logs")
+        (filter-matching { :prose "sending an email" :to email-address })
+        (map #(dissoc % :prose))
+        (info-spy "Inbox from logs")
+        (reset! current-inbox))))
+
+(tbb/implement-step
+ "In the inbox find the message with the subject {0}"
+ (fn [subject]
+   (->> @current-inbox
+        (info-spy "Current inbox")
+        (find-matching {:subject subject})
+        (info-spy "Found message")
+        (reset! current-message))))
+
+(tbb/implement-step
+ "In the message open the link labeled {0}"
+ (fn [label]
+   (let [pattern (re-pattern (str "<a\\s+.*href\\s*=\\s*'(.+)'.*>" label "</a>"))]
+     (->> @current-message
+         :body
+         (info-spy "Body")
+         (re-find pattern)
+         (last)
+         (info-spy "URL to open")
+         (e/go driver)))))
 
 (defn get-current-namespace []
   (-> #'get-current-namespace meta :ns str))

@@ -28,19 +28,23 @@ tags: [proof-of-concept, covered]
 * the form `method` is set to `POST`
 * There is a field `Your email address` of type `email`
 
+  Nonsense:
   Query for `[name="email"]`. Check the type attribute.
+  
+  Consider renaming email to sender-email.
 
 * There is a field `Your message` of element `textarea`
 
+  Nonsense:
   Query for `[name="message"]`. Check the element name.
 
 * Type `user-one@example.com` in the `Your email address` field
 * Type `Hello dear receiver!` in the `Your message` field
 * Click `Send` button
 * Form to Mail service will log `{:prose "valid form submitted" :by "user-one@example.com"}`
-* Form to Mail service will log `{:prose "sending confirmation link"}` 
-* From a log line matching `{:prose "sending confirmation link"}` extract `:confirmation-url`
-* Open the confirmation link in the browser.
+* Open the inbox of `user-one@example.com`
+* In the inbox find the message with the subject `Form to Mail confirmation`
+* In the message open the link labeled `confirm your submission`
 * There is a message `Thank you for confirmation. Your form is delivered.`
 * Form to Mail service will log `{"email" "user-one@example.com", "message" "Hello dear receiver!"}`
 
