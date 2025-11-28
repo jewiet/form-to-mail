@@ -189,7 +189,7 @@
 (defn -main []
   (debug :prose "starting web automation")
   (tbb/ready)
-  (e/close-window driver)
+  (e/quit driver)
   (destroy-tree form-to-mail-process)
   (destroy-tree miniserve-process)
   (info :done (get-current-namespace)))
