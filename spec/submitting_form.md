@@ -21,32 +21,35 @@ tags: [proof-of-concept, covered]
   Run the command `miniserve --port 1234 spec/samples`
 
 * Navigate to `http://localhost:1234/poc-form.html`
-* the form `action` is set to `http://localhost:8080/poc-submit`
+* There is a `form` element with the following properties
 
-  Query for `form`, e.g. `$("form")`.
+  | name   | value                            |
+  |--------|----------------------------------|
+  | method | POST                             |
+  | action | http://localhost:8080/poc-submit |
 
-* the form `method` is set to `POST`
-* There is a field `Your email address` of type `email`
+* There are the following fields 
 
-  Nonsense:
-  Query for `[name="email"]`. Check the type attribute.
-  
+  | label              | name    | type     |
+  |--------------------|---------|----------|
+  | Your email address | email   | email    |
+  | Your message       | message | textarea |
+
   Consider renaming email to sender-email.
-
-* There is a field `Your message` of element `textarea`
-
-  Nonsense:
-  Query for `[name="message"]`. Check the element name.
 
 * Type `user-one@example.com` in the `Your email address` field
 * Type `Hello dear receiver!` in the `Your message` field
 * Click `Send` button
+
 * Form to Mail service will log `{:prose "valid form submitted" :by "user-one@example.com"}`
 * Open the inbox of `user-one@example.com`
 * In the inbox find the message with the subject `Form to Mail confirmation`
 * In the message open the link labeled `confirm your submission`
 * There is a message `Thank you for confirmation. Your form is delivered.`
-* Form to Mail service will log `{"email" "user-one@example.com", "message" "Hello dear receiver!"}`
+* Open the inbox of `publisher-one@example.com`
+* In the inbox find the message with the subject `Form to Mail message`
+* The message is from `user-one@example.com`
+* The message contains `message`
 
 
 ## Order form submission
@@ -56,28 +59,53 @@ This scenario simulates a complex form with many different inputs. It's a fictio
 * Run the app
 * Serve `spec/samples` on port `1234` 
 * Navigate to `http://localhost:1234/order-form.html`
-* the form `action` is set to `http://localhost:8080/poc-submit`
-* the form `method` is set to `POST`
-* There is a field `Street and house number` of type `text`
-* There is a field `City` of type `text`
-* There is a field `Country` of type `text`
-* There is a field `Email` of type `email`
+
+* There is a `form` element with the following properties
+
+  | name   | value                            |
+  |--------|----------------------------------|
+  | method | POST                             |
+  | action | http://localhost:8080/poc-submit |
+
+
+* There are the following fields
+
+  | label                   | type     |
+  |-------------------------|----------|
+  | Street and house number | text     |
+  | City                    | text     |
+  | Country                 | text     |
+  | Email                   | email    |
+  | Select type of wood     | select   |
+  | Select coating          | select   |
+  | Number of chairs        | number   |
+  | Number of high chairs   | number   |
+  | Notes                   | textarea |
+
 * There is a radio button labeled `Home Delivery`
 * There is a radio button labeled `Pickup`
-* There is a field `Select type of wood` of element `select`
-* There is a field `Select coating` of element `select`
-* There is a field `Number of chairs` of type `number`
-* There is a field `Number of high chairs` of type `number`
-* There is a field `Notes` of element `textarea`
-* Type `Verycoolstreet 1` in the `Street and house number` field
-* Type `Kittentown` in the `City` field
-* Type `Katcountry` in the `Country` field
-* Type `szara@muchu.com` in the `Email` field
+
+* Type the following input in to the corresponding fields
+
+  | user-input       | input-field             |
+  |------------------|-------------------------|
+  | Verycoolstreet 1 | Street and house number |
+  | Kittentown       | City                    |
+  | Katcountry       | Country                 |
+  | szara@muchu.com  | Email                   |
+  | 3                | Number of chairs        |
+  | 4                | Number of high chairs   |
+
+
 * Click `Pickup` radio button
-* Select `Pine` in the `Select type of wood` field
-* Select `Red` in the `Select coating` field
-* Type `3` in the `Number of chairs` field
-* Type `4` in the `Number of high chairs` field
+
+* Select the following option from the dropdown
+ 
+  | option | dropdown label      |
+  |--------|---------------------|
+  | Pine   | Select type of wood |
+  | Red    | Select coating      |
+
 * Type `Can I pick up the items before christmas?` in the `Notes` field
 * Click `Send` button
 * Form to Mail service will log `{:prose "valid form submitted" :by "szara@muchu.com"}`
@@ -97,10 +125,21 @@ The email field is the only required field. Submission without email should be r
 * Run the app
 * Serve `spec/samples` on port `1234` 
 * Navigate to `http://localhost:1234/poc-form.html`
-* the form `action` is set to `http://localhost:8080/poc-submit`
-* the form `method` is set to `POST`
-* There is a field `Your email address` of type `email`
-* There is a field `Your message` of element `textarea`
+
+* There is a `form` element with the following properties
+
+  | name   | value                            |
+  |--------|----------------------------------|
+  | method | POST                             |
+  | action | http://localhost:8080/poc-submit |
+
+* There are the following fields 
+
+  | label              | name    | type     |
+  |--------------------|---------|----------|
+  | Your email address | email   | email    |
+  | Your message       | message | textarea |
+
 * Type `Hello dear receiver!` in the `Your message` field
 * Click `Send` button
 * There is a message `Missing required field email`
