@@ -22,8 +22,9 @@
 
 (def miniserve-process (process {:err :write :err-file server-log-file} "bb serve:samples"))
 
+
 (tbb/implement-step "Run the app"
-                    (fn []
+                    (fn [_]
                       (debug "server-log-file" server-log-file)
                       form-to-mail-process
                       ;; TODO: Be smarter about waiting. Use logs.
@@ -31,43 +32,43 @@
 
 
 (tbb/implement-step "Serve {0} on port {1}"
-                    (fn [path port]
+                    (fn [path port _]
                       (debug :serving path :port port)
                       miniserve-process))
 
 (tbb/implement-step "Navigate to {0}"
-                    (fn [url]
+                    (fn [url _]
                       (e/go driver url)
                       (e/wait-visible driver [{:tag :body}])))
 (tbb/implement-step
  "the form {0} is set to {1}"
- (fn [attribute-name attribute-value]
+ (fn [attribute-name attribute-value _]
    (tbb/tis = (e/get-element-attr driver [{:tag :form}] attribute-name)
             attribute-value)))
 
 (tbb/implement-step
  "There is a field {0} of type {1}"
- (fn [field-label field-type]
+ (fn [field-label field-type _]
    (-> (e/get-element-attr driver [{:tag :label :fn/text field-label}] "for")
        (#(e/get-element-attr driver [{:id %}] "type"))
        (#(tbb/tis = field-type %)))))
 
 (tbb/implement-step
  "There is a field {0} of element {1}"
- (fn [field-label tag-name]
+ (fn [field-label tag-name _]
    (-> (e/get-element-attr driver [{:tag :label :fn/text field-label}] "for")
        (#(e/get-element-tag driver [{:id %}]))
        (#(tbb/tis = tag-name %)))))
 
 (tbb/implement-step
  "Type {0} in the {1} field"
- (fn [user-input field-label]
+ (fn [user-input field-label _]
    (-> (e/get-element-attr driver [{:tag :label :fn/text field-label}] "for")
        (#(e/fill driver [{:id %}] user-input)))))
 
 (tbb/implement-step
  "Click {0} button"
- (fn [button-label]
+ (fn [button-label _]
    (e/click driver [{:tag :button :fn/text button-label}])))
 
 ;; TODO: Move to a different namespace or to the top
@@ -104,9 +105,23 @@
   [small coll]
   (not-empty (find-matching small coll)))
 
+(defn table->maps [table]
+  (let [[header & rows] table
+        keywords        (map keyword header)]
+     (map #(zipmap keywords %) rows)))
+
+(defn maps->map
+"Takes a sequence of maps with :name and :value pairings and returns a single map"
+  [maps]
+  (let [coll   (table->maps maps)
+        ks     (map #(keyword (:name %)) coll)
+        values (map :value coll)]
+    (zipmap ks values)))
+
+
 (tbb/implement-step
  "Form to Mail service will log {0}"
- (fn [str-entry]
+ (fn [str-entry _]
    (let [expected (read-string str-entry)]
      (->> (get-form-to-mail-logs)
           (tbb/tis has-matching? expected)))))
@@ -114,7 +129,7 @@
 ;; TODO: Remove it in favor of reading information from inboxes
 (tbb/implement-step
  "From a log line matching {0} extract {1}"
- (fn [query extract-key]
+ (fn [query extract-key _]
    (let [query       (read-string query)
          extract-key (read-string extract-key)
          found       (find-matching query (get-form-to-mail-logs))
@@ -126,35 +141,35 @@
 ;; TODO: Remove it in favor of reading information from inboxes
 (tbb/implement-step
  "Open the confirmation link in the browser."
- (fn []
+ (fn [_]
    (e/go driver @confirmation-url)))
 
 (tbb/implement-step
  "There is a message {0}"
- (fn [message]
+ (fn [message _]
    (tbb/tis = message (e/get-element-text driver {:tag :body}))))
 
 (tbb/implement-step
  "There is a radio button labeled {0}"
- (fn [field-label]
+ (fn [field-label _]
    (-> (e/get-element-attr driver [{:tag :label :fn/text field-label}] "for")
        (#(e/get-element-attr driver [{:tag :input :id %}] "type"))
        (#(tbb/tis = "radio" %)))))
 
 (tbb/implement-step
  "Click {0} radio button"
- (fn [field-label]
+ (fn [field-label _]
    (e/click driver [{:tag :label :fn/text field-label}])))
 
 (tbb/implement-step
  "Select {0} in the {1} field"
- (fn [user-input field-label]
+ (fn [user-input field-label _]
    (-> (e/get-element-attr driver [{:tag :label :fn/text field-label}] "for")
        (#(e/fill driver [{:id %}] user-input)))))
 
 (tbb/implement-step
  "Open the inbox of {0}"
- (fn [email-address]
+ (fn [email-address _]
    (->> (get-form-to-mail-logs)
         (info-spy "All logs")
         (filter-matching { :prose "sending an email" :to email-address })
@@ -164,7 +179,7 @@
 
 (tbb/implement-step
  "In the inbox find the message with the subject {0}"
- (fn [subject]
+ (fn [subject _]
    (->> @current-inbox
         (info-spy "Current inbox")
         (find-matching {:subject subject})
@@ -173,15 +188,23 @@
 
 (tbb/implement-step
  "In the message open the link labeled {0}"
- (fn [label]
+ (fn [label _]
    (let [pattern (re-pattern (str "<a\\s+.*href\\s*=\\s*'(.+)'.*>" label "</a>"))]
      (->> @current-message
-         :body
-         (info-spy "Body")
-         (re-find pattern)
-         (last)
-         (info-spy "URL to open")
-         (e/go driver)))))
+          :body
+          (info-spy "Body")
+          (re-find pattern)
+          (last)
+          (info-spy "URL to open")
+          (e/go driver)))))
+
+(tbb/implement-step
+ "There is a {0} element with the following properties"
+ (fn [element-type {:keys [tables]}]
+   (let [first-table (first tables)
+         attributes (maps->map first-table)]
+    (e/get-element-tag driver (assoc attributes :tag element-type)))))
+
 
 (defn get-current-namespace []
   (-> #'get-current-namespace meta :ns str))

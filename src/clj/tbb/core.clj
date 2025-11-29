@@ -3,7 +3,7 @@
    [clojure.data.json :as json]
    [clojure.pprint :refer [pprint]]
    [clojure.string :refer [blank?]]
-   [io.pedestal.log :refer [debug error]]))
+   [io.pedestal.log :refer [debug error info]]))
 
 
 (defonce ^:private steps-implementation (atom {}))
@@ -26,8 +26,9 @@
   (doseq [line (line-seq (java.io.BufferedReader. *in*))]
     (when-not (blank? line)
       (let [message       (json/read-str line :key-fn keyword)
-            variant       (get-in message [:step :variant])
-            arguments     (get-in message [:step :arguments])
+            step          (:step message)
+            variant       (:variant step)
+            arguments     (:arguments step)
             implmentation (get @steps-implementation variant)]
         (debug :prose "got a message from tbb" :message message)
         (if (nil? implmentation)
@@ -37,7 +38,8 @@
                   (~'fn [~@(map-indexed
                             (fn [indx _]
                               (symbol (str "arg-" indx)))
-                            arguments)]
+                            arguments)
+                         data]
                    (tis ~'= "cat" "dog")))]
 
             (error :missing-step-implemnetation variant)
@@ -48,7 +50,7 @@
                                                  (with-out-str (pprint suggestion))
                                                  "```")})))
           (try
-            (apply implmentation arguments)
+            (apply implmentation (conj arguments step))
             (println (json/write-str {:type "Success"}))
             (catch Throwable e
               (println (json/write-str {:type   "Failure"
