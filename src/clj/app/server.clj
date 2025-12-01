@@ -7,6 +7,14 @@
 
 (defonce submissions (atom {}))
 
+(defn send-mail [from to subject body]
+  (info :prose "sending an email"
+        :to to
+        :reply-to from
+        :subject subject
+        ;; Use a templating library
+        :body body))
+
 ;; TODO: Implement
 (defn submission-verification [{:keys [path-params]}]
   (debug :prose "verifying submission" :submissions @submissions :path-params path-params)
@@ -16,6 +24,10 @@
       (if-let [submission (get @submissions submission-uuid)]
         (do
           (debug :prose "found submission" :submission submission)
+          (send-mail (get submission "email")
+                     "publisher-one@example.com"
+                     "Form to Mail message"
+                     (get submission "message"))
           ;; TODO: Simplify this hack
           (eval `(info ~@(flatten (into [] submission))))
           (spy {:status  200
@@ -27,7 +39,6 @@
     (spy {:status  422
           :headers {"Content-Type" "text/plain"}
           :body    "Invalid submission uuid"})))
-
 (defn form-handler
   [{:keys [params]}]
   (debug :prose "form received" :params params)
@@ -37,11 +48,10 @@
             confirmation-url (str "http://localhost:8080/confirm-submission/" submission-uuid)]
         (info :prose "valid form submitted" :by email)
         (swap! submissions assoc submission-uuid params)
-        (info :prose "sending an email"
-              :to email
-              :subject "Form to Mail confirmation"
-              ;; Use a templating library
-              :body (str "Please <a href='" confirmation-url "'>confirm your submission</a>"))
+        (send-mail "info@form-to-mail.com"
+                   email
+                   "Form to Mail confirmation"
+                   (str "Please <a href='" confirmation-url "'>confirm your submission</a>"))
         (spy {:status  200
               :headers {"Content-Type" "text/plain"}
               :body    (str "Thank you for sending the form. We have sent you an email with confirmation link to " email)}))
