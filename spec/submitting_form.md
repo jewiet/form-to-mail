@@ -54,6 +54,10 @@ tags: [proof-of-concept, covered]
 
 ## Order form submission
 
+``` yaml tbb
+tags: [proof-of-concept, covered]
+```
+
 This scenario simulates a complex form with many different inputs. It's a fictional small carpentry website. Form is used to order a dining room set (a table, number of chairs and number of high chairs).
 
 * Run the app
@@ -118,7 +122,10 @@ This scenario simulates a complex form with many different inputs. It's a fictio
 
 ## Form submission without email
 
-tags: proof-of-concept covered
+``` yaml tbb
+tags: [proof-of-concept, covered]
+```
+
 
 The email field is the only required field. Submission without email should be rejected.
 
@@ -148,6 +155,10 @@ The email field is the only required field. Submission without email should be r
 
 ## Wrong verification url
 
+``` yaml tbb
+tags: [proof-of-concept, covered]
+```
+
 In this scenario we prove that submission won't be verified unless sender knows its UUID.
 
 <!-- * Follow the steps from `Form submission with email and message` until verification -->
@@ -161,6 +172,10 @@ In this scenario we prove that submission won't be verified unless sender knows 
 
 
 ## Invalid verification url
+
+``` yaml tbb
+tags: [proof-of-concept, covered]
+```
 
 In this scenario we prove that submission won't be verified unless sender knows its UUID.
 
