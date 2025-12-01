@@ -48,8 +48,12 @@ tags: [proof-of-concept, covered]
 * There is a message `Thank you for confirmation. Your form is delivered.`
 * Open the inbox of `publisher-one@example.com`
 * In the inbox find the message with the subject `Form to Mail message`
-* The message is from `user-one@example.com`
-* The message contains `message`
+* The message has reply-to header `user-one@example.com`
+* The message contains the following message
+
+  ``` text
+  Hello dear receiver!
+  ```
 
 
 ## Order form submission
@@ -74,49 +78,45 @@ This scenario simulates a complex form with many different inputs. It's a fictio
 
 * There are the following fields
 
-  | label                   | type     |
-  |-------------------------|----------|
-  | Street and house number | text     |
-  | City                    | text     |
-  | Country                 | text     |
-  | Email                   | email    |
-  | Select type of wood     | select   |
-  | Select coating          | select   |
-  | Number of chairs        | number   |
-  | Number of high chairs   | number   |
-  | Notes                   | textarea |
+  | label                   | type     | name            |
+  |-------------------------|----------|-----------------|
+  | Street and house number | text     | address         |
+  | City                    | text     | city            |
+  | Country                 | text     | country         |
+  | Email                   | email    | email           |
+  | Select type of wood     | select   | wood-type       |
+  | Select coating          | select   | coating         |
+  | Number of chairs        | number   | chairs          |
+  | Number of high chairs   | number   | high-chairs     |
+  | Notes                   | textarea | notes           |
+  | Home Delivery           | radio    | delivery-method |
+  | Pickup                  | radio    | delivery-method |
 
-* There is a radio button labeled `Home Delivery`
-* There is a radio button labeled `Pickup`
+* Enter the following input in to the corresponding fields
 
-* Type the following input in to the corresponding fields
-
-  | user-input       | input-field             |
-  |------------------|-------------------------|
-  | Verycoolstreet 1 | Street and house number |
-  | Kittentown       | City                    |
-  | Katcountry       | Country                 |
-  | szara@muchu.com  | Email                   |
-  | 3                | Number of chairs        |
-  | 4                | Number of high chairs   |
+  | user-input                                | label                   |
+  |-------------------------------------------|-------------------------|
+  | Verycoolstreet 1                          | Street and house number |
+  | Kittentown                                | City                    |
+  | Katcountry                                | Country                 |
+  | szara@muchu.com                           | Email                   |
+  | 3                                         | Number of chairs        |
+  | 4                                         | Number of high chairs   |
+  | Pine                                      | Select type of wood     |
+  | Red                                       | Select coating          |
+  | Can I pick up the items before christmas? | Notes                   |
 
 
 * Click `Pickup` radio button
-
-* Select the following option from the dropdown
- 
-  | option | dropdown label      |
-  |--------|---------------------|
-  | Pine   | Select type of wood |
-  | Red    | Select coating      |
-
-* Type `Can I pick up the items before christmas?` in the `Notes` field
 * Click `Send` button
 * Form to Mail service will log `{:prose "valid form submitted" :by "szara@muchu.com"}`
-* From a log line matching `{:prose "sending confirmation link"}` extract `:confirmation-url`
-* Open the confirmation link in the browser.
+* Open the inbox of `szara@muchu.com`
+* In the inbox find the message with the subject `Form to Mail confirmation`
+* In the message open the link labeled `confirm your submission`
 * There is a message `Thank you for confirmation. Your form is delivered.`
-<!-- * Form to Mail service will log `Sending the form <submission-uuid> to publisher-one@example.com`  -->
+* Open the inbox of `publisher-one@example.com`
+* In the inbox find the message with the subject `Form to Mail message`
+* The message has reply-to header `szara@muchu.com`
 * Form to Mail service will log `{"country" "Katcountry", "wood-type" "pine", "city" "Kittentown", "delivery-method" "pickup", "email" "szara@muchu.com", "address" "Verycoolstreet 1", "high-chairs" "4", "coating" "red", "chairs" "3", "notes" "Can I pick up the items before christmas?"}`
 
 

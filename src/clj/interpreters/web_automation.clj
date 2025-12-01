@@ -13,9 +13,6 @@
 
 (def driver (e/firefox)) ;; a Firefox window should appear
 
-;; TODO: Remove it in favor of reading information from inboxes
-(def confirmation-url (atom nil))
-
 (def server-log-file (fs/create-temp-file {:prefix "form-to-mail" :suffix ".log"}))
 
 (def form-to-mail-process (process {:err :write :err-file server-log-file} "bb run:app"))
@@ -40,26 +37,6 @@
                     (fn [url _]
                       (e/go driver url)
                       (e/wait-visible driver [{:tag :body}])))
-(tbb/implement-step
- "the form {0} is set to {1}"
- (fn [attribute-name attribute-value _]
-   (tbb/tis = (e/get-element-attr driver [{:tag :form}] attribute-name)
-            attribute-value)))
-
-(tbb/implement-step
- "There is a field {0} of type {1}"
- (fn [field-label field-type _]
-   (-> (e/get-element-attr driver [{:tag :label :fn/text field-label}] "for")
-       (#(e/get-element-attr driver [{:id %}] "type"))
-       (#(tbb/tis = field-type %)))))
-
-(tbb/implement-step
- "There is a field {0} of element {1}"
- (fn [field-label tag-name _]
-   (-> (e/get-element-attr driver [{:tag :label :fn/text field-label}] "for")
-       (#(e/get-element-tag driver [{:id %}]))
-       (#(tbb/tis = tag-name %)))))
-
 (tbb/implement-step
  "Type {0} in the {1} field"
  (fn [user-input field-label _]
@@ -86,6 +63,10 @@
   (info :prose prose :value value)
   value)
 
+(defn debug-spy [prose value]
+  (debug :prose prose :value value)
+  value)
+
 (defn map-includes? [small big]
   (->> small
        keys
@@ -108,10 +89,10 @@
 (defn table->maps [table]
   (let [[header & rows] table
         keywords        (map keyword header)]
-     (map #(zipmap keywords %) rows)))
+    (map #(zipmap keywords %) rows)))
 
 (defn maps->map
-"Takes a sequence of maps with :name and :value pairings and returns a single map"
+  "Takes a sequence of maps with :name and :value pairings and returns a single map"
   [maps]
   (let [coll   (table->maps maps)
         ks     (map #(keyword (:name %)) coll)
@@ -126,35 +107,10 @@
      (->> (get-form-to-mail-logs)
           (tbb/tis has-matching? expected)))))
 
-;; TODO: Remove it in favor of reading information from inboxes
-(tbb/implement-step
- "From a log line matching {0} extract {1}"
- (fn [query extract-key _]
-   (let [query       (read-string query)
-         extract-key (read-string extract-key)
-         found       (find-matching query (get-form-to-mail-logs))
-         value       (extract-key found)]
-     ;; TODO: Do a helpful assertion that something was found
-     ;; TODO: Rename confirmation-url to something generic
-     (reset! confirmation-url value))))
-
-;; TODO: Remove it in favor of reading information from inboxes
-(tbb/implement-step
- "Open the confirmation link in the browser."
- (fn [_]
-   (e/go driver @confirmation-url)))
-
 (tbb/implement-step
  "There is a message {0}"
  (fn [message _]
    (tbb/tis = message (e/get-element-text driver {:tag :body}))))
-
-(tbb/implement-step
- "There is a radio button labeled {0}"
- (fn [field-label _]
-   (-> (e/get-element-attr driver [{:tag :label :fn/text field-label}] "for")
-       (#(e/get-element-attr driver [{:tag :input :id %}] "type"))
-       (#(tbb/tis = "radio" %)))))
 
 (tbb/implement-step
  "Click {0} radio button"
@@ -162,29 +118,24 @@
    (e/click driver [{:tag :label :fn/text field-label}])))
 
 (tbb/implement-step
- "Select {0} in the {1} field"
- (fn [user-input field-label _]
-   (-> (e/get-element-attr driver [{:tag :label :fn/text field-label}] "for")
-       (#(e/fill driver [{:id %}] user-input)))))
-
-(tbb/implement-step
  "Open the inbox of {0}"
  (fn [email-address _]
    (->> (get-form-to-mail-logs)
-        (info-spy "All logs")
-        (filter-matching { :prose "sending an email" :to email-address })
+        (debug-spy "All logs")
+        (filter-matching {:prose "sending an email" :to email-address})
         (map #(dissoc % :prose))
-        (info-spy "Inbox from logs")
+        (debug-spy "Inbox from logs")
         (reset! current-inbox))))
 
 (tbb/implement-step
  "In the inbox find the message with the subject {0}"
  (fn [subject _]
    (->> @current-inbox
-        (info-spy "Current inbox")
+        (debug-spy "Current inbox")
         (find-matching {:subject subject})
-        (info-spy "Found message")
-        (reset! current-message))))
+        (debug-spy "Found message")
+        (reset! current-message)
+        (tbb/tis some? ))))
 
 (tbb/implement-step
  "In the message open the link labeled {0}"
@@ -192,10 +143,10 @@
    (let [pattern (re-pattern (str "<a\\s+.*href\\s*=\\s*'(.+)'.*>" label "</a>"))]
      (->> @current-message
           :body
-          (info-spy "Body")
+          (debug-spy "Body")
           (re-find pattern)
           (last)
-          (info-spy "URL to open")
+          (debug-spy "URL to open")
           (e/go driver)))))
 
 (tbb/implement-step
@@ -203,7 +154,50 @@
  (fn [element-type {:keys [tables]}]
    (let [first-table (first tables)
          attributes (maps->map first-table)]
-    (e/get-element-tag driver (assoc attributes :tag element-type)))))
+     (e/get-element-tag driver (assoc attributes :tag element-type)))))
+
+(defn- field-row->query [id field-row]
+  (-> field-row
+      (assoc :id id)
+      (dissoc :label)
+      (#(case (:type %)
+          ("textarea" "select") (dissoc (assoc % :tag (:type %) ) :type)
+          %))))
+
+
+(tbb/implement-step
+ "There are the following fields"
+ (fn [{:keys [tables]}]
+   (let [field-rows (-> tables
+                        (first)
+                        (table->maps))]
+     (doseq [field-row field-rows]
+       (-> (e/get-element-attr driver [{:tag :label :fn/text (:label field-row)}] "for")
+           (field-row->query field-row)
+           (#(e/get-element-tag driver %))
+           (#(debug-spy "found-field" %)))))))
+
+(tbb/implement-step
+ "Type the following input in to the corresponding fields"
+ (fn [{:keys [tables]}]
+   (let [field-rows (-> tables
+                        (first)
+                        (table->maps))]
+     (doseq [field-row field-rows]
+       (-> (e/get-element-attr driver {:tag :label :fn/text (:label field-row)} "for")
+           (field-row->query field-row)
+           (#(e/fill driver {:id (:id %)} (:user-input %))))))))
+
+(tbb/implement-step
+ "The message has reply-to header {0}"
+ (fn [relpy-to _]
+   (tbb/tis = (:reply-to @current-message) relpy-to)))
+
+(tbb/implement-step
+ "The message contains the following message"
+ (fn [{:keys [code_blocks]}]
+   (let [expected (:value (first code_blocks))]
+     (tbb/tis = (:body @current-message) expected))))
 
 
 (defn get-current-namespace []
