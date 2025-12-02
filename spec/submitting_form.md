@@ -12,10 +12,17 @@ The tag covered denotes a spec that is expected to be already implemented, or is
 ## Form submission with email and message
 
 ``` yaml tbb
-tags: [proof-of-concept, covered]
+tags: [proof-of-concept, covered, focus]
 ```
 
-* Run the app
+* Run the app with the following configuration
+
+  ``` clojure
+  {:receivers
+   {"1234" "publisher-one@example.com"}}
+  
+  ```
+ 
 * Serve `spec/samples` on port `1234`
 
   Run the command `miniserve --port 1234 spec/samples`
@@ -23,10 +30,10 @@ tags: [proof-of-concept, covered]
 * Navigate to `http://localhost:1234/poc-form.html`
 * There is a `form` element with the following properties
 
-  | name   | value                            |
-  |--------|----------------------------------|
-  | method | POST                             |
-  | action | http://localhost:8080/poc-submit |
+  | name   | value                             |
+  |--------|-----------------------------------|
+  | method | POST                              |
+  | action | http://localhost:8080/submit/1234 |
 
 * There are the following fields 
 
@@ -64,16 +71,23 @@ tags: [proof-of-concept, covered]
 
 This scenario simulates a complex form with many different inputs. It's a fictional small carpentry website. Form is used to order a dining room set (a table, number of chairs and number of high chairs).
 
-* Run the app
+* Run the app with the following configuration
+
+  ``` clojure
+  {:receivers
+   {"1235" "publisher-one@example.com"}}
+  
+  ```
+
 * Serve `spec/samples` on port `1234` 
 * Navigate to `http://localhost:1234/order-form.html`
 
 * There is a `form` element with the following properties
 
-  | name   | value                            |
-  |--------|----------------------------------|
-  | method | POST                             |
-  | action | http://localhost:8080/poc-submit |
+  | name   | value                             |
+  |--------|-----------------------------------|
+  | method | POST                              |
+  | action | http://localhost:8080/submit/1235 |
 
 
 * There are the following fields
@@ -117,7 +131,7 @@ This scenario simulates a complex form with many different inputs. It's a fictio
 * Open the inbox of `publisher-one@example.com`
 * In the inbox find the message with the subject `Form to Mail message`
 * The message has reply-to header `szara@muchu.com`
-* Form to Mail service will log `{"country" "Katcountry", "wood-type" "pine", "city" "Kittentown", "delivery-method" "pickup", "email" "szara@muchu.com", "address" "Verycoolstreet 1", "high-chairs" "4", "coating" "red", "chairs" "3", "notes" "Can I pick up the items before christmas?"}`
+* Form to Mail service will log `{:country "Katcountry", :wood-type "pine", :city "Kittentown", :delivery-method "pickup", :email "szara@muchu.com", :address "Verycoolstreet 1", :high-chairs "4", :coating "red", :chairs "3", :notes "Can I pick up the items before christmas?"}`
 
 
 ## Form submission without email
@@ -129,16 +143,23 @@ tags: [proof-of-concept, covered]
 
 The email field is the only required field. Submission without email should be rejected.
 
-* Run the app
+* Run the app with the following configuration
+
+  ``` clojure
+  {:receivers
+   {"1234" "publisher-one@example.com"}}
+  
+  ```
+
 * Serve `spec/samples` on port `1234` 
 * Navigate to `http://localhost:1234/poc-form.html`
 
 * There is a `form` element with the following properties
 
-  | name   | value                            |
-  |--------|----------------------------------|
-  | method | POST                             |
-  | action | http://localhost:8080/poc-submit |
+  | name   | value                             |
+  |--------|-----------------------------------|
+  | method | POST                              |
+  | action | http://localhost:8080/submit/1234 |
 
 * There are the following fields 
 
@@ -163,7 +184,14 @@ In this scenario we prove that submission won't be verified unless sender knows 
 
 <!-- * Follow the steps from `Form submission with email and message` until verification -->
 
-* Run the app
+* Run the app with the following configuration
+
+  ``` clojure
+  {:receivers
+   {"1234" "publisher-one@example.com"}}
+  
+  ```
+
 * Navigate to `http://localhost:8080/confirm-submission/8a9de9a5-21a7-4e0a-9cc1-754c0d03abdd`
 
   The UUID is intentionally wrong.
@@ -181,7 +209,14 @@ In this scenario we prove that submission won't be verified unless sender knows 
 
 <!-- * Follow the steps from `Form submission with email and message` until verification -->
 
-* Run the app
+* Run the app with the following configuration
+
+  ``` clojure
+  {:receivers
+   {"1234" "publisher-one@example.com"}}
+  
+  ```
+
 * Navigate to `http://localhost:8080/confirm-submission/bla-bla`
 
   The UUID is intentionally invalid.

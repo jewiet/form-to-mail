@@ -8,12 +8,14 @@
 
   run:app
   {:doc  "Run the Form to Mail locally. Optional argument is log level"
-   :task (let [log-level (first *command-line-args*)]
+   :task (let [config-file (first *command-line-args*)
+               log-level "info"]
            (clojure
             (when log-level (str  "-J-Dorg.slf4j.simpleLogger.defaultLogLevel=" log-level))
             "-M"
             "-m"
-            "app.core"))}
+            "app.core"
+            config-file))}
 
   rebel
   {:doc "Run rebl repl"

@@ -15,23 +15,40 @@
 
 (def server-log-file (fs/create-temp-file {:prefix "form-to-mail" :suffix ".log"}))
 
-(def form-to-mail-process (process {:err :write :err-file server-log-file} "bb run:app"))
+(def form-to-mail-process (atom nil))
 
-(def miniserve-process (process {:err :write :err-file server-log-file} "bb serve:samples"))
+(def miniserve-process (atom nil))
 
 
-(tbb/implement-step "Run the app"
-                    (fn [_]
+;; Make a smart-spy that takes the level
+(defn info-spy [prose value]
+  (info :prose prose :value value)
+  value)
+
+(defn debug-spy [prose value]
+  (debug :prose prose :value value)
+  value)
+
+
+(tbb/implement-step "Run the app with the following configuration"
+                    (fn [{:keys [code_blocks]}]
                       (debug "server-log-file" server-log-file)
-                      form-to-mail-process
-                      ;; TODO: Be smarter about waiting. Use logs.
-                      (Thread/sleep 5000)))
+                      (let [config (read-string (:value (first code_blocks)))
+                            config-file (str (fs/create-temp-file {:prefix "form-to-mail-config"
+                                                                   :suffix ".edn"}))]
+                        (spit config-file config)
+                        (reset! form-to-mail-process
+                                (process {:err :write :err-file server-log-file} "bb run:app" config-file))
+                        ;; TODO: Be smarter about waiting. Use logs.
+                        (Thread/sleep 5000))))
 
 
 (tbb/implement-step "Serve {0} on port {1}"
                     (fn [path port _]
                       (debug :serving path :port port)
-                      miniserve-process))
+                      (reset! miniserve-process
+                              (process {:err :write :err-file server-log-file} "bb serve:samples"))
+                      (Thread/sleep 1000)))
 
 (tbb/implement-step "Navigate to {0}"
                     (fn [url _]
@@ -58,14 +75,6 @@
        (map read-string)
        doall))
 
-;; Make a smart-spy that takes the level
-(defn info-spy [prose value]
-  (info :prose prose :value value)
-  value)
-
-(defn debug-spy [prose value]
-  (debug :prose prose :value value)
-  value)
 
 (defn map-includes? [small big]
   (->> small
@@ -178,7 +187,7 @@
            (#(debug-spy "found-field" %)))))))
 
 (tbb/implement-step
- "Type the following input in to the corresponding fields"
+ "Enter the following input in to the corresponding fields"
  (fn [{:keys [tables]}]
    (let [field-rows (-> tables
                         (first)
@@ -207,6 +216,8 @@
   (debug :prose "starting web automation")
   (tbb/ready)
   (e/quit driver)
-  (destroy-tree form-to-mail-process)
-  (destroy-tree miniserve-process)
+  (when @form-to-mail-process
+   (destroy-tree @form-to-mail-process))
+  (when @miniserve-process
+   (destroy-tree @miniserve-process))
   (info :done (get-current-namespace)))
