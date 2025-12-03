@@ -3,19 +3,27 @@
    [clojure.string :as string]
    [io.pedestal.connector :as conn]
    [io.pedestal.log :refer [debug info spy]]
-   [io.pedestal.http.http-kit :as hk]))
+   [io.pedestal.http.http-kit :as hk]
+   [postal.core :as postal]))
+
 
 (defonce configuration (atom nil))
 
 (defonce submissions (atom {}))
 
-(defn send-mail [from to subject body]
-  (info :prose "sending an email"
-        :to to
-        :reply-to from
-        :subject subject
-        ;; Use a templating library
-        :body body))
+(defn send-mail [from to subject body smtp-config]
+  (if smtp-config
+    (postal/send-message smtp-config
+                         {:from     (:user smtp-config)
+                          :reply-to from
+                          :to       to
+                          :subject  subject
+                          :body     body})
+    (info :prose "sending an email"
+          :to to
+          :reply-to from
+          :subject subject
+          :body body)))
 
 ;; TODO: Implement
 (defn submission-verification [{:keys [path-params]}]
@@ -24,17 +32,19 @@
     (do
       (debug :prose "verifying submission id"  :submission-uuid submission-uuid)
       (if-let [submission (get @submissions submission-uuid)]
-        (do
+        (let [smtp-config (:smtp-server @configuration)]
           (debug :prose "found submission" :submission submission)
           (send-mail (:email submission)
                      (:receiver submission)
                      "Form to Mail message"
-                     (str submission)) ;; Use a templating library
+                     (str submission) ;; Use a templating library
+                     smtp-config)
+
           ;; TODO: Simplify this hack
           (eval `(info ~@(flatten (into [] submission))))
           (spy {:status  200
                 :headers {"Content-Type" "text/plain"}
-                :body  "Thank you for confirmation. Your form is delivered."}))
+                :body    "Thank you for confirmation. Your form is delivered."}))
         (spy {:status  404
               :headers {"Content-Type" "text/plain"}
               :body    "Submission not found"})))
@@ -60,7 +70,8 @@
           (send-mail "info@form-to-mail.com"
                      email
                      "Form to Mail confirmation"
-                     (str "Please <a href='" confirmation-url "'>confirm your submission</a>"))
+                     (str "Please <a href='" confirmation-url "'>confirm your submission</a>")
+                     (:smtp-server @configuration))
           (spy {:status  200
                 :headers {"Content-Type" "text/plain"}
                 :body    (str "Thank you for sending the form. We have sent you an email with confirmation link to " email)}))
