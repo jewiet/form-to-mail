@@ -29,7 +29,7 @@
           (send-mail (:email submission)
                      (:receiver submission)
                      "Form to Mail message"
-                     (:message submission))
+                     (str submission)) ;; Use a templating library
           ;; TODO: Simplify this hack
           (eval `(info ~@(flatten (into [] submission))))
           (spy {:status  200

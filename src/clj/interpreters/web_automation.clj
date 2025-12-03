@@ -100,12 +100,12 @@
         keywords        (map keyword header)]
     (map #(zipmap keywords %) rows)))
 
-(defn maps->map
+(defn table->map
   "Takes a sequence of maps with :name and :value pairings and returns a single map"
-  [maps]
+  [maps key-kw value-kw]
   (let [coll   (table->maps maps)
-        ks     (map #(keyword (:name %)) coll)
-        values (map :value coll)]
+        ks     (map #(keyword (key-kw %)) coll)
+        values (map value-kw coll)]
     (zipmap ks values)))
 
 
@@ -162,7 +162,7 @@
  "There is a {0} element with the following properties"
  (fn [element-type {:keys [tables]}]
    (let [first-table (first tables)
-         attributes (maps->map first-table)]
+         attributes (table->map first-table :name :value)]
      (e/get-element-tag driver (assoc attributes :tag element-type)))))
 
 (defn- field-row->query [id field-row]
@@ -203,10 +203,11 @@
    (tbb/tis = (:reply-to @current-message) relpy-to)))
 
 (tbb/implement-step
- "The message contains the following message"
- (fn [{:keys [code_blocks]}]
-   (let [expected (:value (first code_blocks))]
-     (tbb/tis = (:body @current-message) expected))))
+ "The message contains a clojure map with the following fields"
+ (fn [{:keys [tables]}]
+   (let [expected (table->map (first tables) :key :value)
+         actual   (read-string (:body @current-message))]
+     (tbb/tis map-includes? expected actual))))
 
 
 (defn get-current-namespace []

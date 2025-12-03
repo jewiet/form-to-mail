@@ -12,7 +12,7 @@ The tag covered denotes a spec that is expected to be already implemented, or is
 ## Form submission with email and message
 
 ``` yaml tbb
-tags: [proof-of-concept, covered, focus]
+tags: [proof-of-concept, covered]
 ```
 
 * Run the app with the following configuration
@@ -56,11 +56,12 @@ tags: [proof-of-concept, covered, focus]
 * Open the inbox of `publisher-one@example.com`
 * In the inbox find the message with the subject `Form to Mail message`
 * The message has reply-to header `user-one@example.com`
-* The message contains the following message
+* The message contains a clojure map with the following fields
 
-  ``` text
-  Hello dear receiver!
-  ```
+  | key     | value                |
+  |---------|----------------------|
+  | email   | user-one@example.com |
+  | message | Hello dear receiver! |
 
 
 ## Order form submission
@@ -131,7 +132,20 @@ This scenario simulates a complex form with many different inputs. It's a fictio
 * Open the inbox of `publisher-one@example.com`
 * In the inbox find the message with the subject `Form to Mail message`
 * The message has reply-to header `szara@muchu.com`
-* Form to Mail service will log `{:country "Katcountry", :wood-type "pine", :city "Kittentown", :delivery-method "pickup", :email "szara@muchu.com", :address "Verycoolstreet 1", :high-chairs "4", :coating "red", :chairs "3", :notes "Can I pick up the items before christmas?"}`
+* The message contains a clojure map with the following fields
+
+  | key             | value                                     |
+  |-----------------|-------------------------------------------|
+  | email           | szara@muchu.com                           |
+  | country         | Katcountry                                |
+  | wood-type       | pine                                      |
+  | city            | Kittentown                                |
+  | delivery-method | pickup                                    |
+  | address         | Verycoolstreet 1                          |
+  | high-chairs     | 4                                         |
+  | coating         | red                                       |
+  | chairs          | 3                                         |
+  | notes           | Can I pick up the items before christmas? |
 
 
 ## Form submission without email
