@@ -11,4 +11,5 @@ pom.xml.asc
 .direnv/
 .rebel_readline_history
 result
-
+/secret
+config.edn

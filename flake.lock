@@ -567,11 +567,11 @@
         "systems": "systems_2"
       },
       "locked": {
-        "lastModified": 1764406382,
-        "narHash": "sha256-GHFbmuPnzqCUNqrsS8Urx2ly/sG9zFyjX+fUbRcsxgU=",
+        "lastModified": 1764718013,
+        "narHash": "sha256-0LyPdPc2Mk6nBiIGNU8U4r9UrGnMmDaXIy35IKaUZdE=",
         "ref": "refs/heads/main",
-        "rev": "9cb1aa77260227f4bb497bb60781f75ea4ec7289",
-        "revCount": 127,
+        "rev": "d6c813d55436a865b6d30d23bb40d0ba31f4da3d",
+        "revCount": 146,
         "type": "git",
         "url": "https://codeberg.org/tad-lispy/tad-better-behavior.git"
       },
