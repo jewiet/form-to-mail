@@ -76,7 +76,7 @@ This scenario simulates a complex form with many different inputs. It's a fictio
 
   ``` clojure
   {:receivers
-   {"1235" "publisher-one@example.com"}}
+   {"2345" "publisher-two@example.com"}}
   
   ```
 
@@ -88,7 +88,7 @@ This scenario simulates a complex form with many different inputs. It's a fictio
   | name   | value                             |
   |--------|-----------------------------------|
   | method | POST                              |
-  | action | http://localhost:8080/submit/1235 |
+  | action | http://localhost:8080/submit/2345 |
 
 
 * There are the following fields
@@ -129,7 +129,7 @@ This scenario simulates a complex form with many different inputs. It's a fictio
 * In the inbox find the message with the subject `Form to Mail confirmation`
 * In the message open the link labeled `confirm your submission`
 * There is a message `Thank you for confirmation. Your form is delivered.`
-* Open the inbox of `publisher-one@example.com`
+* Open the inbox of `publisher-two@example.com`
 * In the inbox find the message with the subject `Form to Mail message`
 * The message has reply-to header `szara@muchu.com`
 * The message contains a clojure map with the following fields
