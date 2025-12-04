@@ -11,7 +11,7 @@
 
 (def current-message (atom nil))
 
-(def driver (e/firefox)) ;; a Firefox window should appear
+(def driver (atom nil))
 
 (def server-log-file (fs/create-temp-file {:prefix "form-to-mail" :suffix ".log"}))
 
@@ -52,18 +52,18 @@
 
 (tbb/implement-step "Navigate to {0}"
                     (fn [url _]
-                      (e/go driver url)
-                      (e/wait-visible driver [{:tag :body}])))
+                      (e/go @driver url)
+                      (e/wait-visible @driver [{:tag :body}])))
 (tbb/implement-step
  "Type {0} in the {1} field"
  (fn [user-input field-label _]
-   (-> (e/get-element-attr driver [{:tag :label :fn/text field-label}] "for")
-       (#(e/fill driver [{:id %}] user-input)))))
+   (-> (e/get-element-attr @driver [{:tag :label :fn/text field-label}] "for")
+       (#(e/fill @driver [{:id %}] user-input)))))
 
 (tbb/implement-step
  "Click {0} button"
  (fn [button-label _]
-   (e/click driver [{:tag :button :fn/text button-label}])))
+   (e/click @driver [{:tag :button :fn/text button-label}])))
 
 ;; TODO: Move to a different namespace or to the top
 (defn get-form-to-mail-logs []
@@ -119,12 +119,12 @@
 (tbb/implement-step
  "There is a message {0}"
  (fn [message _]
-   (tbb/tis = message (e/get-element-text driver {:tag :body}))))
+   (tbb/tis = message (e/get-element-text @driver {:tag :body}))))
 
 (tbb/implement-step
  "Click {0} radio button"
  (fn [field-label _]
-   (e/click driver [{:tag :label :fn/text field-label}])))
+   (e/click @driver [{:tag :label :fn/text field-label}])))
 
 (tbb/implement-step
  "Open the inbox of {0}"
@@ -156,14 +156,14 @@
           (re-find pattern)
           (last)
           (debug-spy "URL to open")
-          (e/go driver)))))
+          (e/go @driver)))))
 
 (tbb/implement-step
  "There is a {0} element with the following properties"
  (fn [element-type {:keys [tables]}]
    (let [first-table (first tables)
          attributes (table->map first-table :name :value)]
-     (e/get-element-tag driver (assoc attributes :tag element-type)))))
+     (e/get-element-tag @driver (assoc attributes :tag element-type)))))
 
 (defn- field-row->query [id field-row]
   (-> field-row
@@ -181,9 +181,9 @@
                         (first)
                         (table->maps))]
      (doseq [field-row field-rows]
-       (-> (e/get-element-attr driver [{:tag :label :fn/text (:label field-row)}] "for")
+       (-> (e/get-element-attr @driver [{:tag :label :fn/text (:label field-row)}] "for")
            (field-row->query field-row)
-           (#(e/get-element-tag driver %))
+           (#(e/get-element-tag @driver %))
            (#(debug-spy "found-field" %)))))))
 
 (tbb/implement-step
@@ -193,9 +193,9 @@
                         (first)
                         (table->maps))]
      (doseq [field-row field-rows]
-       (-> (e/get-element-attr driver {:tag :label :fn/text (:label field-row)} "for")
+       (-> (e/get-element-attr @driver {:tag :label :fn/text (:label field-row)} "for")
            (field-row->query field-row)
-           (#(e/fill driver {:id (:id %)} (:user-input %))))))))
+           (#(e/fill @driver {:id (:id %)} (:user-input %))))))))
 
 (tbb/implement-step
  "The message has reply-to header {0}"
@@ -215,8 +215,9 @@
 
 (defn -main []
   (debug :prose "starting web automation")
+  (reset! driver (e/firefox))
   (tbb/ready)
-  (e/quit driver)
+  (e/quit @driver)
   (when @form-to-mail-process
    (destroy-tree @form-to-mail-process))
   (when @miniserve-process
