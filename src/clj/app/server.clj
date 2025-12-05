@@ -11,17 +11,27 @@
 
 (defonce submissions (atom {}))
 
-(defn send-mail [from to subject body smtp-config]
-  (if smtp-config
+(defn send-mail
+  "Send an email.
+
+  If config has :smpt-server key, use its value. Otherwise log details of the
+  message for mocking.
+
+  The first argument (reply-to) can be nil if the message shouldn't be replied
+  to."
+  [reply-to to subject body]
+  (if-let [smtp-config (:smtp-server @configuration)]
     (postal/send-message smtp-config
-                         {:from     (:user smtp-config)
-                          :reply-to from
+                         {:from     (:from-address @configuration)
+                          :reply-to reply-to
                           :to       to
                           :subject  subject
                           :body     body})
+    ;; TODO: DRY
     (info :prose "sending an email"
+          :from (:from-address @configuration)
           :to to
-          :reply-to from
+          :reply-to reply-to
           :subject subject
           :body body)))
 
@@ -32,13 +42,13 @@
     (do
       (debug :prose "verifying submission id"  :submission-uuid submission-uuid)
       (if-let [submission (get @submissions submission-uuid)]
-        (let [smtp-config (:smtp-server @configuration)]
+        (do
           (debug :prose "found submission" :submission submission)
           (send-mail (:email submission)
                      (:receiver submission)
                      "Form to Mail message"
-                     (str submission) ;; Use a templating library
-                     smtp-config)
+                     ;; Use a templating library
+                     (str submission))
 
           ;; TODO: Simplify this hack
           (eval `(info ~@(flatten (into [] submission))))
@@ -63,15 +73,14 @@
             :body    "No such receiver"})
       (if-not (string/blank? email)
         (let [submission-uuid  (random-uuid)
-              confirmation-url (str "http://localhost:8080/confirm-submission/" submission-uuid)]
+              confirmation-url (str (:base-url @configuration) "/confirm-submission/" submission-uuid)]
           (info :prose "valid form submitted" :by email)
           (swap! submissions assoc submission-uuid
                  (assoc form-params :receiver receiver))
-          (send-mail "info@form-to-mail.com"
+          (send-mail nil
                      email
                      "Form to Mail confirmation"
-                     (str "Please <a href='" confirmation-url "'>confirm your submission</a>")
-                     (:smtp-server @configuration))
+                     (str "Please <a href='" confirmation-url "'>confirm your submission</a>"))
           (spy {:status  200
                 :headers {"Content-Type" "text/plain"}
                 :body    (str "Thank you for sending the form. We have sent you an email with confirmation link to " email)}))
@@ -104,7 +113,7 @@
 
 (defn create-connector
   []
-  (-> (conn/default-connector-map "0.0.0.0" 8080)
+  (-> (conn/default-connector-map "0.0.0.0" 8080) ;; TODO: get from configuration
       (conn/with-default-interceptors)
       (conn/with-routes routes)
       (log-connector)
