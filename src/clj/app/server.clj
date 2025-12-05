@@ -113,11 +113,15 @@
 
 (defn create-connector
   []
-  (-> (conn/default-connector-map "0.0.0.0" 8080) ;; TODO: get from configuration
-      (conn/with-default-interceptors)
-      (conn/with-routes routes)
-      (log-connector)
-      (hk/create-connector nil)))
+  (let [port    (or (:listen-port @configuration)
+                    4242)
+        address (or (:listen-address @configuration)
+                    "0.0.0.0")]
+   (-> (conn/default-connector-map address port)
+       (conn/with-default-interceptors)
+       (conn/with-routes routes)
+       (log-connector)
+       (hk/create-connector nil))))
 
 ;; For interactive development
 (defonce *connector (atom nil))

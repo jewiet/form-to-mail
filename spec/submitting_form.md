@@ -20,6 +20,8 @@ tags: [proof-of-concept, covered]
   ``` clojure
   {:from-address   "form-to-mail@localhost"
    :base-url       "http://localhost:8080"
+   :listen-address "127.0.0.1"
+   :listen-port    8080
    :receivers
     {"1234" "publisher-one@example.com"}}
   ```
@@ -79,6 +81,8 @@ This scenario simulates a complex form with many different inputs. It's a fictio
   ``` clojure
   {:from-address   "form-to-mail@localhost"
    :base-url       "http://localhost:8080"
+   :listen-address "127.0.0.1"
+   :listen-port    8080
    :receivers      {"2345" "publisher-two@example.com"}}
   ```
 
@@ -164,6 +168,8 @@ The email field is the only required field. Submission without email should be r
   ``` clojure
   {:from-address   "form-to-mail@localhost"
    :base-url       "http://localhost:8080"
+   :listen-address "127.0.0.1"
+   :listen-port    8080
    :receivers
     {"1234" "publisher-one@example.com"}}
   
@@ -207,6 +213,8 @@ In this scenario we prove that submission won't be verified unless sender knows 
   ``` clojure
   {:from-address   "form-to-mail@localhost"
    :base-url       "http://localhost:8080"
+   :listen-address "127.0.0.1"
+   :listen-port    8080
    :receivers
     {"1234" "publisher-one@example.com"}}
   
@@ -234,6 +242,8 @@ In this scenario we prove that submission won't be verified unless sender knows 
   ``` clojure
   {:from-address   "form-to-mail@localhost"
    :base-url       "http://localhost:8080"
+   :listen-address "127.0.0.1"
+   :listen-port    8080
    :receivers
     {"1234" "publisher-one@example.com"}}
   
@@ -266,3 +276,5 @@ This is how the form submission should work once the project is complete.
 - Publisher receives an email at `publisher-one@example.com` with a subject `Renew subscription` from `user-one@example.com` with a message `My current plan expires...`. 
 
  -->
+
+## Port and interface can be changed through config
