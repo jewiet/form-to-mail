@@ -52,7 +52,7 @@ java -jar target/form-to-mail-0.1.19-standalone.jar
   - [ ] TODO: Preserve order of params
 - [ ] Implement publisher registration form
 - [ ] Persistence
-- [ ] Email delivery
+- [x] Email delivery
 - [ ] Setup CI pipeline
 - [ ] Convert spec to Tad Better Behavior
   - [ ] create_form.md
@@ -61,9 +61,9 @@ java -jar target/form-to-mail-0.1.19-standalone.jar
   - [ ] publisher_registration.md
   - [x] submitting_form.md
 
-- [ ] Research transaction email provider
-  - [ ] must be European
-  - [ ] cheap
+- [x] Research transaction email provider
+  - [x] must be European
+  - [x] cheap
 - [x] Improve logging
     - [x] Log to stderr
     - [x] Use logging library
