@@ -84,8 +84,6 @@ An uberjar is a Java archive that contains a program and all it's dependencies.
 
 Execute this command in your terminal `java -jar form-to-mail.x.x.x.jar form-to-mail.edn`
 
-WIP: GitHub Actions to build and publish the uberjar are not yet implemented.
-
 
 b. Execute this command in your terminal `Nix run github:jewiet/form-to-mail -- form-to-mail.edn`
 
