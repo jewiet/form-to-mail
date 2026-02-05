@@ -56,6 +56,7 @@
           (system:
             let
               pkgs = nixpkgs.legacyPackages.${system};
+              clj-pkgs = clj-nix.packages.${system};
             in
               {
                 default = clj-nix.lib.mkCljApp {
@@ -73,7 +74,17 @@
                       # customJdk.enable = true;
                     }
                   ];
-                }; 
+                };
+                uberjar = clj-pkgs.mkCljBin {
+                  projectSrc = ./.;
+                  name = "form-to-mail";
+                  main-ns = "app.core";
+                  buildCommand = "clj -T:build uber";
+
+                  # nativeImage.enable = true;
+
+                  # customJdk.enable = true;
+                };
               });
       };
 }
