@@ -2,7 +2,9 @@
   (:require [clojure.tools.build.api :as b]))
 
 (def lib 'jewiet/form-to-mail)
-(def version (format "0.1.%s" (b/git-count-revs nil)))
+(def version (or (b/git-process {:git-args "tag --points-at=HEAD --list"})
+                 (b/git-process {:git-args "branch --show-current"})
+                 "unknown"))
 (def class-dir "target/classes")
 (def uber-file (format "target/%s-%s-standalone.jar" (name lib) version))
 
