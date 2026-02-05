@@ -21,8 +21,6 @@ jobs:
     - uses: actions/download-artifact@v5
       with:
         path: ./result-lib/
-    - name: Display structure of downloaded files
-      run: ls -R
     - name: Create Release
       id: create_release
       uses: actions/create-release@v1
