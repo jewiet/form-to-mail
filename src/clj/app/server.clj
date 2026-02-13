@@ -7,6 +7,15 @@
    [postal.core :as postal]))
 
 
+(defn create-html [body]
+  (str "<html><head> </head><body> <dl style='font-size: 0.9rem; 'margin-bottom: 1em'> Contents of the form submitted"
+       (clojure.string/join (map (fn [[k v]]
+                                   (str "<dt style='font-weight:bold;'>" (name k)
+                                        "</dt><dd style='margin-bottom: 1em; margin-left: 0.5rem; font-size: 0.9rem; '>" v "</dd>"))
+                                 body))
+       "</dl></body></html>" ))
+
+
 (defonce configuration (atom nil))
 
 (defonce submissions (atom {}))
@@ -26,7 +35,10 @@
                           :reply-to reply-to
                           :to       to
                           :subject  subject
-                          :body     body})
+                          :body  [{:type "text/html"
+                                   :content (if (map? body)
+                                              (create-html body)
+                                             body)}]})
     ;; TODO: DRY
     (info :prose "sending an email"
           :from (:from-address @configuration)
@@ -48,7 +60,7 @@
                      (:receiver submission)
                      "Form to Mail message"
                      ;; Use a templating library
-                     (str submission))
+                     submission)
 
           ;; TODO: Simplify this hack
           (eval `(info ~@(flatten (into [] submission))))
