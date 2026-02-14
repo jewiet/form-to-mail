@@ -4,7 +4,9 @@
    [io.pedestal.connector :as conn]
    [io.pedestal.log :refer [debug info spy]]
    [io.pedestal.http.http-kit :as hk]
-   [postal.core :as postal]))
+   [io.pedestal.interceptor :as interceptor]
+   [postal.core :as postal]
+   [babashka.fs :as fs]))
 
 
 (defn create-html [body]
@@ -29,23 +31,29 @@
   The first argument (reply-to) can be nil if the message shouldn't be replied
   to."
   [reply-to to subject body]
-  (if-let [smtp-config (:smtp-server @configuration)]
-    (postal/send-message smtp-config
+  (let [raw-body-file (str (fs/create-temp-file {:prefix "form-to-mail-raw-body"
+                                                 :suffix ".txt"}))]
+    (when (map? body)
+      (spit raw-body-file (:raw-body body)))
+   (if-let [smtp-config (:smtp-server @configuration)]
+     (postal/send-message smtp-config
                          {:from     (:from-address @configuration)
                           :reply-to reply-to
                           :to       to
                           :subject  subject
                           :body  [{:type "text/html"
                                    :content (if (map? body)
-                                              (create-html body)
-                                             body)}]})
+                                              (create-html (dissoc body :raw-body))
+                                              body)}
+                                  {:type :attachment
+                                   :content raw-body-file}]})
     ;; TODO: DRY
     (info :prose "sending an email"
           :from (:from-address @configuration)
           :to to
           :reply-to reply-to
           :subject subject
-          :body body)))
+          :body body))))
 
 ;; TODO: Implement
 (defn submission-verification [{:keys [path-params]}]
@@ -75,7 +83,7 @@
           :body    "Invalid submission uuid"})))
 
 (defn form-handler
-  [{:keys [form-params path-params]}]
+  [{:keys [form-params path-params ::raw-body]}]
   (let [email       (:email form-params)
         receiver-id (:receiver-id  path-params)
         receiver    (get-in @configuration [:receivers receiver-id])]
@@ -86,9 +94,11 @@
       (if-not (string/blank? email)
         (let [submission-uuid  (random-uuid)
               confirmation-url (str (:base-url @configuration) "/confirm-submission/" submission-uuid)]
-          (info :prose "valid form submitted" :by email)
+          (debug :prose "valid form submitted" :by email)
           (swap! submissions assoc submission-uuid
-                 (assoc form-params :receiver receiver))
+                 (assoc form-params
+                        :receiver receiver
+                        :raw-body raw-body))
           (send-mail nil
                      email
                      "Form to Mail confirmation"
@@ -123,6 +133,20 @@
   (info :prose "Starting Form to Mail" :host host :port port)
   connector-map)
 
+(def raw-body-interceptor
+  (interceptor/interceptor
+    {:name ::raw-body-interceptor
+     :enter (fn [context]
+              (let [body-stream (get-in context [:request :body])
+                    body-string (when body-stream
+                                  (slurp body-stream))]
+                 (-> context
+                   (assoc-in [:request ::raw-body] body-string)
+                   (assoc-in [:request :body] (when body-string
+                                               (java.io.ByteArrayInputStream. (.getBytes body-string)))))))
+     :leave (fn [context]
+                (update context :request dissoc ::raw-body))}))
+
 (defn create-connector
   []
   (let [port    (or (:listen-port @configuration)
@@ -130,6 +154,8 @@
         address (or (:listen-address @configuration)
                     "0.0.0.0")]
    (-> (conn/default-connector-map address port)
+       ;; our interceptor
+       (conn/with-interceptor raw-body-interceptor)
        (conn/with-default-interceptors)
        (conn/with-routes routes)
        (log-connector)
