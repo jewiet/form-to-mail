@@ -2,18 +2,17 @@
   (:require
    [clojure.string :as string]
    [io.pedestal.connector :as conn]
-   [io.pedestal.log :refer [debug info spy]]
    [io.pedestal.http.http-kit :as hk]
    [io.pedestal.interceptor :as interceptor]
-   [postal.core :as postal]
-   [babashka.fs :as fs]))
+   [io.pedestal.log :refer [debug info spy]]
+   [postal.core :as postal]))
 
 
 (defn create-html [body]
   (str "<html><head> </head><body> <dl style='font-size: 0.9rem; 'margin-bottom: 1em'> Contents of the form submitted"
        (clojure.string/join (map (fn [[k v]]
-                                   (str "<dt style='font-weight:bold;'>" (name k)
-                                        "</dt><dd style='margin-bottom: 1em; margin-left: 0.5rem; font-size: 0.9rem; '>" v "</dd>"))
+                                   (str "<dt style='font-weight:bold;'>" (name k) "</dt>
+                                         <dd style='margin-bottom: 1em; margin-left: 0.5rem; font-size: 0.9rem; '>" v "</dd>"))
                                  body))
        "</dl></body></html>" ))
 
@@ -30,30 +29,22 @@
 
   The first argument (reply-to) can be nil if the message shouldn't be replied
   to."
+
   [reply-to to subject body]
-  (let [raw-body-file (str (fs/create-temp-file {:prefix "form-to-mail-raw-body"
-                                                 :suffix ".txt"}))]
-    (when (map? body)
-      (spit raw-body-file (:raw-body body)))
-   (if-let [smtp-config (:smtp-server @configuration)]
+  (if-let [smtp-config (:smtp-server @configuration)]
      (postal/send-message smtp-config
                          {:from     (:from-address @configuration)
                           :reply-to reply-to
                           :to       to
                           :subject  subject
-                          :body  [{:type "text/html"
-                                   :content (if (map? body)
-                                              (create-html (dissoc body :raw-body))
-                                              body)}
-                                  {:type :attachment
-                                   :content raw-body-file}]})
+                          :body     body})
     ;; TODO: DRY
     (info :prose "sending an email"
           :from (:from-address @configuration)
           :to to
           :reply-to reply-to
           :subject subject
-          :body body))))
+          :body body)))
 
 ;; TODO: Implement
 (defn submission-verification [{:keys [path-params]}]
@@ -61,14 +52,19 @@
   (if-let [submission-uuid (parse-uuid (:submission-uuid path-params))]
     (do
       (debug :prose "verifying submission id"  :submission-uuid submission-uuid)
-      (if-let [submission (get @submissions submission-uuid)]
+      (if-let [{:keys [raw parsed ] :as submission} (get @submissions submission-uuid)]
         (do
           (debug :prose "found submission" :submission submission)
-          (send-mail (:email submission)
-                     (:receiver submission)
+          (send-mail (:email parsed)
+                     (:receiver parsed)
                      "Form to Mail message"
                      ;; Use a templating library
-                     submission)
+                     [{:type "text/html"
+                       :content (create-html parsed)}
+                      {:type :attachment
+                       :file-name "form-to-mail-request-body.txt"
+                       :content-type "application/x-www-form-urlencoded"
+                       :content (.getBytes raw)}])
 
           ;; TODO: Simplify this hack
           (eval `(info ~@(flatten (into [] submission))))
@@ -96,13 +92,15 @@
               confirmation-url (str (:base-url @configuration) "/confirm-submission/" submission-uuid)]
           (debug :prose "valid form submitted" :by email)
           (swap! submissions assoc submission-uuid
-                 (assoc form-params
-                        :receiver receiver
-                        :raw-body raw-body))
+                 (-> {}
+                     (assoc :parsed form-params)
+                     (assoc-in [:parsed :receiver] receiver)
+                     (assoc :raw raw-body)))
           (send-mail nil
                      email
                      "Form to Mail confirmation"
-                     (str "Please <a href='" confirmation-url "'>confirm your submission</a>"))
+                     [{:type "text/html"
+                       :content (str "Please <a href='" confirmation-url "'>confirm your submission</a>")}])
           (spy {:status  200
                 :headers {"Content-Type" "text/plain"}
                 :body    (str "Thank you for sending the form. We have sent you an email with confirmation link to " email)}))
