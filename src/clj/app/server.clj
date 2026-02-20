@@ -46,13 +46,12 @@
           :subject subject
           :body body)))
 
-;; TODO: Implement
 (defn submission-verification [{:keys [path-params]}]
   (debug :prose "verifying submission" :submissions @submissions)
   (if-let [submission-uuid (parse-uuid (:submission-uuid path-params))]
     (do
       (debug :prose "verifying submission id"  :submission-uuid submission-uuid)
-      (if-let [{:keys [raw parsed ] :as submission} (get @submissions submission-uuid)]
+      (if-let [{:keys [raw parsed] :as submission} (get @submissions submission-uuid)]
         (do
           (debug :prose "found submission" :submission submission)
           (send-mail (:email parsed)
@@ -100,7 +99,8 @@
                      email
                      "Form to Mail confirmation"
                      [{:type "text/html"
-                       :content (str "Please <a href='" confirmation-url "'>confirm your submission</a>")}])
+                       :content (str "<html> <head>Thank you for submitting the form at <a href=https://formtomail.eu> Form to Mail. </a> </head> <body>
+                                     Please click the link to <a href='" confirmation-url "'>confirm your submission.</a> <p style='font-size: 0.8rem;'>If you haven't filled the form please ignore this email. </p></body></html>")}])
           (spy {:status  200
                 :headers {"Content-Type" "text/plain"}
                 :body    (str "Thank you for sending the form. We have sent you an email with confirmation link to " email)}))
