@@ -5,25 +5,24 @@
    [io.pedestal.http.http-kit :as hk]
    [io.pedestal.interceptor :as interceptor]
    [io.pedestal.log :refer [debug info spy]]
-   [postal.core :as postal]))
+   [postal.core :as postal]
+   [hiccup2.core :as h]))
 
-(defn- format-value [v]
+(defn- value->html [v]
   (if (vector? v)
-   (clojure.string/join (map format-value v))
-   (str "<dd>" v "</dd>")))
+    (map value->html v)
+    [:dd v]))
 
 
-(defn create-html [body]
-  (str "<html>"
-       "<head> </head>"
-       "<body>"
-       "<p>Contents of the form submitted</p>"
-       "<dl>"
-       (clojure.string/join (map (fn [[k v]]
-                                   (str "<dt>" (name k) "</dt>"
-                                         (format-value v)))
-                                 body))
-       "</dl></body></html>"))
+(defn form->html [form]
+  (str (h/html [:html
+                [:head]
+                [:body
+                 [:p "Contents of the form submitted"]
+                 [:dl (map (fn [[k v]]
+                             (list [:dt (name k)]
+                                   (value->html v)))
+                           form)]]])))
 
 
 (defonce configuration (atom nil))
@@ -41,7 +40,7 @@
 
   [reply-to to subject body]
   (if-let [smtp-config (:smtp-server @configuration)]
-     (postal/send-message smtp-config
+    (postal/send-message smtp-config
                          {:from     (:from-address @configuration)
                           :reply-to reply-to
                           :to       to
@@ -68,7 +67,7 @@
                      "Form to Mail message"
                      ;; Use a templating library
                      [{:type "text/html"
-                       :content (create-html parsed)}
+                       :content (form->html parsed)}
                       {:type :attachment
                        :file-name "form-to-mail-request-body.txt"
                        :content-type "application/x-www-form-urlencoded"
@@ -108,8 +107,24 @@
                      email
                      "Form to Mail confirmation"
                      [{:type "text/html"
-                       :content (str "<html> <head>Thank you for submitting the form at <a href=https://formtomail.eu> Form to Mail. </a> </head> <body>
-                                     Please click the link to <a href='" confirmation-url "'>confirm your submission.</a> <p style='font-size: 0.8rem;'>If you haven't filled the form please ignore this email. </p></body></html>")}])
+                       :content (str (h/html [:html
+                                              [:head
+                                               [:style ".call-to-action {
+                                                            background: darkblue;
+                                                            padding: 0.5em 1em;
+                                                            border-radius: 1em;
+                                                            color: white;
+                                                            font-weight: bold;
+                                                            text-decoration: none;
+                                                        }"]]
+                                              [:body
+                                               [:p
+                                                "Thank you for submitting the form at "
+                                                [:a {:href "https://formtomail.eu/"} "Form to Mail"]
+                                                ". Before we deliver your form we need to confirm your email address. Please click below."]
+                                               [:p
+                                                [:a {:href confirmation-url :class "call-to-action"} "Confirm your submission"]
+                                               [:p "If you haven't filled the form please ignore this email."]]]]))}])
           (spy {:status  200
                 :headers {"Content-Type" "text/plain"}
                 :body    (str "Thank you for sending the form. We have sent you an email with confirmation link to " email)}))
@@ -142,17 +157,17 @@
 
 (def raw-body-interceptor
   (interceptor/interceptor
-    {:name ::raw-body-interceptor
-     :enter (fn [context]
-              (let [body-stream (get-in context [:request :body])
-                    body-string (when body-stream
-                                  (slurp body-stream))]
-                 (-> context
+   {:name ::raw-body-interceptor
+    :enter (fn [context]
+             (let [body-stream (get-in context [:request :body])
+                   body-string (when body-stream
+                                 (slurp body-stream))]
+               (-> context
                    (assoc-in [:request ::raw-body] body-string)
                    (assoc-in [:request :body] (when body-string
-                                               (java.io.ByteArrayInputStream. (.getBytes body-string)))))))
-     :leave (fn [context]
-                (update context :request dissoc ::raw-body))}))
+                                                (java.io.ByteArrayInputStream. (.getBytes body-string)))))))
+    :leave (fn [context]
+             (update context :request dissoc ::raw-body))}))
 
 (defn create-connector
   []
@@ -160,13 +175,13 @@
                     4242)
         address (or (:listen-address @configuration)
                     "0.0.0.0")]
-   (-> (conn/default-connector-map address port)
-       ;; our interceptor
-       (conn/with-interceptor raw-body-interceptor)
-       (conn/with-default-interceptors)
-       (conn/with-routes routes)
-       (log-connector)
-       (hk/create-connector nil))))
+    (-> (conn/default-connector-map address port)
+        ;; our interceptor
+        (conn/with-interceptor raw-body-interceptor)
+        (conn/with-default-interceptors)
+        (conn/with-routes routes)
+        (log-connector)
+        (hk/create-connector nil))))
 
 ;; For interactive development
 (defonce *connector (atom nil))

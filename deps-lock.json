@@ -32,6 +32,16 @@
       "hash": "sha256-i/WnArsFKbDV4G8GS4F4z5H5Ktn+vShl717j0J3I9yM="
     },
     {
+      "mvn-path": "babashka/fs/0.5.30/fs-0.5.30.jar",
+      "mvn-repo": "https://repo.clojars.org/",
+      "hash": "sha256-Wf4BeIxSN9FAHd57aFL7OzWjO6lH9XG+BK4MPDs81VI="
+    },
+    {
+      "mvn-path": "babashka/fs/0.5.30/fs-0.5.30.pom",
+      "mvn-repo": "https://repo.clojars.org/",
+      "hash": "sha256-fCwnSrKop60b0zcqrhvYUSZ7Yk/QOOrRoE8Y/X6k6Ko="
+    },
+    {
       "mvn-path": "babashka/process/0.6.23/process-0.6.23.jar",
       "mvn-repo": "https://repo.clojars.org/",
       "hash": "sha256-iUMqatsqYdPNfc06AyahJOTXFmY4PRpluMIAxtJxz/k="
@@ -92,14 +102,14 @@
       "hash": "sha256-6rfCHPBH6Bd77px61lSxH5W2AndbQ3B829pnNDbFrAQ="
     },
     {
-      "mvn-path": "clj-kondo/clj-kondo/2025.10.23/clj-kondo-2025.10.23.jar",
+      "mvn-path": "clj-kondo/clj-kondo/2026.01.19/clj-kondo-2026.01.19.jar",
       "mvn-repo": "https://repo.clojars.org/",
-      "hash": "sha256-8mWPUikVIwEdDoL5N9D/5egEkBd3g3uRzPdTTSMXjpg="
+      "hash": "sha256-CiABC++IGJoJEVqbkG0sPbmjVxc33r7VlTuawLZprGI="
     },
     {
-      "mvn-path": "clj-kondo/clj-kondo/2025.10.23/clj-kondo-2025.10.23.pom",
+      "mvn-path": "clj-kondo/clj-kondo/2026.01.19/clj-kondo-2026.01.19.pom",
       "mvn-repo": "https://repo.clojars.org/",
-      "hash": "sha256-FqqsFWclWO0wzB7bb71bTaxRmhhhMNSG3sfFEisV2Aw="
+      "hash": "sha256-r5ZJM6cxNA950gc9RosCcwj7Alzu7LBXNqZykt7TSHg="
     },
     {
       "mvn-path": "com/bhauman/rebel-readline/0.1.5/rebel-readline-0.1.5.jar",
@@ -465,6 +475,16 @@
       "mvn-path": "etaoin/etaoin/1.1.43/etaoin-1.1.43.pom",
       "mvn-repo": "https://repo.clojars.org/",
       "hash": "sha256-qF2AGr6vNEA3zY4ytdMzX1CmNDwTiG5S115zkaRvaXc="
+    },
+    {
+      "mvn-path": "hiccup/hiccup/2.0.0/hiccup-2.0.0.jar",
+      "mvn-repo": "https://repo.clojars.org/",
+      "hash": "sha256-VoBRu8I82VXoSvOc6OYUQEwWZULGlC0db2S6Vb1yBTo="
+    },
+    {
+      "mvn-path": "hiccup/hiccup/2.0.0/hiccup-2.0.0.pom",
+      "mvn-repo": "https://repo.clojars.org/",
+      "hash": "sha256-f+cp+WpSEwEH+QoLsfeQXAK0ncn+JnIwxMz4IEJ/T5c="
     },
     {
       "mvn-path": "http-kit/http-kit/2.9.0-beta3/http-kit-2.9.0-beta3.jar",
