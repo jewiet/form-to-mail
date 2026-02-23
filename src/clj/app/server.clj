@@ -7,12 +7,17 @@
    [io.pedestal.log :refer [debug info spy]]
    [postal.core :as postal]))
 
+(defn- format-value [v]
+  (if (vector? v)
+   (clojure.string/join (map format-value v))
+   (str "<dd style='margin-bottom: 1em; margin-left: 0.5rem; font-size: 0.9rem; '>" v "</dd>")))
+
 
 (defn create-html [body]
   (str "<html><head> </head><body> <dl style='font-size: 0.9rem; 'margin-bottom: 1em'> Contents of the form submitted"
        (clojure.string/join (map (fn [[k v]]
-                                   (str "<dt style='font-weight:bold;'>" (name k) "</dt>
-                                         <dd style='margin-bottom: 1em; margin-left: 0.5rem; font-size: 0.9rem; '>" v "</dd>"))
+                                   (str "<dt style='font-weight:bold;'>" (name k) "</dt>"
+                                         (format-value v)))
                                  body))
        "</dl></body></html>" ))
 
