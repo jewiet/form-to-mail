@@ -59,11 +59,11 @@
   (if-let [submission-uuid (parse-uuid (:submission-uuid path-params))]
     (do
       (debug :prose "verifying submission id"  :submission-uuid submission-uuid)
-      (if-let [{:keys [raw parsed] :as submission} (get @submissions submission-uuid)]
+      (if-let [{:keys [raw parsed receiver] :as submission} (get @submissions submission-uuid)]
         (do
           (debug :prose "found submission" :submission submission)
           (send-mail (:email parsed)
-                     (:receiver parsed)
+                     receiver
                      "Form to Mail message"
                      ;; Use a templating library
                      [{:type "text/html"
@@ -101,7 +101,7 @@
           (swap! submissions assoc submission-uuid
                  (-> {}
                      (assoc :parsed form-params)
-                     (assoc-in [:parsed :receiver] receiver)
+                     (assoc :receiver receiver)
                      (assoc :raw raw-body)))
           (send-mail nil
                      email
