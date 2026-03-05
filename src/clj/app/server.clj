@@ -200,13 +200,11 @@
                                 call-to-action-section
                                 contact-section]
         html-body              [:body
-
                                 html-header
-
                                 html-main]
-        body (str (html5
-                   html-head
-                   html-body))]
+        body                   (str (html5
+                                     html-head
+                                     html-body))]
     (spy {:status  200
           :headers {"Content-Type" "text/html"}
           :body    body})))
