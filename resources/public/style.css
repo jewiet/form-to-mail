@@ -1,0 +1,26 @@
+.icon {
+    margin-right: 0.5em;
+    width: 3em;
+}
+.link {
+    text-decoration: none;
+}
+
+#features > * {
+    display: flex;
+
+    p {
+        padding-top: 1em;
+
+        small {
+            color: var(--pico-muted-color);
+            font-size: 0.7em;
+            font-weight: bold;
+
+            &::before {
+                content: "\A";
+                white-space: pre;
+            }
+        }
+    }
+}
