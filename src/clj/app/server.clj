@@ -1,20 +1,19 @@
 (ns app.server
   (:require
    [clojure.string :as string]
+   [hiccup.page :refer [html5]]
+   [hiccup2.core :as h]
    [io.pedestal.connector :as conn]
    [io.pedestal.http.http-kit :as hk]
    [io.pedestal.interceptor :as interceptor]
    [io.pedestal.log :refer [debug info spy]]
-   [postal.core :as postal]
-   [hiccup2.core :as h]
-   [clojure.java.io :as io]
-   [hiccup.page :refer [html5]]))
+   [io.pedestal.service.resources :as resources]
+   [postal.core :as postal]))
 
 (defn- value->html [v]
   (if (vector? v)
     (map value->html v)
     [:dd v]))
-
 
 (defn form->html [form]
   (str (h/html [:html
@@ -25,7 +24,6 @@
                              (list [:dt (name k)]
                                    (value->html v)))
                            form)]]])))
-
 
 (defonce configuration (atom nil))
 
@@ -55,7 +53,6 @@
           :reply-to reply-to
           :subject subject
           :body body)))
-
 
 (defn submission-verification [{:keys [path-params]}]
   (debug :prose "verifying submission" :submissions @submissions)
@@ -138,27 +135,15 @@
                 :headers {"Content-Type" "text/plain"}
                 :body    "Missing required field email"}))))))
 
-(defn resource-handler
-  [request]
-  (if-let [resource-url (io/resource (str "public/" (get-in request [:path-params :resource])))]
-    (spy {:status  200
-          :headers (if (clojure.string/ends-with? resource-url ".css")
-                     {"Content-Type" "text/css"}
-                     {"Content-Type" "image/svg+xml"})
-          :body  (slurp resource-url)})
-    (spy {:status  404
-          :body  "Resource not found"})))
-
-
 (defn home-handler
   [_request]
   (let [html-head              [:head
-                                [:meta {:name "viewport" :content "width=device-width, initial-scale=1"} ]
+                                [:meta {:name "viewport" :content "width=device-width, initial-scale=1"}]
                                 [:link {:type "text/css", :href "/resources/pico.min.css", :rel "stylesheet"}]
                                 [:link {:type "text/css", :href "/resources/style.css", :rel "stylesheet"}]]
         html-header            [:header.container
                                 [:hgroup
-                                 [:h1 "Form to Mail" ]
+                                 [:h1 "Form to Mail"]
                                  [:p "Web forms for static websites"]]]
         intro-section          [:section#intro
                                 [:p "Form to Mail is a lightweight web service that sends data submitted from a standard HTML form as an email via any SMTP server. The service verifies sender's email address before delivering the form. It works with standard HTML forms and it's easy to self host."]]
@@ -177,7 +162,7 @@
                                  [:img.icon {:src "/resources/streamline-emojis--house-with-garden.svg"}]
                                  [:p
                                   "Delightful to self-host"
-                                  [:small "with " [:code "java -jar" ] " or a NixOS module"]]]]
+                                  [:small "with " [:code "java -jar"] " or a NixOS module"]]]]
         call-to-action-section [:section#call-to-action.grid
                                 [:a {:href   "https://github.com/jewiet/form-to-mail/releases"
                                      :target "_blank"
@@ -191,7 +176,7 @@
         contact-section        [:section#contact
                                 [:h3 "Get in touch"]
                                 [:form {:method "POST" :action "https://formtomail.eu/submit/1234"}
-                                 [:label {:for "email" } "Email"]
+                                 [:label {:for "email"} "Email"]
                                  [:input {:type "email" :name "email" :id "email" :placeholder "Email" :required true}]
                                  [:label {:for "message"} "Your message"]
                                  [:textarea {:name "message" :id "message" :placeholder "Your messsage"}]
@@ -220,8 +205,7 @@
      :route-name :form-submit]
     ["/confirm-submission/:submission-uuid"
      :get submission-verification
-     :route-name :submission-verification]
-    ["/resources/:resource" :get resource-handler :route-name :resource]})
+     :route-name :submission-verification]})
 
 (defn log-connector [{:keys [host port] :as connector-map}]
   (info :prose "Starting Form to Mail" :host host :port port)
@@ -251,7 +235,9 @@
         ;; our interceptor
         (conn/with-interceptor raw-body-interceptor)
         (conn/with-default-interceptors)
-        (conn/with-routes routes)
+        (conn/with-routes routes
+          (resources/resource-routes {:prefix "/resources"
+                                      :resource-root "public"}))
         (log-connector)
         (hk/create-connector nil))))
 
