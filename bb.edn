@@ -1,10 +1,11 @@
 {:paths
- ["src"]
+ ["src" "src/bb"]
 
  :tasks
  {:requires
   ([clojure.edn :as edn]
-   [babashka.fs :as fs])
+   [babashka.fs :as fs]
+   [www.core :as www])
 
   app:run
   {:doc  "Run the Form to Mail locally. Optional argument is log level"
@@ -20,6 +21,10 @@
   rebel:run
   {:doc "Run rebl repl"
    :task (clojure "-Xrebel")}
+
+  www:build
+  {:doc "Build the project website"
+   :task (www/build)}
 
   uberjar:build
   {:doc  "Package the app in an uberjar"
