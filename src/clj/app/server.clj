@@ -56,6 +56,7 @@
           :subject subject
           :body body)))
 
+
 (defn submission-verification [{:keys [path-params]}]
   (debug :prose "verifying submission" :submissions @submissions)
   (if-let [submission-uuid (parse-uuid (:submission-uuid path-params))]
@@ -74,6 +75,7 @@
                        :file-name "form-to-mail-request-body.txt"
                        :content-type "application/x-www-form-urlencoded"
                        :content (.getBytes raw)}])
+          (swap! submissions dissoc submission-uuid)
 
           ;; TODO: Simplify this hack
           (eval `(info ~@(flatten (into [] submission))))
