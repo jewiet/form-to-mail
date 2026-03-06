@@ -6,7 +6,7 @@
   ([clojure.edn :as edn]
    [babashka.fs :as fs])
 
-  run:app
+  app:run
   {:doc  "Run the Form to Mail locally. Optional argument is log level"
    :task (let [config-file (first *command-line-args*)
                log-level "info"]
@@ -17,11 +17,11 @@
             "app.core"
             config-file))}
 
-  rebel
+  rebel:run
   {:doc "Run rebl repl"
    :task (clojure "-Xrebel")}
 
-  build:uberjar
+  uberjar:build
   {:doc  "Package the app in an uberjar"
    :task (do
            (println "Building uberjar")
@@ -38,7 +38,7 @@
    :task (do (run 'clean)
              (run 'build:uberjar))}
 
-  run:uberjar
+  uberjar:run
   {:doc     "Run the uberjar locally"
    :task (shell "java" "-jar" "target/form-to-mail-0.1.25-standalone.jar")}
 
@@ -50,13 +50,9 @@
   {:doc  "Fix code style"
    :task (clojure "-Sdeps" "{:deps {mvxcvi/cljstyle {:mvn/version \"0.15.0\"}}}" "-m" "cljstyle.main" "fix" "src")}
 
-  lint
+  code:lint
   {:doc  "Lint with clj-kondo"
    :task (clojure "-M:clj-kondo" "--lint" "src")}
-
-  test
-  {:doc  "Run tests"
-   :task (clojure "-X:test")}
 
   nix:update-deps
   {:doc "Update deps-lock.json based on deps.edn"
