@@ -8,7 +8,7 @@
    [postal.core :as postal]
    [hiccup2.core :as h]
    [clojure.java.io :as io]
-   [hiccup.page :refer [include-css html5]]))
+   [hiccup.page :refer [html5]]))
 
 (defn- value->html [v]
   (if (vector? v)
@@ -159,7 +159,7 @@
                                  [:h1 "Form to Mail" ]
                                  [:p "Web forms for static websites"]]]
         intro-section          [:section#intro
-                                [:p "Form to Mail is a lightweight web service that sends data submitted from a standard HTML form as an email via any SMTP server. Senders email address verification, works with any form and it's easy to self host."]]
+                                [:p "Form to Mail is a lightweight web service that sends data submitted from a standard HTML form as an email via any SMTP server. The service verifies sender's email address before delivering the form. It works with standard HTML forms and it's easy to self host."]]
         features-section       [:section#features.grid
                                 [:div
                                  [:img.icon {:src "/resources/streamline-emojis--wrench.svg"}]
