@@ -58,7 +58,7 @@
   {:doc "Update deps-lock.json based on deps.edn"
    :task (shell "deps-lock")}
 
-  serve:samples
+  samples:serve
   {:doc "Serves spec/samples on :1234/"
    :task (shell "miniserve --port 1234 spec/samples")}
 
