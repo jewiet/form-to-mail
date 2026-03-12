@@ -1,10 +1,12 @@
 (ns interpreters.web-automation
   (:require
-   [clojure.string :refer [split-lines]]
-   [etaoin.api :as e]
-   [io.pedestal.log :refer [debug info warn]]
    [babashka.fs :as fs]
-   [babashka.process :as p :refer [process destroy-tree]]
+   [babashka.process :as p :refer [destroy-tree process]]
+   [clojure.string :as string]
+   [clojure.walk :as walk]
+   [etaoin.api :as e]
+   [io.pedestal.log :refer [debug info]]
+   [ring.util.codec :refer [base64-decode form-decode]]
    [tbb.core :as tbb]))
 
 (def current-inbox (atom nil))
@@ -19,7 +21,6 @@
 
 (def miniserve-process (atom nil))
 
-
 ;; Make a smart-spy that takes the level
 (defn info-spy [prose value]
   (info :prose prose :value value)
@@ -29,31 +30,35 @@
   (debug :prose prose :value value)
   value)
 
-
-(tbb/implement-step "Run the app with the following configuration"
-                    (fn [{:keys [code_blocks]}]
-                      (debug "server-log-file" server-log-file)
-                      (let [config (read-string (:value (first code_blocks)))
-                            config-file (str (fs/create-temp-file {:prefix "form-to-mail-config"
-                                                                   :suffix ".edn"}))]
-                        (spit config-file config)
-                        (reset! form-to-mail-process
-                                (process {:err :write :err-file server-log-file} "bb run:app" config-file))
+(tbb/implement-step
+ "Run the app with the following configuration"
+ (fn [{:keys [code_blocks]}]
+   (debug "server-log-file" server-log-file)
+   (let [config (read-string (:value (first code_blocks)))
+         config-file (str (fs/create-temp-file {:prefix "form-to-mail-config"
+                                                :suffix ".edn"}))]
+     (spit config-file config)
+     (reset! form-to-mail-process
+             (process {:err :write
+                       :err-file server-log-file}
+                      "bb app:run" config-file))
                         ;; TODO: Be smarter about waiting. Use logs.
-                        (Thread/sleep 5000))))
+     (Thread/sleep 5000))))
 
+(tbb/implement-step
+ "Serve {0} on port {1}"
+ (fn [path port _]
+   (debug :serving path :port port)
+   (reset! miniserve-process
+           (process {:err :write :err-file server-log-file}
+                    "miniserve --port" port path))
+   (Thread/sleep 1000)))
 
-(tbb/implement-step "Serve {0} on port {1}"
-                    (fn [path port _]
-                      (debug :serving path :port port)
-                      (reset! miniserve-process
-                              (process {:err :write :err-file server-log-file} "bb serve:samples"))
-                      (Thread/sleep 1000)))
-
-(tbb/implement-step "Navigate to {0}"
-                    (fn [url _]
-                      (e/go @driver url)
-                      (e/wait-visible @driver [{:tag :body}])))
+(tbb/implement-step
+ "Navigate to {0}"
+ (fn [url _]
+   (e/go @driver url)
+   (e/wait-visible @driver [{:tag :body}])))
 (tbb/implement-step
  "Type {0} in the {1} field"
  (fn [user-input field-label _]
@@ -70,11 +75,10 @@
   (->> server-log-file
        str
        slurp
-       split-lines
+       string/split-lines
        (keep #(re-find #"\{.*\}" %))
        (map read-string)
        doall))
-
 
 (defn map-includes? [small big]
   (->> small
@@ -108,7 +112,6 @@
         values (map value-kw coll)]
     (zipmap ks values)))
 
-
 (tbb/implement-step
  "Form to Mail service will log {0}"
  (fn [str-entry _]
@@ -130,7 +133,6 @@
  "Open the inbox of {0}"
  (fn [email-address _]
    (->> (get-form-to-mail-logs)
-        (debug-spy "All logs")
         (filter-matching {:prose "sending an email" :to email-address})
         (map #(dissoc % :prose))
         (debug-spy "Inbox from logs")
@@ -144,16 +146,18 @@
         (find-matching {:subject subject})
         (debug-spy "Found message")
         (reset! current-message)
-        (tbb/tis some? ))))
+        (tbb/tis some?))))
 
 (tbb/implement-step
  "In the message open the link labeled {0}"
  (fn [label _]
-   (let [pattern (re-pattern (str "<a\\s+.*href\\s*=\\s*'(.+)'.*>" label "</a>"))]
+   (let [pattern (re-pattern (str "<a\\s+.*href\\s*=\\s*[\"'](.+)[\"'].*>" label "</a>"))]
      (->> @current-message
           :body
-          (debug-spy "Body")
+          first
+          :content
           (re-find pattern)
+          (debug-spy "link")
           (last)
           (debug-spy "URL to open")
           (e/go @driver)))))
@@ -170,9 +174,8 @@
       (assoc :id id)
       (dissoc :label)
       (#(case (:type %)
-          ("textarea" "select") (dissoc (assoc % :tag (:type %) ) :type)
+          ("textarea" "select") (dissoc (assoc % :tag (:type %)) :type)
           %))))
-
 
 (tbb/implement-step
  "There are the following fields"
@@ -203,12 +206,34 @@
    (tbb/tis = (:reply-to @current-message) relpy-to)))
 
 (tbb/implement-step
- "The message contains a clojure map with the following fields"
+ "The message contains an application/x-www-form-urlencoded encoded attachment with the following fields"
  (fn [{:keys [tables]}]
    (let [expected (table->map (first tables) :key :value)
-         actual   (read-string (:body @current-message))]
+         actual   (->> @current-message
+                       :body
+                       (find-matching {:file-name "form-to-mail-request-body.txt"})
+                       :content
+                       base64-decode
+                       String.
+                       form-decode
+                       walk/keywordize-keys)]
+
      (tbb/tis map-includes? expected actual))))
 
+(tbb/implement-step
+ "The {0} body of the message contains"
+ (fn [type {:keys [code_blocks]}]
+   (let [expected (->>  code_blocks
+                        first
+                        :value
+                        string/trim)
+         actual   (->> @current-message
+                       :body
+                       (find-matching {:type type})
+                       :content
+                       string/trim)]
+
+     (tbb/tis string/includes? actual expected))))
 
 (defn get-current-namespace []
   (-> #'get-current-namespace meta :ns str))
@@ -219,7 +244,7 @@
   (tbb/ready)
   (e/quit @driver)
   (when @form-to-mail-process
-   (destroy-tree @form-to-mail-process))
+    (destroy-tree @form-to-mail-process))
   (when @miniserve-process
-   (destroy-tree @miniserve-process))
+    (destroy-tree @miniserve-process))
   (info :done (get-current-namespace)))

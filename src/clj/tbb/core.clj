@@ -5,7 +5,6 @@
    [clojure.string :refer [blank?]]
    [io.pedestal.log :refer [debug error info]]))
 
-
 (defonce ^:private steps-implementation (atom {}))
 
 (defn implement-step [variant f]
@@ -40,9 +39,9 @@
                               (symbol (str "arg-" indx)))
                             arguments)
                          data]
-                   (tis ~'= "cat" "dog")))]
+                        (tis ~'= "cat" "dog")))]
 
-            (error :missing-step-implemnetation variant)
+            (error :missing-step-implementation variant)
             (println (json/write-str {:type   "Failure"
                                       :reason "Not implemented"
                                       :hint (str "To get started put this in your interpreter:\n\n"
@@ -57,5 +56,3 @@
                                         :reason (.getMessage e)}))))))))
 
   (debug :prose "Done reading from tbb."))
-
-

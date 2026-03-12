@@ -54,12 +54,21 @@ tags: [proof-of-concept, covered]
 * Form to Mail service will log `{:prose "valid form submitted" :by "user-one@example.com"}`
 * Open the inbox of `user-one@example.com`
 * In the inbox find the message with the subject `Form to Mail confirmation`
-* In the message open the link labeled `confirm your submission`
+* In the message open the link labeled `Confirm your submission`
 * There is a message `Thank you for confirmation. Your form is delivered.`
 * Open the inbox of `publisher-one@example.com`
 * In the inbox find the message with the subject `Form to Mail message`
 * The message has reply-to header `user-one@example.com`
-* The message contains a clojure map with the following fields
+* The `text/html` body of the message contains
+
+  <!-- TODO: Format the HTML code and make the interpreter accept it. -->
+
+  ``` html
+  <dl><dt>email</dt><dd>user-one@example.com</dd><dt>message</dt><dd>Hello dear receiver!</dd></dl>
+  ```
+  
+* The message contains an application/x-www-form-urlencoded encoded attachment with the following fields
+
 
   | key     | value                |
   |---------|----------------------|
@@ -133,12 +142,21 @@ This scenario simulates a complex form with many different inputs. It's a fictio
 * Form to Mail service will log `{:prose "valid form submitted" :by "szara@muchu.com"}`
 * Open the inbox of `szara@muchu.com`
 * In the inbox find the message with the subject `Form to Mail confirmation`
-* In the message open the link labeled `confirm your submission`
+* In the message open the link labeled `Confirm your submission`
 * There is a message `Thank you for confirmation. Your form is delivered.`
 * Open the inbox of `publisher-two@example.com`
 * In the inbox find the message with the subject `Form to Mail message`
 * The message has reply-to header `szara@muchu.com`
-* The message contains a clojure map with the following fields
+* The `text/html` body of the message contains
+
+  <!-- TODO: Format the HTML code and make the interpreter accept it. -->
+
+  ``` html
+  <dl><dt>address</dt><dd>Verycoolstreet 1</dd><dt>email</dt><dd>szara@muchu.com</dd><dt>city</dt><dd>Kittentown</dd><dt>high-chairs</dt><dd>4</dd><dt>wood-type</dt><dd>pine</dd><dt>chairs</dt><dd>3</dd><dt>notes</dt><dd>Can I pick up the items before christmas?</dd><dt>coating</dt><dd>red</dd><dt>delivery-method</dt><dd>pickup</dd><dt>country</dt><dd>Katcountry</dd></dl>
+  ```
+  
+* The message contains an application/x-www-form-urlencoded encoded attachment with the following fields
+
 
   | key             | value                                     |
   |-----------------|-------------------------------------------|
