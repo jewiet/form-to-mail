@@ -8,13 +8,14 @@
    [postal.core :as postal]
    [hiccup2.core :as h]
    [clojure.java.io :as io]
-   [hiccup.page :refer [html5]]))
+   [hiccup.page :refer [html5]]
+   [ring.util.codec :refer [base64-encode]]))
+
 
 (defn- value->html [v]
   (if (vector? v)
     (map value->html v)
     [:dd v]))
-
 
 (defn form->html [form]
   (str (h/html [:html
@@ -26,10 +27,17 @@
                                    (value->html v)))
                            form)]]])))
 
-
 (defonce configuration (atom nil))
 
 (defonce submissions (atom {}))
+
+(defn- encode-body-part [part]
+  (if (= (:type part) :attachment)
+    (update part :content base64-encode)
+    part))
+
+(defn- encode-body-parts [body]
+  (map encode-body-part body))
 
 (defn send-mail
   "Send an email.
@@ -54,8 +62,7 @@
           :to to
           :reply-to reply-to
           :subject subject
-          :body body)))
-
+          :body (encode-body-parts body))))
 
 (defn submission-verification [{:keys [path-params]}]
   (debug :prose "verifying submission" :submissions @submissions)
@@ -101,7 +108,7 @@
       (if-not (string/blank? email)
         (let [submission-uuid  (random-uuid)
               confirmation-url (str (:base-url @configuration) "/confirm-submission/" submission-uuid)]
-          (debug :prose "valid form submitted" :by email)
+          (info :prose "valid form submitted" :by email)
           (swap! submissions assoc submission-uuid
                  (-> {}
                      (assoc :parsed form-params)
