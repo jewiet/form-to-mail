@@ -156,16 +156,15 @@
     (spy {:status  404
           :body  "Resource not found"})))
 
-
 (defn home-handler
   [_request]
   (let [html-head              [:head
-                                [:meta {:name "viewport" :content "width=device-width, initial-scale=1"} ]
+                                [:meta {:name "viewport" :content "width=device-width, initial-scale=1"}]
                                 [:link {:type "text/css", :href "/resources/pico.min.css", :rel "stylesheet"}]
                                 [:link {:type "text/css", :href "/resources/style.css", :rel "stylesheet"}]]
         html-header            [:header.container
                                 [:hgroup
-                                 [:h1 "Form to Mail" ]
+                                 [:h1 "Form to Mail"]
                                  [:p "Web forms for static websites"]]]
         intro-section          [:section#intro
                                 [:p "Form to Mail is a lightweight web service that sends data submitted from a standard HTML form as an email via any SMTP server. The service verifies sender's email address before delivering the form. It works with standard HTML forms and it's easy to self host."]]
@@ -184,7 +183,7 @@
                                  [:img.icon {:src "/resources/streamline-emojis--house-with-garden.svg"}]
                                  [:p
                                   "Delightful to self-host"
-                                  [:small "with " [:code "java -jar" ] " or a NixOS module"]]]]
+                                  [:small "with " [:code "java -jar"] " or a NixOS module"]]]]
         call-to-action-section [:section#call-to-action.grid
                                 [:a {:href   "https://github.com/jewiet/form-to-mail/releases"
                                      :target "_blank"
@@ -198,7 +197,7 @@
         contact-section        [:section#contact
                                 [:h3 "Get in touch"]
                                 [:form {:method "POST" :action "https://formtomail.eu/submit/1234"}
-                                 [:label {:for "email" } "Email"]
+                                 [:label {:for "email"} "Email"]
                                  [:input {:type "email" :name "email" :id "email" :placeholder "Email" :required true}]
                                  [:label {:for "message"} "Your message"]
                                  [:textarea {:name "message" :id "message" :placeholder "Your messsage"}]
