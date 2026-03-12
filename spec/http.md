@@ -10,26 +10,51 @@ This spec covers direct use of HTTP endpoints, i.e. without a web browser.
 
 ## Home page
 
-tags: proof-of-concept covered
+``` yaml tbb
+tags: 
+  - proof-of-concept 
+  - covered
+```
 
-- Run the app
+* Run the app with the following configuration
+
+  ``` clojure
+  {:from-address   "form-to-mail@localhost"
+   :base-url       "http://localhost:8080"
+   :listen-address "127.0.0.1"
+   :listen-port    8080
+   :receivers
+    {"1234" "publisher-one@example.com"}}
+  ```
+
 - Make a `GET` request to `http://localhost:8080/`.
 
   `http GET :8080/`
 
 - The response has a `200` status code.
-- The response body is `Hello, form!`.
-- The response `content-type` header is `text/plain`.
+- The response `content-type` header is `text/html`.
 
 
 ## Form submission without email
 
-tags: proof-of-concept covered
+``` yaml tbb
+tags: 
+  - proof-of-concept 
+  - covered
+```
 
-- Run the app
-- Make a `POST` request to `http://localhost:8080/poc-submit`.
+* Run the app with the following configuration
 
-  `http --form POST http://localhost:8080/poc-submit`
+  ``` clojure
+  {:from-address   "form-to-mail@localhost"
+   :base-url       "http://localhost:8080"
+   :listen-address "127.0.0.1"
+   :listen-port    8080
+   :receivers
+    {"something-else" "publisher-one@example.com"}}
+  ```
+
+- Make a `POST` request to `http://localhost:8080/submit/something-else`.
 
 - The response has a `422` status code.
 - The response body is `Missing required field email`.
