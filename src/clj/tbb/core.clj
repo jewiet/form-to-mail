@@ -5,6 +5,9 @@
    [clojure.string :refer [blank?]]
    [clojure.tools.logging.readable :as logging]))
 
+;; TODO: Replace logging with a simpler, more reliable solution.
+;; NOTE: Calling logging/info will almost certainly break TBB as it writes to stdout.
+
 ;; TODO: Make it work with Babashka (so no dependency on JDK)
 ;; TODO: Distribute this with TBB so it can be used in other Clojure projects.
 
