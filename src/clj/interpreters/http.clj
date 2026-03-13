@@ -3,6 +3,7 @@
    [babashka.fs :as fs]
    [babashka.process :refer [destroy-tree process]]
    [clojure.string :refer [lower-case]]
+   [interpreters.common :refer [wait-for-log]]
    [io.pedestal.log :refer [debug spy]]
    [org.httpkit.client :as hk-client]
    [tbb.core :as tbb]))
@@ -28,8 +29,8 @@
              (process {:err :write
                        :err-file server-log-file}
                       "bb app:run" config-file))
-                        ;; TODO: Be smarter about waiting. Use logs.
-     (Thread/sleep 5000))))
+     (wait-for-log {:prose "Starting Form to Mail"}
+                   server-log-file))))
 
 (tbb/implement-step
  "Make a {0} request to {1}."

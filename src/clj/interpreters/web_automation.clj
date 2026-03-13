@@ -5,6 +5,9 @@
    [clojure.string :as string]
    [clojure.walk :as walk]
    [etaoin.api :as e]
+   [interpreters.common :refer [debug-spy filter-matching find-matching
+                                has-matching? map-includes? read-log-file
+                                wait-for-log]]
    [io.pedestal.log :refer [debug info]]
    [ring.util.codec :refer [base64-decode form-decode]]
    [tbb.core :as tbb]))
@@ -21,15 +24,6 @@
 
 (def miniserve-process (atom nil))
 
-;; Make a smart-spy that takes the level
-(defn info-spy [prose value]
-  (info :prose prose :value value)
-  value)
-
-(defn debug-spy [prose value]
-  (debug :prose prose :value value)
-  value)
-
 (tbb/implement-step
  "Run the app with the following configuration"
  (fn [{:keys [code_blocks]}]
@@ -42,8 +36,8 @@
              (process {:err :write
                        :err-file server-log-file}
                       "bb app:run" config-file))
-                        ;; TODO: Be smarter about waiting. Use logs.
-     (Thread/sleep 5000))))
+     (wait-for-log {:prose "Starting Form to Mail"}
+                   server-log-file))))
 
 (tbb/implement-step
  "Serve {0} on port {1}"
@@ -71,40 +65,12 @@
    (e/click @driver [{:tag :button :fn/text button-label}])))
 
 ;; TODO: Move to a different namespace or to the top
-(defn get-form-to-mail-logs []
-  (->> server-log-file
-       str
-       slurp
-       string/split-lines
-       (keep #(re-find #"\{.*\}" %))
-       (map read-string)
-       doall))
-
-(defn map-includes? [small big]
-  (->> small
-       keys
-       (select-keys big)
-       (= small)))
-
-(defn- filter-matching [small coll]
-  (filter #(map-includes? small %) coll))
-
-(defn- find-matching [small coll]
-  (->> coll
-       (filter-matching small)
-       (first)))
-
-(defn has-matching?
-  "Takes a small map and a collection of maps, checks if any matches"
-  [small coll]
-  (not-empty (find-matching small coll)))
-
 
 (tbb/implement-step
  "Form to Mail service will log {0}"
  (fn [str-entry _]
    (let [expected (read-string str-entry)]
-     (->> (get-form-to-mail-logs)
+     (->> (read-log-file server-log-file)
           (tbb/tis has-matching? expected)))))
 
 (tbb/implement-step
@@ -120,7 +86,7 @@
 (tbb/implement-step
  "Open the inbox of {0}"
  (fn [email-address _]
-   (->> (get-form-to-mail-logs)
+   (->> (read-log-file server-log-file)
         (filter-matching {:prose "sending an email" :to email-address})
         (map #(dissoc % :prose))
         (debug-spy "Inbox from logs")
@@ -224,7 +190,10 @@
      (tbb/tis string/includes? actual expected))))
 
 (defn get-current-namespace []
-  (-> #'get-current-namespace meta :ns str))
+  (-> #'get-current-namespace
+      meta
+      :ns
+      str))
 
 (defn -main []
   (debug :prose "starting web automation")
