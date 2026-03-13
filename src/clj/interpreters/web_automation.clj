@@ -99,18 +99,6 @@
   [small coll]
   (not-empty (find-matching small coll)))
 
-(defn table->maps [table]
-  (let [[header & rows] table
-        keywords        (map keyword header)]
-    (map #(zipmap keywords %) rows)))
-
-(defn table->map
-  "Takes a sequence of maps with :name and :value pairings and returns a single map"
-  [maps key-kw value-kw]
-  (let [coll   (table->maps maps)
-        ks     (map #(keyword (key-kw %)) coll)
-        values (map value-kw coll)]
-    (zipmap ks values)))
 
 (tbb/implement-step
  "Form to Mail service will log {0}"
@@ -166,7 +154,7 @@
  "There is a {0} element with the following properties"
  (fn [element-type {:keys [tables]}]
    (let [first-table (first tables)
-         attributes (table->map first-table :name :value)]
+         attributes (tbb/table->map first-table :name :value)]
      (e/get-element-tag @driver (assoc attributes :tag element-type)))))
 
 (defn- field-row->query [id field-row]
@@ -182,7 +170,7 @@
  (fn [{:keys [tables]}]
    (let [field-rows (-> tables
                         (first)
-                        (table->maps))]
+                        (tbb/table->maps))]
      (doseq [field-row field-rows]
        (-> (e/get-element-attr @driver [{:tag :label :fn/text (:label field-row)}] "for")
            (field-row->query field-row)
@@ -194,7 +182,7 @@
  (fn [{:keys [tables]}]
    (let [field-rows (-> tables
                         (first)
-                        (table->maps))]
+                        (tbb/table->maps))]
      (doseq [field-row field-rows]
        (-> (e/get-element-attr @driver {:tag :label :fn/text (:label field-row)} "for")
            (field-row->query field-row)
@@ -208,7 +196,7 @@
 (tbb/implement-step
  "The message contains an application/x-www-form-urlencoded encoded attachment with the following fields"
  (fn [{:keys [tables]}]
-   (let [expected (table->map (first tables) :key :value)
+   (let [expected (tbb/table->map (first tables) :key :value)
          actual   (->> @current-message
                        :body
                        (find-matching {:file-name "form-to-mail-request-body.txt"})

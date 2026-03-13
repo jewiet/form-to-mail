@@ -59,3 +59,17 @@
                                         :reason (.getMessage e)}))))))))
 
   (logging/debug "Done reading from tbb."))
+
+(defn table->maps [table]
+  ;; Each column in a table becomes a map in an array. Keys are derived from the first row.
+  (let [[header & rows] table
+        keywords        (map keyword header)]
+    (map #(zipmap keywords %) rows)))
+
+(defn table->map
+  "Takes a sequence of maps with :name and :value pairings and returns a single map"
+  [maps key-kw value-kw]
+  (let [coll   (table->maps maps)
+        ks     (map #(keyword (key-kw %)) coll)
+        values (map value-kw coll)]
+    (zipmap ks values)))
