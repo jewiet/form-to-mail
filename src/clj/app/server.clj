@@ -1,16 +1,15 @@
 (ns app.server
   (:require
    [clojure.string :as string]
+   [hiccup.page :refer [html5]]
+   [hiccup2.core :as h]
    [io.pedestal.connector :as conn]
    [io.pedestal.http.http-kit :as hk]
    [io.pedestal.interceptor :as interceptor]
    [io.pedestal.log :refer [debug info spy]]
+   [io.pedestal.service.resources :as resources]
    [postal.core :as postal]
-   [hiccup2.core :as h]
-   [clojure.java.io :as io]
-   [hiccup.page :refer [html5]]
    [ring.util.codec :refer [base64-encode]]))
-
 
 (defn- value->html [v]
   (if (vector? v)
@@ -145,17 +144,6 @@
                 :headers {"Content-Type" "text/plain"}
                 :body    "Missing required field email"}))))))
 
-(defn resource-handler
-  [request]
-  (if-let [resource-url (io/resource (str "public/" (get-in request [:path-params :resource])))]
-    (spy {:status  200
-          :headers (if (clojure.string/ends-with? resource-url ".css")
-                     {"Content-Type" "text/css"}
-                     {"Content-Type" "image/svg+xml"})
-          :body  (slurp resource-url)})
-    (spy {:status  404
-          :body  "Resource not found"})))
-
 (defn home-handler
   [_request]
   (let [html-head              [:head
@@ -226,8 +214,7 @@
      :route-name :form-submit]
     ["/confirm-submission/:submission-uuid"
      :get submission-verification
-     :route-name :submission-verification]
-    ["/resources/:resource" :get resource-handler :route-name :resource]})
+     :route-name :submission-verification]})
 
 (defn log-connector [{:keys [host port] :as connector-map}]
   (info :prose "Starting Form to Mail" :host host :port port)
@@ -257,7 +244,9 @@
         ;; our interceptor
         (conn/with-interceptor raw-body-interceptor)
         (conn/with-default-interceptors)
-        (conn/with-routes routes)
+        (conn/with-routes routes
+          (resources/resource-routes {:prefix "/resources"
+                                      :resource-root "public"}))
         (log-connector)
         (hk/create-connector nil))))
 
