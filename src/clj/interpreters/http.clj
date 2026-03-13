@@ -5,7 +5,7 @@
    [clojure.string :refer [lower-case]]
    [io.pedestal.log :refer [debug spy]]
    [org.httpkit.client :as hk-client]
-   [tbb.core :refer [implement-step ready tis]]))
+   [tbb.core :as tbb]))
 
 (defonce response (atom nil))
 
@@ -16,7 +16,7 @@
 ;; TODO: Implement "Run the app" with a default configuration to reduce spec boilerplate
 ;; TODO: Extract logic shared with web-automation interpreter to a shared module
 
-(implement-step
+(tbb/implement-step
  "Run the app with the following configuration"
  (fn [{:keys [code_blocks]}]
    (debug "server-log-file" server-log-file)
@@ -31,7 +31,7 @@
                         ;; TODO: Be smarter about waiting. Use logs.
      (Thread/sleep 5000))))
 
-(implement-step
+(tbb/implement-step
  "Make a {0} request to {1}."
  (fn [method url _]
    (debug :prose "making http request" :method method :url url)
@@ -43,27 +43,27 @@
          (#(reset! response %))
          (spy)))))
 
-(implement-step
+(tbb/implement-step
  "The response has a {0} status code."
  (fn [status _]
    (let [actual (:status @response)
          expected (read-string status)]
-     (tis = expected actual))))
+     (tbb/tis = expected actual))))
 
-(implement-step
+(tbb/implement-step
  "The response body is {0}."
  (fn [body _]
-   (tis = body (:body @response))))
+   (tbb/tis = body (:body @response))))
 
-(implement-step
+(tbb/implement-step
  "The response {0} header is {1}."
  (fn [header-name header-value _]
    (let [header-key (keyword header-name)]
-     (tis = header-value (get-in @response [:headers header-key])))))
+     (tbb/tis = header-value (get-in @response [:headers header-key])))))
 
 (defn -main []
   (debug :prose "Starting http interpreter")
-  (ready)
+  (tbb/ready)
   (debug :prose "Stopping the server.")
   (when @form-to-mail-process
     (destroy-tree @form-to-mail-process)))
