@@ -1,5 +1,5 @@
 ---
-interpreter: clj -M -m interpreters.http
+interpreter: bb spec/interpreters/http.clj
 ---
 
 

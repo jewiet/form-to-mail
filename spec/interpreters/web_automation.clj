@@ -1,16 +1,15 @@
-(ns interpreters.web-automation
+(ns web-automation
   (:require
    [babashka.fs :as fs]
    [babashka.process :as p :refer [destroy-tree process]]
    [clojure.string :as string]
    [clojure.walk :as walk]
+   [common :refer [filter-matching find-matching has-matching? map-includes?
+                   read-log-file wait-for-log]]
    [etaoin.api :as e]
-   [interpreters.common :refer [debug-spy filter-matching find-matching
-                                has-matching? map-includes? read-log-file
-                                wait-for-log]]
-   [io.pedestal.log :refer [debug info]]
    [ring.util.codec :refer [base64-decode form-decode]]
-   [tbb.core :as tbb]))
+   [taoensso.timbre :as logging]
+   [tbb]))
 
 (def current-inbox (atom nil))
 
@@ -27,7 +26,7 @@
 (tbb/implement-step
  "Run the app with the following configuration"
  (fn [{:keys [code_blocks]}]
-   (debug "server-log-file" server-log-file)
+   (logging/debug "server-log-file" server-log-file)
    (let [config (read-string (:value (first code_blocks)))
          config-file (str (fs/create-temp-file {:prefix "form-to-mail-config"
                                                 :suffix ".edn"}))]
@@ -42,7 +41,8 @@
 (tbb/implement-step
  "Serve {0} on port {1}"
  (fn [path port _]
-   (debug :serving path :port port)
+   (logging/debug "Serving" {:path path
+                             :port port})
    (reset! miniserve-process
            (process {:err :write :err-file server-log-file}
                     "miniserve --port" port path))
@@ -89,16 +89,16 @@
    (->> (read-log-file server-log-file)
         (filter-matching {:prose "sending an email" :to email-address})
         (map #(dissoc % :prose))
-        (debug-spy "Inbox from logs")
+        (logging/spy :debug "Inbox from logs")
         (reset! current-inbox))))
 
 (tbb/implement-step
  "In the inbox find the message with the subject {0}"
  (fn [subject _]
    (->> @current-inbox
-        (debug-spy "Current inbox")
+        (logging/spy :debug "Current inbox")
         (find-matching {:subject subject})
-        (debug-spy "Found message")
+        (logging/spy :debug "Found message")
         (reset! current-message)
         (tbb/tis some?))))
 
@@ -111,9 +111,9 @@
           first
           :content
           (re-find pattern)
-          (debug-spy "link")
+          (logging/spy :debug "link")
           (last)
-          (debug-spy "URL to open")
+          (logging/spy :debug "URL to open")
           (e/go @driver)))))
 
 (tbb/implement-step
@@ -141,7 +141,7 @@
        (-> (e/get-element-attr @driver [{:tag :label :fn/text (:label field-row)}] "for")
            (field-row->query field-row)
            (#(e/get-element-tag @driver %))
-           (#(debug-spy "found-field" %)))))))
+           (#(logging/spy :debug "found-field" %)))))))
 
 (tbb/implement-step
  "Enter the following input in to the corresponding fields"
@@ -189,14 +189,8 @@
 
      (tbb/tis string/includes? actual expected))))
 
-(defn get-current-namespace []
-  (-> #'get-current-namespace
-      meta
-      :ns
-      str))
-
-(defn -main []
-  (debug :prose "starting web automation")
+(defn -main [& args]
+  (logging/info "Interpreter start")
   (reset! driver (e/firefox))
   (tbb/ready)
   (e/quit @driver)
@@ -204,4 +198,7 @@
     (destroy-tree @form-to-mail-process))
   (when @miniserve-process
     (destroy-tree @miniserve-process))
-  (info :done (get-current-namespace)))
+  (logging/info "Interpreter done"))
+
+(when (= *file* (System/getProperty "babashka.file"))
+  (apply -main *command-line-args*))

@@ -1,12 +1,12 @@
-(ns interpreters.http
+(ns http
   (:require
    [babashka.fs :as fs]
    [babashka.process :refer [destroy-tree process]]
    [clojure.string :refer [lower-case]]
-   [interpreters.common :refer [wait-for-log]]
-   [io.pedestal.log :refer [debug spy]]
+   [common :refer [wait-for-log]]
    [org.httpkit.client :as hk-client]
-   [tbb.core :as tbb]))
+   [taoensso.timbre :as logging]
+   [tbb]))
 
 (defonce response (atom nil))
 
@@ -20,7 +20,7 @@
 (tbb/implement-step
  "Run the app with the following configuration"
  (fn [{:keys [code_blocks]}]
-   (debug "server-log-file" server-log-file)
+   (logging/debug "server-log-file" server-log-file)
    (let [config (read-string (:value (first code_blocks)))
          config-file (str (fs/create-temp-file {:prefix "form-to-mail-config"
                                                 :suffix ".edn"}))]
@@ -35,14 +35,14 @@
 (tbb/implement-step
  "Make a {0} request to {1}."
  (fn [method url _]
-   (debug :prose "making http request" :method method :url url)
+   (logging/debug "making http request" {:method method :url url})
    (let [method (keyword (lower-case method))]
-     (-> {:method method
-          :url url}
-         hk-client/request
-         deref
-         (#(reset! response %))
-         (spy)))))
+     (->> {:method method
+           :url url}
+          hk-client/request
+          deref
+          (reset! response)
+          (logging/spy :debug)))))
 
 (tbb/implement-step
  "The response has a {0} status code."
@@ -62,9 +62,13 @@
    (let [header-key (keyword header-name)]
      (tbb/tis = header-value (get-in @response [:headers header-key])))))
 
-(defn -main []
-  (debug :prose "Starting http interpreter")
+(defn -main [& args]
+  (logging/info "Interpreter start")
   (tbb/ready)
-  (debug :prose "Stopping the server.")
+  (logging/debug "Stopping the server.")
   (when @form-to-mail-process
-    (destroy-tree @form-to-mail-process)))
+    (destroy-tree @form-to-mail-process))
+  (logging/info "Interpreter done"))
+
+(when (= *file* (System/getProperty "babashka.file"))
+  (apply -main *command-line-args*))

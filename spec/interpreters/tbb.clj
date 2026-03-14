@@ -1,12 +1,17 @@
-(ns tbb.core
+(ns tbb
   (:require
-   [clojure.data.json :as json]
+   [cheshire.core :as json]
    [clojure.pprint :refer [pprint]]
    [clojure.string :refer [blank?]]
-   [clojure.tools.logging.readable :as logging]))
+   [taoensso.timbre :as timbre]))
 
-;; TODO: Replace logging with a simpler, more reliable solution.
-;; NOTE: Calling logging/info will almost certainly break TBB as it writes to stdout.
+(timbre/merge-config!
+ {:appenders
+  {:println (timbre/println-appender
+             {:stream *err*})}
+  :min-level (keyword (or
+                       (System/getenv "tbb_interpreter_log")
+                       "info"))})
 
 ;; TODO: Make it work with Babashka (so no dependency on JDK)
 ;; TODO: Distribute this with TBB so it can be used in other Clojure projects.
@@ -25,17 +30,17 @@
                                   (cons '~f (list ~@args)))))))
 
 (defn ready []
-  (println (json/write-str {:type "InterpreterState"
-                            :ready true}))
+  (println (json/encode {:type "InterpreterState"
+                         :ready true}))
 
   (doseq [line (line-seq (java.io.BufferedReader. *in*))]
     (when-not (blank? line)
-      (let [message       (json/read-str line :key-fn keyword)
+      (let [message       (json/parse-string line true)
             step          (:step message)
             variant       (:variant step)
             arguments     (:arguments step)
             implmentation (get @steps-implementation variant)]
-        (logging/debug "got a message from tbb" message)
+        (timbre/debug "got a message from tbb" message)
         (if (nil? implmentation)
           (let [suggestion
                 `(tbb/implement-step
@@ -44,24 +49,24 @@
                             (fn [indx _]
                               (symbol (str "arg-" indx)))
                             arguments)
-                         data]
+                         ~'data]
                         (tis ~'= "cat" "dog")))]
 
-            (logging/error "missing step implementation" variant)
-            (println (json/write-str {:type   "Failure"
-                                      :reason "Not implemented"
-                                      :hint (str "To get started put this in your interpreter:\n\n"
-                                                 "``` clojure\n"
-                                                 (with-out-str (pprint suggestion))
-                                                 "```")})))
+            (timbre/error "missing step implementation" variant)
+            (println (json/generate-string {:type   "Failure"
+                                            :reason "Not implemented"
+                                            :hint (str "To get started put this in your interpreter:\n\n"
+                                                       "``` clojure\n"
+                                                       (with-out-str (pprint suggestion))
+                                                       "```")})))
           (try
             (apply implmentation (conj arguments step))
-            (println (json/write-str {:type "Success"}))
+            (println (json/generate-string {:type "Success"}))
             (catch Throwable e
-              (println (json/write-str {:type   "Failure"
-                                        :reason (.getMessage e)}))))))))
+              (println (json/generate-string {:type   "Failure"
+                                              :reason (.getMessage e)}))))))))
 
-  (logging/debug "Done reading from tbb."))
+  (timbre/debug "Done reading from tbb."))
 
 (defn table->maps [table]
   ;; Each column in a table becomes a map in an array. Keys are derived from the first row.

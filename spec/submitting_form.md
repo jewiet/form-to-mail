@@ -1,5 +1,5 @@
 ---
-interpreter: clj -J-Dorg.slf4j.simpleLogger.defaultLogLevel=info -M -m interpreters.web-automation
+interpreter: bb spec/interpreters/web_automation.clj
 ---
 
 # Submitting Form

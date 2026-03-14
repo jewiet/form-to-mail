@@ -1,7 +1,7 @@
-(ns interpreters.common
+(ns common
   (:require
    [clojure.string :as string]
-   [io.pedestal.log :refer [debug error info]]))
+   [taoensso.timbre :as logging]))
 
 (defn read-log-file [log-file]
   (->> log-file
@@ -31,19 +31,9 @@
   [small coll]
   (not-empty (find-matching small coll)))
 
-;; Make a smart-spy that takes the level
-;; FIXME: Line number in output always points here instead of call site
-(defn info-spy [prose value]
-  (info :prose prose :value value)
-  value)
-
-(defn debug-spy [prose value]
-  (debug :prose prose :value value)
-  value)
-
 (defn wait-for-log [pattern log-file]
   (loop [iteration 0]
-    (debug :iteration iteration)
+    (logging/debug "Wait iteration" iteration)
 
     ;; Repeat until the pattern is found...
     (when-not (as-> log-file $
@@ -51,7 +41,7 @@
                 (has-matching? pattern $))
       ;; ...but no more than n times
       (when (> iteration 250)
-        (error :log-not-found pattern :logs (read-log-file log-file))
+        (logging/error "Log not found" {:pattern pattern :logs (read-log-file log-file)})
         (throw (ex-info "Timeout exceeded" {})))
 
       (Thread/sleep 100)
