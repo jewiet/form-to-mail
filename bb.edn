@@ -1,10 +1,9 @@
-{:paths
- ["src"]
-
+{:paths []
  :tasks
  {:requires
   ([clojure.edn :as edn]
-   [babashka.fs :as fs])
+   [babashka.fs :as fs]
+   [babashka.cli :as cli])
 
   app:run
   {:doc  "Run the Form to Mail locally. Optional argument is log level"
@@ -58,6 +57,35 @@
   {:doc "Serves spec/samples on :1234/"
    :task (shell "miniserve --port 1234 spec/samples")}
 
+  release
+  {:doc "Release a git tag"
+   :depends [;; TODO git:check-clean
+             spec:run
+             git:tag]
+   :task
+   ;; TODO: Ask for confirmation (confirm "About to push the new-tag")
+   (shell "git" "push" "--tags")}
+
+  git:tag
+  {:doc "Create a new tag"
+   :task (let [git-latest-tag (->>
+                               (shell {:out :string} "git" "describe" "--abbrev=0" "--tags")
+                               :out
+                               (clojure.string/trim))
+               [major minor patch] (as-> git-latest-tag $
+                                     (clojure.string/split $ (re-pattern "\\."))
+                                     (map Integer/parseInt $))
+               opts (cli/parse-args *command-line-args* {})
+               [level] (:args opts)
+               new-version (case level
+                             "major" [(inc major) 0 0]
+                             "minor" [major (inc minor) 0]
+                             "patch" [major minor (inc patch)]
+                             (throw (ex-info "The level can be one of: major, minor or patch" {})))
+               new-tag (clojure.string/join "." new-version)]
+           ;; TODO: Ask for confirmation (confirm "About to tag current commit as " new-tag)
+           (shell "git" "tag" new-tag))}
+
   spec:run
   {:doc "Evaluate the system against the specification"
-   :task (shell "tbb")}}}
+   :task (shell "tbb" "evaluate" "--only" "scenario:covered")}}}
