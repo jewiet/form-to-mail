@@ -17,10 +17,6 @@
             "app.core"
             config-file))}
 
-  rebel:run
-  {:doc "Run rebl repl"
-   :task (clojure "-Xrebel")}
-
   uberjar:build
   {:doc  "Package the app in an uberjar"
    :task (do
