@@ -85,6 +85,21 @@
 
                   # customJdk.enable = true;
                 };
+
+                website = pkgs.stdenv.mkDerivation {
+                  name = "website";
+                  src = ./.;
+                  buildInputs = [ pkgs.babashka ];
+                  buildPhase = ''
+                    echo "Building the website..."
+                    bb www:build public
+                  '';
+                  installPhase = ''
+                    echo "Installing the website..."
+                    mkdir --parents $out
+                    cp --recursive public $out/www
+                  '';
+                };
               });
       };
 }

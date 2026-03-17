@@ -21,7 +21,9 @@
 
   www:build
   {:doc "Build the project website"
-   :task (www/build "public" www/website)}
+   :requires [mmm]
+   :task (let [out-path (first *command-line-args*)]
+          (mmm/build out-path www/website))}
 
   uberjar:build
   {:doc  "Package the app in an uberjar"
