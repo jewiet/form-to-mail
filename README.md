@@ -1,6 +1,6 @@
 # Form to Mail
 
-Form to Mail is a lightweight web service that sends data submitted from a standard HTML form as an email via any SMTP server. It's designed to work with static websites and easy to self-host.
+Form to Mail is a lightweight web service that sends data submitted from a standard HTML form as an email via any SMTP server. It's designed to work with static websites and for easy self-hosting.
 
 
 ## Try it out on your laptop
@@ -85,14 +85,14 @@ Currently it's distributed as a single uberjar or a Nix flake. You can chose the
 
 #### The uberjar method:
 
-An uberjar is a Java archive that contains a program and all it's dependencies. All you need is a working Java runtime environment (JRE).
+An uberjar is a Java archive that contains a program and all its dependencies. All you need is a working Java runtime environment (JRE).
    
-[Download the jar file](https://github.com/jewiet/form-to-mail/releases) and execute the following command in your terminal:    
-   
+[Download the jar file](https://github.com/jewiet/form-to-mail/releases) and execute the following command in your terminal:
+
 ``` shell
 java -jar form-to-mail.x.x.x.jar form-to-mail.edn
 ```
-   
+
 
 #### The Nix method
 
