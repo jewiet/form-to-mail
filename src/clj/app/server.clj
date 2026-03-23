@@ -197,7 +197,7 @@
                                 [:h3 "Get in touch"]
                                 [:form {:method "POST" :action "https://formtomail.eu/submit/1234"}
                                  [:label {:for "email"} "Your email"]
-                                 [:input {:type "email" :name "email" :id "email" :placeholder "For sending you a confirmation link." :required true}]
+                                 [:input {:type "email" :name "email" :id "email" :placeholder "Enter your email address" :required true}]
                                  [:label {:for "message"} "Your message"]
                                  [:textarea {:name "message" :id "message" :placeholder "If you write a nice message, I will reply back."}]
                                  [:button {:type "submit"} "Send"]]]
