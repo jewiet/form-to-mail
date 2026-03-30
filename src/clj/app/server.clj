@@ -1,7 +1,6 @@
 (ns app.server
   (:require
    [clojure.string :as string]
-   [hiccup.page :refer [html5]]
    [hiccup2.core :as h]
    [io.pedestal.connector :as conn]
    [io.pedestal.http.http-kit :as hk]
@@ -144,72 +143,8 @@
                 :headers {"Content-Type" "text/plain"}
                 :body    "Missing required field email"}))))))
 
-(defn home-handler
-  [_request]
-  (let [html-head              [:head
-                                [:meta {:name "viewport" :content "width=device-width, initial-scale=1"}]
-                                [:link {:type "text/css", :href "/resources/pico.min.css", :rel "stylesheet"}]
-                                [:link {:type "text/css", :href "/resources/style.css", :rel "stylesheet"}]]
-        html-header            [:header.container
-                                [:hgroup
-                                 [:h1 "Form to Mail"]
-                                 [:p "Web forms for static websites"]]]
-        intro-section          [:section#intro
-                                [:p "Form to Mail is a lightweight web service that sends data submitted from a standard HTML form as an email via any SMTP server. The service verifies sender's email address before delivering the form. It works with standard HTML forms and it's easy to self host."]]
-        features-section       [:section#features.grid
-                                [:div
-                                 [:img.icon {:src "/resources/streamline-emojis--wrench.svg"}]
-                                 [:p
-                                  "Standard HTML forms"
-                                  [:small "without JavaScript or other bullshit"]]]
-                                [:div
-                                 [:img.icon {:src "/resources/streamline-emojis--open-mailbox-with-raised-flag.svg"}]
-                                 [:p
-                                  "Verifies sender's address"
-                                  [:small "before delivering you a form"]]]
-                                [:div
-                                 [:img.icon {:src "/resources/streamline-emojis--house-with-garden.svg"}]
-                                 [:p
-                                  "Delightful to self-host"
-                                  [:small "with " [:code "java -jar"] " or a NixOS module"]]]]
-        call-to-action-section [:section#call-to-action.grid
-                                [:a {:href   "https://github.com/jewiet/form-to-mail/releases"
-                                     :target "_blank"
-                                     :role   "button"}
-                                 "Download"]
-                                [:a {:href   "https://github.com/jewiet/form-to-mail/"
-                                     :target "_blank"
-                                     :role   "button"
-                                     :class  "outline"}
-                                 "More info"]]
-        contact-section        [:section#contact
-                                [:h3 "Get in touch"]
-                                [:form {:method "POST" :action "https://formtomail.eu/submit/1234"}
-                                 [:label {:for "email"} "Your email"]
-                                 [:input {:type "email" :name "email" :id "email" :placeholder "Enter your email address" :required true}]
-                                 [:label {:for "message"} "Your message"]
-                                 [:textarea {:name "message" :id "message" :placeholder "If you write a nice message, I will reply back."}]
-                                 [:button {:type "submit"} "Send"]]]
-        html-main              [:main {:class "container"}
-                                intro-section
-                                features-section
-                                call-to-action-section
-                                contact-section]
-        html-body              [:body
-                                html-header
-                                html-main]
-        body                   (str (html5
-                                     html-head
-                                     html-body))]
-    (spy {:status  200
-          :headers {"Content-Type" "text/html"}
-          :body    body})))
-
 (def routes
-  #{["/"
-     :get home-handler
-     :route-name :home]
-    ["/submit/:receiver-id"
+  #{["/submit/:receiver-id"
      :post form-handler
      :route-name :form-submit]
     ["/confirm-submission/:submission-uuid"
