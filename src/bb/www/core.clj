@@ -42,7 +42,7 @@
                                  "More info"]]
         contact-section        [:section#contact
                                 [:h3 "Get in touch"]
-                                [:form {:method "POST" :action "https://formtomail.eu/submit/1234"}
+                                [:form {:method "POST" :action "https://use.formtomail.eu/submit/1234"}
                                  [:label {:for "email"} "Email"]
                                  [:input {:type "email" :name "email" :id "email" :placeholder "Email" :required true}]
                                  [:label {:for "message"} "Your message"]
