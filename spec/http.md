@@ -31,8 +31,8 @@ tags:
 
   `http GET :8080/`
 
-- The response has a `200` status code.
-- The response `content-type` header is `text/html`.
+- The response has a `404` status code.
+- The response `content-type` header is `text/plain`.
 
 
 ## Form submission without email
