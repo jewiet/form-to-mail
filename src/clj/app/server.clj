@@ -4,6 +4,7 @@
    [clojure.string :as string]
    [hiccup2.core :as h]
    [io.pedestal.connector :as conn]
+   [io.pedestal.environment :refer [dev-mode?]]
    [io.pedestal.http.http-kit :as hk]
    [io.pedestal.interceptor :as interceptor]
    [io.pedestal.log :refer [debug info spy]]
@@ -81,7 +82,10 @@
                        :file-name "form-to-mail-request-body.txt"
                        :content-type "application/x-www-form-urlencoded"
                        :content (.getBytes raw)}])
-          (swap! submissions dissoc submission-uuid)
+          (when-not dev-mode?
+            ;; In production prevent the submission from being delivered multiple times
+            ;; In development keep it, so we can iterate quickly
+            (swap! submissions dissoc submission-uuid))
 
           ;; TODO: Simplify this hack
           (eval `(info ~@(flatten (into [] submission))))
