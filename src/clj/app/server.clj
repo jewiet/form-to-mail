@@ -90,9 +90,9 @@
           ;; TODO: Simplify this hack
           (eval `(info ~@(flatten (into [] submission))))
           (spy {:status  200
-                :headers {"Content-Type" "text/plain",
-                          "Refresh" (str "5, url=" (:return-url receiver))}
-                :body    "Thank you for confirmation. Your form is delivered."}))
+                :headers {"Content-Type" "text/html",
+                          "Refresh" (str "10, url=" (:return-url receiver))}
+                :body    (templates/confirmation (select-keys receiver [:receiver-name :return-url]))}))
         (spy {:status  404
               :headers {"Content-Type" "text/plain"}
               :body    "Submission not found"})))
