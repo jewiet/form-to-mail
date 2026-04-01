@@ -180,7 +180,7 @@
         (conn/with-interceptor raw-body-interceptor)
         (conn/with-default-interceptors)
         (conn/with-routes routes
-          (resources/resource-routes {:prefix "/resources"
+          (resources/resource-routes {:prefix "/"
                                       :resource-root "public"}))
         (log-connector)
         (hk/create-connector nil))))
