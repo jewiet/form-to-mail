@@ -1,5 +1,6 @@
 (ns app.server
   (:require
+   [app.templates :as templates]
    [clojure.string :as string]
    [hiccup2.core :as h]
    [io.pedestal.connector :as conn]
@@ -135,8 +136,8 @@
                                                 [:a {:href confirmation-url :class "call-to-action"} "Confirm your submission"]
                                                 [:p "If you haven't filled the form please ignore this email."]]]]))}])
           (spy {:status  200
-                :headers {"Content-Type" "text/plain"}
-                :body    (str "Thank you for sending the form. We have sent you an email with confirmation link to " email)}))
+                :headers {"Content-Type" "text/html"}
+                :body    (templates/submission email)}))
         (do
           (info :prose "Missing required field" :field "email")
           (spy {:status  422

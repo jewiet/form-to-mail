@@ -32,3 +32,23 @@ nav hgroup {
         }
     }
 }
+
+html.submission {
+    header {
+        display: flex;
+        flex-direction: column;
+
+        #main-logo {
+            height: 8rem;
+            margin: 2rem;
+        }
+
+        hgroup {
+            text-align: center;
+        }
+    }
+
+    .container {
+        max-width: 30rem;
+    }
+}
