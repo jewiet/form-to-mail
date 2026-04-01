@@ -6,8 +6,8 @@
 (def index-html
   (let [html-head              [:head
                                 [:meta {:name "viewport" :content "width=device-width, initial-scale=1"}]
-                                [:link {:type "text/css", :href "/resources/pico.min.css", :rel "stylesheet"}]
-                                [:link {:type "text/css", :href "/resources/style.css", :rel "stylesheet"}]]
+                                [:link {:type "text/css", :href "/pico.min.css", :rel "stylesheet"}]
+                                [:link {:type "text/css", :href "/style.css", :rel "stylesheet"}]]
         html-header            [:header.container
                                 [:hgroup
                                  [:h1 "Form to Mail"]
@@ -16,17 +16,17 @@
                                 [:p "Form to Mail is a lightweight web service that sends data submitted from a standard HTML form as an email via any SMTP server. The service verifies sender's email address before delivering the form. It works with standard HTML forms and it's easy to self host."]]
         features-section       [:section#features.grid
                                 [:div
-                                 [:img.icon {:src "/resources/streamline-emojis--wrench.svg"}]
+                                 [:img.icon {:src "/streamline-emojis--wrench.svg"}]
                                  [:p
                                   "Standard HTML forms"
                                   [:small "without JavaScript or other bullshit"]]]
                                 [:div
-                                 [:img.icon {:src "/resources/streamline-emojis--open-mailbox-with-raised-flag.svg"}]
+                                 [:img.icon {:src "/streamline-emojis--open-mailbox-with-raised-flag.svg"}]
                                  [:p
                                   "Verifies sender's address"
                                   [:small "before delivering you a form"]]]
                                 [:div
-                                 [:img.icon {:src "/resources/streamline-emojis--house-with-garden.svg"}]
+                                 [:img.icon {:src "/streamline-emojis--house-with-garden.svg"}]
                                  [:p
                                   "Delightful to self-host"
                                   [:small "with " [:code "java -jar"] " or a NixOS module"]]]]
@@ -73,4 +73,4 @@
 
    A map will be populated recursively."
   {"index.html" index-html
-   "resources" (fs/path "resources/public/")})
+   "." (fs/path "resources/public/")})
