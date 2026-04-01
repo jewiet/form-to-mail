@@ -73,7 +73,7 @@
         (do
           (debug :prose "found submission" :submission submission)
           (send-mail (:email parsed)
-                     receiver
+                     (:email-addresses receiver)
                      "Form to Mail message"
                      ;; Use a templating library
                      [{:type "text/html"
@@ -90,7 +90,8 @@
           ;; TODO: Simplify this hack
           (eval `(info ~@(flatten (into [] submission))))
           (spy {:status  200
-                :headers {"Content-Type" "text/plain"}
+                :headers {"Content-Type" "text/plain",
+                          "Refresh" (str "5, url=" (:return-url receiver))}
                 :body    "Thank you for confirmation. Your form is delivered."}))
         (spy {:status  404
               :headers {"Content-Type" "text/plain"}
