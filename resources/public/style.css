@@ -1,3 +1,11 @@
+#logo > img {
+    height: 6rem;
+}
+
+nav hgroup {
+    margin: 0;
+}
+
 .icon {
     margin-right: 0.5em;
     width: 3em;

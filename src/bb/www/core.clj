@@ -9,9 +9,14 @@
                                 [:link {:type "text/css", :href "/pico.min.css", :rel "stylesheet"}]
                                 [:link {:type "text/css", :href "/style.css", :rel "stylesheet"}]]
         html-header            [:header.container
-                                [:hgroup
-                                 [:h1 "Form to Mail"]
-                                 [:p "Web forms for static websites"]]]
+                                [:nav
+                                 [:ul
+                                  [:li#logo
+                                   [:img {:src "/logo.svg" :alt "Form to Mail logo"}]]
+                                  [:li
+                                   [:hgroup
+                                    [:h1 "Form to Mail"]
+                                    [:p "Web forms for static websites"]]]]]]
         intro-section          [:section#intro
                                 [:p "Form to Mail is a lightweight web service that sends data submitted from a standard HTML form as an email via any SMTP server. The service verifies sender's email address before delivering the form. It works with standard HTML forms and it's easy to self host."]]
         features-section       [:section#features.grid
