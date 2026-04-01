@@ -48,6 +48,9 @@
                         clj-nix-pkgs.deps-lock
                         miniserve
                       ];
+                      env = {
+                        PEDESTAL_DEV_MODE = "true";
+                      };
                     }
                   ];
                 };
