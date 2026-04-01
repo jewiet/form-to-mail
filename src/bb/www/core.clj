@@ -48,10 +48,10 @@
         contact-section        [:section#contact
                                 [:h3 "Get in touch"]
                                 [:form {:method "POST" :action "https://use.formtomail.eu/submit/1234"}
-                                 [:label {:for "email"} "Email"]
-                                 [:input {:type "email" :name "email" :id "email" :placeholder "Email" :required true}]
+                                 [:label {:for "email"} "Your email address"]
+                                 [:input {:type "email" :name "email" :id "email" :placeholder "me@example.com" :required true}]
                                  [:label {:for "message"} "Your message"]
-                                 [:textarea {:name "message" :id "message" :placeholder "Your messsage"}]
+                                 [:textarea {:name "message" :id "message" :placeholder "If you write something nice I might respond to you..."}]
                                  [:button {:type "submit"} "Send"]]]
         html-main              [:main {:class "container"}
                                 intro-section
