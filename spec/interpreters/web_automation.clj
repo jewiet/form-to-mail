@@ -53,6 +53,7 @@
  (fn [url _]
    (e/go @driver url)
    (e/wait-visible @driver [{:tag :body}])))
+
 (tbb/implement-step
  "Type {0} in the {1} field"
  (fn [user-input field-label _]
@@ -79,6 +80,11 @@
    (tbb/tis = message (e/get-element-text @driver {:tag :body}))))
 
 (tbb/implement-step
+ "The webpage contains {0}"
+ (fn [message _]
+   (string/includes? (e/get-element-text @driver {:tag :body}) message)))
+
+(tbb/implement-step
  "Click {0} radio button"
  (fn [field-label _]
    (e/click @driver [{:tag :label :fn/text field-label}])))
@@ -86,11 +92,16 @@
 (tbb/implement-step
  "Open the inbox of {0}"
  (fn [email-address _]
+   (tbb/send-link server-log-file, "Server logs")
    (->> (read-log-file server-log-file)
-        (filter-matching {:prose "sending an email" :to email-address})
+        (filter-matching {:prose "sending an email"})
+        (tbb/send-text)
+        (filter #(some #{email-address} (:to %)))
         (map #(dissoc % :prose))
-        (logging/spy :debug "Inbox from logs")
-        (reset! current-inbox))))
+        (tbb/send-text)
+
+        (reset! current-inbox))
+   (tbb/send-text @current-inbox)))
 
 (tbb/implement-step
  "In the inbox find the message with the subject {0}"

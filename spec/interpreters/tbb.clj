@@ -68,6 +68,23 @@
 
   (timbre/debug "Done reading from tbb."))
 
+(defn send-text [text]
+  (println (json/generate-string {:type   "Text"
+                                  :content (pr-str text)}))
+  text)
+
+(defn send-link
+  ([url]
+   (println (json/generate-string {:type "Link"
+                                   :url  (str url)}))
+   url)
+
+  ([url label]
+   (println (json/generate-string {:type  "Link"
+                                   :url   (str url)
+                                   :label label}))
+   url))
+
 (defn table->maps [table]
   ;; Each column in a table becomes a map in an array. Keys are derived from the first row.
   (let [[header & rows] table

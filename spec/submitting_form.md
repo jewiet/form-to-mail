@@ -19,11 +19,13 @@ tags: [proof-of-concept, covered]
 
   ``` clojure
   {:from-address   "form-to-mail@localhost"
-   :base-url       "http://localhost:8080"
+   :base-url       "http://localhost:8090"
    :listen-address "127.0.0.1"
-   :listen-port    8080
+   :listen-port    8090
    :receivers
-    {"1234" "publisher-one@example.com"}}
+    {"1234" {:receiver-name "Publisher One"
+             :email-addresses ["publisher-one@example.com"]
+             :return-url "http://localhost:1234/thank-you"}}}
   ```
  
 * Serve `spec/samples` on port `1234`
@@ -36,7 +38,7 @@ tags: [proof-of-concept, covered]
   | name   | value                             |
   |--------|-----------------------------------|
   | method | POST                              |
-  | action | http://localhost:8080/submit/1234 |
+  | action | http://localhost:8090/submit/1234 |
 
 * There are the following fields 
 
@@ -55,7 +57,7 @@ tags: [proof-of-concept, covered]
 * Open the inbox of `user-one@example.com`
 * In the inbox find the message with the subject `Form to Mail confirmation`
 * In the message open the link labeled `Confirm your submission`
-* There is a message `Thank you for confirmation. Your form is delivered.`
+* The webpage contains `Before we deliver your form we need to confirm your email address.` 
 * Open the inbox of `publisher-one@example.com`
 * In the inbox find the message with the subject `Form to Mail message`
 * The message has reply-to header `user-one@example.com`
@@ -89,10 +91,12 @@ This scenario simulates a complex form with many different inputs. It's a fictio
 
   ``` clojure
   {:from-address   "form-to-mail@localhost"
-   :base-url       "http://localhost:8080"
+   :base-url       "http://localhost:8090"
    :listen-address "127.0.0.1"
-   :listen-port    8080
-   :receivers      {"2345" "publisher-two@example.com"}}
+   :listen-port    8090
+   :receivers      {"2345" {:receiver-name "Publisher Two"
+                            :email-addresses ["publisher-two@example.com"]
+                            :return-url "http://localhost:1234/thank-you"}}}
   ```
 
 * Serve `spec/samples` on port `1234` 
@@ -103,7 +107,7 @@ This scenario simulates a complex form with many different inputs. It's a fictio
   | name   | value                             |
   |--------|-----------------------------------|
   | method | POST                              |
-  | action | http://localhost:8080/submit/2345 |
+  | action | http://localhost:8090/submit/2345 |
 
 
 * There are the following fields
@@ -143,7 +147,7 @@ This scenario simulates a complex form with many different inputs. It's a fictio
 * Open the inbox of `szara@muchu.com`
 * In the inbox find the message with the subject `Form to Mail confirmation`
 * In the message open the link labeled `Confirm your submission`
-* There is a message `Thank you for confirmation. Your form is delivered.`
+* The webpage contains `Before we deliver your form we need to confirm your email address.`
 * Open the inbox of `publisher-two@example.com`
 * In the inbox find the message with the subject `Form to Mail message`
 * The message has reply-to header `szara@muchu.com`
@@ -185,11 +189,13 @@ The email field is the only required field. Submission without email should be r
 
   ``` clojure
   {:from-address   "form-to-mail@localhost"
-   :base-url       "http://localhost:8080"
+   :base-url       "http://localhost:8090"
    :listen-address "127.0.0.1"
-   :listen-port    8080
+   :listen-port    8090
    :receivers
-    {"1234" "publisher-one@example.com"}}
+    {"1234" {:receiver-name "Publisher One"
+             :email-addresses ["publisher-one@example.com"]
+             :return-url "http://localhost:1234/thank-you"}}}
   
   ```
 
@@ -201,7 +207,7 @@ The email field is the only required field. Submission without email should be r
   | name   | value                             |
   |--------|-----------------------------------|
   | method | POST                              |
-  | action | http://localhost:8080/submit/1234 |
+  | action | http://localhost:8090/submit/1234 |
 
 * There are the following fields 
 
@@ -230,15 +236,16 @@ In this scenario we prove that submission won't be verified unless sender knows 
 
   ``` clojure
   {:from-address   "form-to-mail@localhost"
-   :base-url       "http://localhost:8080"
+   :base-url       "http://localhost:8090"
    :listen-address "127.0.0.1"
-   :listen-port    8080
+   :listen-port    8090
    :receivers
-    {"1234" "publisher-one@example.com"}}
-  
+    {"1234" {:receiver-name "Publisher One"
+             :email-addresses ["publisher-one@example.com"]
+             :return-url "http://localhost:1234/thank-you"}}}
   ```
 
-* Navigate to `http://localhost:8080/confirm-submission/8a9de9a5-21a7-4e0a-9cc1-754c0d03abdd`
+* Navigate to `http://localhost:8090/confirm-submission/8a9de9a5-21a7-4e0a-9cc1-754c0d03abdd`
 
   The UUID is intentionally wrong.
   
@@ -259,15 +266,16 @@ In this scenario we prove that submission won't be verified unless sender knows 
 
   ``` clojure
   {:from-address   "form-to-mail@localhost"
-   :base-url       "http://localhost:8080"
+   :base-url       "http://localhost:8090"
    :listen-address "127.0.0.1"
-   :listen-port    8080
+   :listen-port    8090
    :receivers
-    {"1234" "publisher-one@example.com"}}
-  
+    {"1234" {:receiver-name "Publisher One"
+             :email-addresses ["publisher-one@example.com"]
+             :return-url "http://localhost:1234/thank-you"}}}
   ```
 
-* Navigate to `http://localhost:8080/confirm-submission/bla-bla`
+* Navigate to `http://localhost:8090/confirm-submission/bla-bla`
 
   The UUID is intentionally invalid.
   

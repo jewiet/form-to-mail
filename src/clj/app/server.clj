@@ -49,20 +49,22 @@
   to."
 
   [reply-to to subject body]
-  (if-let [smtp-config (:smtp-server @configuration)]
-    (postal/send-message smtp-config
-                         {:from     (:from-address @configuration)
-                          :reply-to reply-to
-                          :to       to
-                          :subject  subject
-                          :body     body})
-    ;; TODO: DRY
-    (info :prose "sending an email"
-          :from (:from-address @configuration)
-          :to to
-          :reply-to reply-to
-          :subject subject
-          :body (encode-body-parts body))))
+  ;; Normalize to address to always be a vector
+  (let [to (if (vector? to) to [to])]
+    (if-let [smtp-config (:smtp-server @configuration)]
+      (postal/send-message smtp-config
+                           {:from     (:from-address @configuration)
+                            :reply-to reply-to
+                            :to       to
+                            :subject  subject
+                            :body     body})
+      ;; TODO: DRY
+      (info :prose "sending an email"
+            :from (:from-address @configuration)
+            :to to
+            :reply-to reply-to
+            :subject subject
+            :body (encode-body-parts body)))))
 
 (defn submission-verification [{:keys [path-params]}]
   (debug :prose "verifying submission" :submissions @submissions)
@@ -157,8 +159,7 @@
      :get submission-verification
      :route-name :submission-verification]})
 
-(defn log-connector [{:keys [host port] :as connector-map}]
-  (info :prose "Starting Form to Mail" :host host :port port)
+(defn log-connector [connector-map]
   connector-map)
 
 (def raw-body-interceptor
@@ -197,7 +198,8 @@
 (defn start [config]
   (reset! configuration config)
   (reset! *connector
-          (conn/start! (create-connector))))
+          (conn/start! (create-connector)))
+  (info :prose "Starting Form to Mail" :config (select-keys config [:listen-port :listen-address])))
 
 (defn stop []
   (conn/stop! @*connector)

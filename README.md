@@ -40,7 +40,9 @@ Create a file called `form-to-mail.edn` with the following content.
  :listen-address "127.0.0.1"
  :base-url       "http://localhost:8080"
  :listen-port    8080
- :receivers      {"1234" "alice@example.com"}}
+ :receivers      {"1234" {:receiver-name "Alice"
+                          :email-addresses ["alice@example.com"]
+                          :return-url "https://alice-wonderland/thank-you"}}}
 ```
 
 Notice that you can have multiple receivers. The key `"1234"` is an identifier. You can type there whatever you want as long as it's unique. 
