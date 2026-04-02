@@ -1,5 +1,6 @@
 (ns app.templates
   (:require
+   [clojure.java.io :as io]
    [hiccup2.core :as hiccup]))
 
 (defn submission [email]
@@ -56,3 +57,19 @@
                        html-head
                        html-body]))))
 
+(defn confirmation-email-html [confirmation-url]
+  [{:type "text/html"
+    :content (str (hiccup/html [:html
+                                [:head
+                                 [:style (slurp (io/resource "public/mail.css"))]]
+                                [:body
+                                 [:div#logo (hiccup/raw (slurp (io/resource "public/logo.svg")))]
+                                 [:h1 "Form to Mail"]
+                                 [:p [:strong "confirmation"]]
+                                 [:p
+                                  "Thank you for submitting the form via "
+                                  [:a {:href "https://formtomail.eu/"} "Form to Mail"]
+                                  ". Before we deliver your form we need to confirm your email address. Please click below."]
+                                 [:p
+                                  [:a {:href confirmation-url :class "call-to-action"} "Confirm your submission"]
+                                  [:p "If you haven't filled the form please ignore this email."]]]]))}])

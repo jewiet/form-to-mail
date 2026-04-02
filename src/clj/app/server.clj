@@ -123,25 +123,7 @@
           (send-mail nil
                      email
                      "Form to Mail confirmation"
-                     [{:type "text/html"
-                       :content (str (h/html [:html
-                                              [:head
-                                               [:style ".call-to-action {
-                                                            background: darkblue;
-                                                            padding: 0.5em 1em;
-                                                            border-radius: 1em;
-                                                            color: white;
-                                                            font-weight: bold;
-                                                            text-decoration: none;
-                                                        }"]]
-                                              [:body
-                                               [:p
-                                                "Thank you for submitting the form at "
-                                                [:a {:href "https://formtomail.eu/"} "Form to Mail"]
-                                                ". Before we deliver your form we need to confirm your email address. Please click below."]
-                                               [:p
-                                                [:a {:href confirmation-url :class "call-to-action"} "Confirm your submission"]
-                                                [:p "If you haven't filled the form please ignore this email."]]]]))}])
+                     (templates/confirmation-email-html confirmation-url))
           (spy {:status  200
                 :headers {"Content-Type" "text/html"}
                 :body    (templates/submission email)}))

@@ -1,0 +1,21 @@
+body {
+    font-family: sans-serif;
+    text-align: center;
+}
+
+
+#logo svg {
+    height: 6em; 
+    width: 6em; 
+}
+
+.call-to-action {
+	border-radius: 0.4em;
+	background-color: rgb(1, 114, 173);
+	padding: 1em 4em;
+	font-weight: bold;
+	margin: 1em 0em;
+	color: white;
+	display: inline-block;
+	text-decoration: none;
+}
