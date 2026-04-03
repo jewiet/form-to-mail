@@ -78,7 +78,7 @@
                                  [:p "Web forms for static websites"]]]
         html-main              [:main {:class "container"}
                                 [:p
-                                 "Thank you for submitting the form. "]]
+                                 "Thank you for submitting the form. We will geet back to you as soon as possible."]]
 
         html-body              [:body
                                 html-header
