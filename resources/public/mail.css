@@ -19,3 +19,9 @@ body {
 	display: inline-block;
 	text-decoration: none;
 }
+
+dl {
+    max-width: 30rem;
+    margin: auto;
+    text-align: left;
+}
