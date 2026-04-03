@@ -47,6 +47,7 @@
                         tad-better-behavior.packages.${system}.default
                         clj-nix-pkgs.deps-lock
                         miniserve
+                        mailpit
                       ];
                       env = {
                         PEDESTAL_DEV_MODE = "true";
