@@ -12,21 +12,6 @@
    [postal.core :as postal]
    [ring.util.codec :refer [base64-encode]]))
 
-(defn- value->html [v]
-  (if (vector? v)
-    (map value->html v)
-    [:dd v]))
-
-(defn form->html [form]
-  (str (h/html [:html
-                [:head]
-                [:body
-                 [:p "Contents of the form submitted"]
-                 [:dl (map (fn [[k v]]
-                             (list [:dt (name k)]
-                                   (value->html v)))
-                           form)]]])))
-
 (defonce configuration (atom nil))
 
 (defonce submissions (atom {}))
@@ -78,12 +63,7 @@
                      (:email-addresses receiver)
                      "Form to Mail message"
                      ;; Use a templating library
-                     [{:type "text/html"
-                       :content (form->html parsed)}
-                      {:type :attachment
-                       :file-name "form-to-mail-request-body.txt"
-                       :content-type "application/x-www-form-urlencoded"
-                       :content (.getBytes raw)}])
+                     (templates/delivery-email-html parsed raw))
           (when-not dev-mode?
             ;; In production prevent the submission from being delivered multiple times
             ;; In development keep it, so we can iterate quickly
