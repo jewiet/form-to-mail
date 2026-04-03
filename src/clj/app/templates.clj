@@ -77,10 +77,10 @@
 (defn- value->html [v]
   (if (vector? v)
     (map value->html v)
-    [:dd v]))
+    [:li v]))
 
 (defn delivery-email-html [parsed raw]
-  [{:type "text/html"
+  [{:type    "text/html"
     :content (str (hiccup/html [:html
                                 [:head
                                  [:style (slurp (io/resource "public/mail.css"))]]
@@ -89,11 +89,15 @@
                                  [:h1 "Form to Mail"]
                                  [:p [:strong "Form delivery"]]
                                  [:p "Contents of the form submitted"]
-                                 [:dl (map (fn [[k v]]
-                                             (list [:dt (name k)]
-                                                   (value->html v)))
-                                           parsed)]]]))}
-   {:type :attachment
-    :file-name "form-to-mail-request-body.txt"
+                                 [:table
+                                  [:tbody
+                                   (map (fn [[k v]]
+                                          [:tr
+                                           (list [:th {:scope "row"} (name k)]
+                                                 [:td [:ul (value->html v)]])])
+                                        parsed)]]]]))}
+
+   {:type         :attachment
+    :file-name    "form-to-mail-request-body.txt"
     :content-type "application/x-www-form-urlencoded"
-    :content (.getBytes raw)}])
+    :content      (.getBytes raw)}])
