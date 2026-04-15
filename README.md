@@ -110,7 +110,7 @@ nix run github:jewiet/form-to-mail -- form-to-mail.edn
 Enter bob@example.com in the email field and write something nice in the message input. Submit the form. You should see a page prompting you to confirm your email address. 
 
 
-### Step 7. Confirm Bob's eamil
+### Step 7. Confirm Bob's email
 
 Check the inbox of Bob (the sender) for a confirmation email with a link. Follow the link. There should be a page confirming the form being delivered.
  
