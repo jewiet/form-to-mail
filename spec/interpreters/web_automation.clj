@@ -3,17 +3,11 @@
    [babashka.fs :as fs]
    [babashka.process :as p :refer [destroy-tree process]]
    [clojure.string :as string]
-   [clojure.walk :as walk]
-   [common :refer [filter-matching find-matching has-matching? map-includes?
-                   read-log-file wait-for-log]]
+   [common :refer [has-matching? read-log-file wait-for-log]]
    [etaoin.api :as e]
-   [ring.util.codec :refer [base64-decode form-decode]]
+   [etaoin.keys :as k]
    [taoensso.timbre :as logging]
    [tbb]))
-
-(def current-inbox (atom nil))
-
-(def current-message (atom nil))
 
 (def driver (atom nil))
 
@@ -22,6 +16,8 @@
 (def form-to-mail-process (atom nil))
 
 (def miniserve-process (atom nil))
+
+(def mailpit-process (atom nil))
 
 (tbb/implement-step
  "Run the app with the following configuration"
@@ -47,6 +43,14 @@
            (process {:err :write :err-file server-log-file}
                     "miniserve --port" port path))
    (Thread/sleep 1000)))
+
+(tbb/implement-step
+ "Run Mailpit"
+ (fn [_]
+   (logging/debug "Starting mailpit")
+   (reset! mailpit-process
+           (process {:err :write :err-file server-log-file}
+                    "mailpit"))))
 
 (tbb/implement-step
  "Navigate to {0}"
@@ -92,40 +96,26 @@
 (tbb/implement-step
  "Open the inbox of {0}"
  (fn [email-address _]
-   (tbb/send-link server-log-file, "Server logs")
-   (->> (read-log-file server-log-file)
-        (filter-matching {:prose "sending an email"})
-        (tbb/send-text)
-        (filter #(some #{email-address} (:to %)))
-        (map #(dissoc % :prose))
-        (tbb/send-text)
-
-        (reset! current-inbox))
-   (tbb/send-text @current-inbox)))
+   (e/fill @driver {:tag :input :placeholder "Search mailbox"} (str "to:" email-address) k/enter)
+   (e/wait @driver 10)
+   (e/click @driver
+            [{:tag :div :id :message-page}
+             {:tag :div :class "list-group my-2"} {:tag :a}])))
 
 (tbb/implement-step
  "In the inbox find the message with the subject {0}"
  (fn [subject _]
-   (->> @current-inbox
-        (logging/spy :debug "Current inbox")
-        (find-matching {:subject subject})
-        (logging/spy :debug "Found message")
-        (reset! current-message)
-        (tbb/tis some?))))
+   (tbb/tis =
+            subject
+            (e/get-element-inner-html @driver [{:tag :table :class "messageHeaders"} {:tag :strong :class "text-spaces"}]))))
 
 (tbb/implement-step
  "In the message open the link labeled {0}"
  (fn [label _]
-   (let [pattern (re-pattern (str "<a\\s+.*href\\s*=\\s*[\"'](.+)[\"'].*>" label "</a>"))]
-     (->> @current-message
-          :body
-          first
-          :content
-          (re-find pattern)
-          (logging/spy :debug "link")
-          (last)
-          (logging/spy :debug "URL to open")
-          (e/go @driver)))))
+   (e/switch-frame @driver {:id :preview-html})
+   (e/click @driver {:tag :a :class :call-to-action :fn/text label})
+   (e/switch-frame-top @driver)
+   (e/go @driver "http://localhost:8025/")))
 
 (tbb/implement-step
  "There is a {0} element with the following properties"
@@ -168,22 +158,17 @@
 (tbb/implement-step
  "The message has reply-to header {0}"
  (fn [relpy-to _]
-   (tbb/tis = (:reply-to @current-message) relpy-to)))
+   (tbb/tis =
+            relpy-to
+            (e/get-element-inner-html @driver [{:tag :table :class "messageHeaders"}
+                                               {:tag :a :class "text-body-secondary"}]))))
 
 (tbb/implement-step
  "The message contains an application/x-www-form-urlencoded encoded attachment with the following fields"
  (fn [{:keys [tables]}]
-   (let [expected (tbb/table->map (first tables) :key :value)
-         actual   (->> @current-message
-                       :body
-                       (find-matching {:file-name "form-to-mail-request-body.txt"})
-                       :content
-                       base64-decode
-                       String.
-                       form-decode
-                       walk/keywordize-keys)]
-
-     (tbb/tis map-includes? expected actual))))
+   (tbb/tis =
+            "form-to-mail-request-body.txt"
+            (e/get-element-text @driver {:tag :a :class "card attachment float-start me-3 mb-3"}))))
 
 (tbb/implement-step
  "The {0} body of the message contains"
@@ -191,14 +176,14 @@
    (let [expected (->>  code_blocks
                         first
                         :value
-                        string/trim)
-         actual   (->> @current-message
-                       :body
-                       (find-matching {:type type})
-                       :content
-                       string/trim)]
-
-     (tbb/tis string/includes? actual expected))))
+                        string/trim)]
+     (tbb/send-text "expected")
+     (tbb/send-text expected)
+     (e/switch-frame @driver {:id :preview-html})
+     (tbb/send-text "actual")
+     (tbb/send-text (e/get-element-inner-html @driver {:tag :table}))
+     (tbb/tis string/includes? expected (e/get-element-inner-html @driver {:tag :table}))
+     (e/switch-frame-top @driver))))
 
 (defn -main [& args]
   (logging/info "Interpreter start")
@@ -209,6 +194,8 @@
     (destroy-tree @form-to-mail-process))
   (when @miniserve-process
     (destroy-tree @miniserve-process))
+  (when @mailpit-process
+    (destroy-tree @mailpit-process))
   (logging/info "Interpreter done"))
 
 (when (= *file* (System/getProperty "babashka.file"))

@@ -18,7 +18,10 @@ tags: [proof-of-concept, covered]
 * Run the app with the following configuration
 
   ``` clojure
-  {:from-address   "form-to-mail@localhost"
+  {:smtp-server    {:host "localhost"
+                    :port 1025
+                    :ssl  false}
+   :from-address   "form-to-mail@localhost"
    :base-url       "http://localhost:8090"
    :listen-address "127.0.0.1"
    :listen-port    8090
@@ -32,6 +35,7 @@ tags: [proof-of-concept, covered]
 
   Run the command `miniserve --port 1234 spec/samples`
 
+* Run Mailpit
 * Navigate to `http://localhost:1234/poc-form.html`
 * There is a `form` element with the following properties
 
@@ -54,10 +58,11 @@ tags: [proof-of-concept, covered]
 * Click `Send` button
 
 * Form to Mail service will log `{:prose "valid form submitted" :by "user-one@example.com"}`
+* Navigate to `http://localhost:8025/`
 * Open the inbox of `user-one@example.com`
 * In the inbox find the message with the subject `Form to Mail confirmation`
-* In the message open the link labeled `Confirm your submission`
 * The webpage contains `Before we deliver your form we need to confirm your email address.` 
+* In the message open the link labeled `Confirm your submission`
 * Open the inbox of `publisher-one@example.com`
 * In the inbox find the message with the subject `Form to Mail message`
 * The message has reply-to header `user-one@example.com`
@@ -66,8 +71,8 @@ tags: [proof-of-concept, covered]
   <!-- TODO: Format the HTML code and make the interpreter accept it. -->
 
   ``` html
-  <dl><dt>email</dt><dd>user-one@example.com</dd><dt>message</dt><dd>Hello dear receiver!</dd></dl>
-  ```
+  <tbody><tr><th scope="row">email</th><td><ul><li>user-one@example.com</li></ul></td></tr><tr><th scope="row">message</th><td><ul><li>Hello dear receiver!</li></ul></td></tr></tbody>
+   ```
   
 * The message contains an application/x-www-form-urlencoded encoded attachment with the following fields
 
@@ -90,7 +95,10 @@ This scenario simulates a complex form with many different inputs. It's a fictio
 
 
   ``` clojure
-  {:from-address   "form-to-mail@localhost"
+  {:smtp-server    {:host "localhost"
+                    :port 1025
+                    :ssl  false}
+   :from-address   "form-to-mail@localhost"
    :base-url       "http://localhost:8090"
    :listen-address "127.0.0.1"
    :listen-port    8090
@@ -100,6 +108,7 @@ This scenario simulates a complex form with many different inputs. It's a fictio
   ```
 
 * Serve `spec/samples` on port `1234` 
+* Run Mailpit
 * Navigate to `http://localhost:1234/order-form.html`
 
 * There is a `form` element with the following properties
@@ -144,10 +153,11 @@ This scenario simulates a complex form with many different inputs. It's a fictio
 * Click `Pickup` radio button
 * Click `Send` button
 * Form to Mail service will log `{:prose "valid form submitted" :by "szara@muchu.com"}`
+* Navigate to `http://localhost:8025/`
 * Open the inbox of `szara@muchu.com`
 * In the inbox find the message with the subject `Form to Mail confirmation`
-* In the message open the link labeled `Confirm your submission`
 * The webpage contains `Before we deliver your form we need to confirm your email address.`
+* In the message open the link labeled `Confirm your submission`
 * Open the inbox of `publisher-two@example.com`
 * In the inbox find the message with the subject `Form to Mail message`
 * The message has reply-to header `szara@muchu.com`
@@ -156,7 +166,7 @@ This scenario simulates a complex form with many different inputs. It's a fictio
   <!-- TODO: Format the HTML code and make the interpreter accept it. -->
 
   ``` html
-  <dl><dt>address</dt><dd>Verycoolstreet 1</dd><dt>email</dt><dd>szara@muchu.com</dd><dt>city</dt><dd>Kittentown</dd><dt>high-chairs</dt><dd>4</dd><dt>wood-type</dt><dd>pine</dd><dt>chairs</dt><dd>3</dd><dt>notes</dt><dd>Can I pick up the items before christmas?</dd><dt>coating</dt><dd>red</dd><dt>delivery-method</dt><dd>pickup</dd><dt>country</dt><dd>Katcountry</dd></dl>
+  <tbody><tr><th scope="row">address</th><td><ul><li>Verycoolstreet 1</li></ul></td></tr><tr><th scope="row">email</th><td><ul><li>szara@muchu.com</li></ul></td></tr><tr><th scope="row">city</th><td><ul><li>Kittentown</li></ul></td></tr><tr><th scope="row">high-chairs</th><td><ul><li>4</li></ul></td></tr><tr><th scope="row">wood-type</th><td><ul><li>pine</li></ul></td></tr><tr><th scope="row">chairs</th><td><ul><li>3</li></ul></td></tr><tr><th scope="row">notes</th><td><ul><li>Can I pick up the items before christmas?</li></ul></td></tr><tr><th scope="row">coating</th><td><ul><li>red</li></ul></td></tr><tr><th scope="row">delivery-method</th><td><ul><li>pickup</li></ul></td></tr><tr><th scope="row">country</th><td><ul><li>Katcountry</li></ul></td></tr></tbody>
   ```
   
 * The message contains an application/x-www-form-urlencoded encoded attachment with the following fields
@@ -188,7 +198,10 @@ The email field is the only required field. Submission without email should be r
 * Run the app with the following configuration
 
   ``` clojure
-  {:from-address   "form-to-mail@localhost"
+  {:smtp-server    {:host "localhost"
+                    :port 1025
+                    :ssl  false}
+   :from-address   "form-to-mail@localhost"
    :base-url       "http://localhost:8090"
    :listen-address "127.0.0.1"
    :listen-port    8090
@@ -235,7 +248,10 @@ In this scenario we prove that submission won't be verified unless sender knows 
 * Run the app with the following configuration
 
   ``` clojure
-  {:from-address   "form-to-mail@localhost"
+  {:smtp-server    {:host "localhost"
+                    :port 1025
+                    :ssl  false}
+   :from-address   "form-to-mail@localhost"
    :base-url       "http://localhost:8090"
    :listen-address "127.0.0.1"
    :listen-port    8090
@@ -265,7 +281,10 @@ In this scenario we prove that submission won't be verified unless sender knows 
 * Run the app with the following configuration
 
   ``` clojure
-  {:from-address   "form-to-mail@localhost"
+  {:smtp-server    {:host "localhost"
+                    :port 1025
+                    :ssl  false}
+   :from-address   "form-to-mail@localhost"
    :base-url       "http://localhost:8090"
    :listen-address "127.0.0.1"
    :listen-port    8090
