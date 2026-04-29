@@ -108,10 +108,10 @@
                 :headers {"Content-Type" "text/html"}
                 :body    (templates/submission sender)}))
         (do
-          (info :prose "Missing required field" :field "email")
+          (info :prose "Missing required field" :field "sender")
           (spy {:status  422
                 :headers {"Content-Type" "text/plain"}
-                :body    "Missing required field email"}))))))
+                :body    "Missing required field sender"}))))))
 
 (def routes
   #{["/submit/:receiver-id"
