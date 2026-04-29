@@ -9,7 +9,7 @@ The tag proof-of-concept denotes a temporary spec describing a proof of concept 
 The tag covered denotes a spec that is expected to be already implemented, or is currently being implemented.
 
 
-## Form submission with email and message
+## Form submission with sender and message
 
 ``` yaml tbb
 tags: [proof-of-concept, covered]
@@ -184,14 +184,14 @@ This scenario simulates a complex form with many different inputs. It's a fictio
   | notes           | Can I pick up the items before christmas? |
 
 
-## Form submission without email
+## Form submission without sender
 
 ``` yaml tbb
 tags: [proof-of-concept, covered]
 ```
 
 
-The email field is the only required field. Submission without email should be rejected.
+The sender field is the only required field. Submission without sender should be rejected.
 
 * Run the app with the following configuration
 
@@ -229,8 +229,8 @@ The email field is the only required field. Submission without email should be r
 
 * Type `Hello dear receiver!` in the `Your message` field
 * Click `Send` button
-* There is a message `Missing required field email`
-* Form to Mail service will log `{:prose "Missing required field" :field "email"}`
+* There is a message `Missing required field sender`
+* Form to Mail service will log `{:prose "Missing required field" :field "sender"}`
 
 
 ## Wrong verification url
@@ -241,7 +241,7 @@ tags: [proof-of-concept, covered]
 
 In this scenario we prove that submission won't be verified unless sender knows its UUID.
 
-<!-- * Follow the steps from `Form submission with email and message` until verification -->
+<!-- * Follow the steps from `Form submission with sender and message` until verification -->
 
 * Run the app with the following configuration
 
@@ -274,7 +274,7 @@ tags: [proof-of-concept, covered]
 
 In this scenario we prove that submission won't be verified unless sender knows its UUID.
 
-<!-- * Follow the steps from `Form submission with email and message` until verification -->
+<!-- * Follow the steps from `Form submission with sender and message` until verification -->
 
 * Run the app with the following configuration
 

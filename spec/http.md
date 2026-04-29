@@ -61,5 +61,5 @@ tags:
 - Make a `POST` request to `http://localhost:8080/submit/something-else`.
 
 - The response has a `422` status code.
-- The response body is `Missing required field email`.
+- The response body is `Missing required field sender`.
 - The response `content-type` header is `text/plain`.
