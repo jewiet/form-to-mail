@@ -63,7 +63,7 @@ Create a new HTML file called `form.html` with the following content.
     <form action="http://localhost:8080/submit/1234" method="POST">
       <label>
         E‑mail:
-        <input type="email" name="email" required>
+        <input type="email" name="sender" required>
       </label>
 
       <label>

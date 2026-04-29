@@ -59,7 +59,7 @@
       (if-let [{:keys [raw parsed receiver] :as submission} (get @submissions submission-uuid)]
         (do
           (debug :prose "found submission" :submission submission)
-          (send-mail (:email parsed)
+          (send-mail (:sender parsed)
                      (:email-addresses receiver)
                      "Form to Mail message"
                      ;; Use a templating library
@@ -84,29 +84,29 @@
 
 (defn form-handler
   [{:keys [form-params path-params ::raw-body]}]
-  (let [email       (:email form-params)
-        receiver-id (:receiver-id  path-params)
-        receiver    (get-in @configuration [:receivers receiver-id])]
+  (let [sender         (:sender form-params)
+        receiver-id    (:receiver-id  path-params)
+        receiver       (get-in @configuration [:receivers receiver-id])]
     (if (nil? receiver)
       (spy {:status  404
             :headers {"Content-Type" "text/plain"}
             :body    "No such receiver"})
-      (if-not (string/blank? email)
+      (if-not (string/blank? sender)
         (let [submission-uuid  (random-uuid)
               confirmation-url (str (:base-url @configuration) "/confirm-submission/" submission-uuid)]
-          (info :prose "valid form submitted" :by email)
+          (info :prose "valid form submitted" :by sender)
           (swap! submissions assoc submission-uuid
                  (-> {}
                      (assoc :parsed form-params)
                      (assoc :receiver receiver)
                      (assoc :raw raw-body)))
           (send-mail nil
-                     email
+                     sender
                      "Form to Mail confirmation"
                      (templates/confirmation-email-html confirmation-url))
           (spy {:status  200
                 :headers {"Content-Type" "text/html"}
-                :body    (templates/submission email)}))
+                :body    (templates/submission sender)}))
         (do
           (info :prose "Missing required field" :field "email")
           (spy {:status  422

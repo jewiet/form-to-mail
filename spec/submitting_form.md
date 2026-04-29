@@ -48,10 +48,8 @@ tags: [proof-of-concept, covered]
 
   | label              | name    | type     |
   |--------------------|---------|----------|
-  | Your email address | email   | email    |
+  | Your email address | sender  | email    |
   | Your message       | message | textarea |
-
-  Consider renaming email to sender-email.
 
 * Type `user-one@example.com` in the `Your email address` field
 * Type `Hello dear receiver!` in the `Your message` field
@@ -71,7 +69,7 @@ tags: [proof-of-concept, covered]
   <!-- TODO: Format the HTML code and make the interpreter accept it. -->
 
   ``` html
-  <tbody><tr><th scope="row">email</th><td><ul><li>user-one@example.com</li></ul></td></tr><tr><th scope="row">message</th><td><ul><li>Hello dear receiver!</li></ul></td></tr></tbody>
+  <tbody><tr><th scope="row">sender</th><td><ul><li>user-one@example.com</li></ul></td></tr><tr><th scope="row">message</th><td><ul><li>Hello dear receiver!</li></ul></td></tr></tbody>
    ```
   
 * The message contains an application/x-www-form-urlencoded encoded attachment with the following fields
@@ -79,14 +77,14 @@ tags: [proof-of-concept, covered]
 
   | key     | value                |
   |---------|----------------------|
-  | email   | user-one@example.com |
+  | sender  | user-one@example.com |
   | message | Hello dear receiver! |
 
 
 ## Order form submission
 
 ``` yaml tbb
-tags: [proof-of-concept, covered]
+tags: [proof-of-concept, covered, focus]
 ```
 
 This scenario simulates a complex form with many different inputs. It's a fictional small carpentry website. Form is used to order a dining room set (a table, number of chairs and number of high chairs).
@@ -126,7 +124,7 @@ This scenario simulates a complex form with many different inputs. It's a fictio
   | Street and house number | text     | address         |
   | City                    | text     | city            |
   | Country                 | text     | country         |
-  | Email                   | email    | email           |
+  | Email                   | email    | sender          |
   | Select type of wood     | select   | wood-type       |
   | Select coating          | select   | coating         |
   | Number of chairs        | number   | chairs          |
@@ -166,7 +164,7 @@ This scenario simulates a complex form with many different inputs. It's a fictio
   <!-- TODO: Format the HTML code and make the interpreter accept it. -->
 
   ``` html
-  <tbody><tr><th scope="row">address</th><td><ul><li>Verycoolstreet 1</li></ul></td></tr><tr><th scope="row">email</th><td><ul><li>szara@muchu.com</li></ul></td></tr><tr><th scope="row">city</th><td><ul><li>Kittentown</li></ul></td></tr><tr><th scope="row">high-chairs</th><td><ul><li>4</li></ul></td></tr><tr><th scope="row">wood-type</th><td><ul><li>pine</li></ul></td></tr><tr><th scope="row">chairs</th><td><ul><li>3</li></ul></td></tr><tr><th scope="row">notes</th><td><ul><li>Can I pick up the items before christmas?</li></ul></td></tr><tr><th scope="row">coating</th><td><ul><li>red</li></ul></td></tr><tr><th scope="row">delivery-method</th><td><ul><li>pickup</li></ul></td></tr><tr><th scope="row">country</th><td><ul><li>Katcountry</li></ul></td></tr></tbody>
+  <tbody><tr><th scope="row">address</th><td><ul><li>Verycoolstreet 1</li></ul></td></tr><tr><th scope="row">city</th><td><ul><li>Kittentown</li></ul></td></tr><tr><th scope="row">high-chairs</th><td><ul><li>4</li></ul></td></tr><tr><th scope="row">wood-type</th><td><ul><li>pine</li></ul></td></tr><tr><th scope="row">chairs</th><td><ul><li>3</li></ul></td></tr><tr><th scope="row">notes</th><td><ul><li>Can I pick up the items before christmas?</li></ul></td></tr><tr><th scope="row">sender</th><td><ul><li>szara@muchu.com</li></ul></td></tr><tr><th scope="row">coating</th><td><ul><li>red</li></ul></td></tr><tr><th scope="row">delivery-method</th><td><ul><li>pickup</li></ul></td></tr><tr><th scope="row">country</th><td><ul><li>Katcountry</li></ul></td></tr></tbody>
   ```
   
 * The message contains an application/x-www-form-urlencoded encoded attachment with the following fields
@@ -174,7 +172,7 @@ This scenario simulates a complex form with many different inputs. It's a fictio
 
   | key             | value                                     |
   |-----------------|-------------------------------------------|
-  | email           | szara@muchu.com                           |
+  | sender          | szara@muchu.com                           |
   | country         | Katcountry                                |
   | wood-type       | pine                                      |
   | city            | Kittentown                                |
@@ -226,7 +224,7 @@ The email field is the only required field. Submission without email should be r
 
   | label              | name    | type     |
   |--------------------|---------|----------|
-  | Your email address | email   | email    |
+  | Your email address | sender  | email    |
   | Your message       | message | textarea |
 
 * Type `Hello dear receiver!` in the `Your message` field

@@ -165,14 +165,14 @@
 
 (tbb/implement-step
  "The message contains an application/x-www-form-urlencoded encoded attachment with the following fields"
- (fn [{:keys [tables]}]
+ (fn [_]
    (tbb/tis =
             "form-to-mail-request-body.txt"
             (e/get-element-text @driver {:tag :a :class "card attachment float-start me-3 mb-3"}))))
 
 (tbb/implement-step
  "The {0} body of the message contains"
- (fn [type {:keys [code_blocks]}]
+ (fn [_ {:keys [code_blocks]}]
    (let [expected (->>  code_blocks
                         first
                         :value
