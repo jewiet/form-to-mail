@@ -73,7 +73,7 @@
           (eval `(info ~@(flatten (into [] submission))))
           (spy {:status  200
                 :headers {"Content-Type" "text/html",
-                          "Refresh" (str "10, url=" (:return-url receiver))}
+                          "Refresh"      (str "10, url=" (:return-url receiver))}
                 :body    (templates/confirmation (select-keys receiver [:receiver-name :return-url]))}))
         (spy {:status  404
               :headers {"Content-Type" "text/plain"}
