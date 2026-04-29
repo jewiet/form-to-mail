@@ -48,6 +48,7 @@
                         clj-nix-pkgs.deps-lock
                         miniserve
                         mailpit
+                        emmet-ls
                       ];
                       env = {
                         PEDESTAL_DEV_MODE = "true";
