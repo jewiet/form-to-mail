@@ -1,0 +1,34 @@
+<!doctype html>
+<html class="no-js" lang="">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <title>File uploads</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="css/pico.min.css">
+        <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+        <!-- Place favicon.ico in the root directory -->
+
+    </head>
+    <body>
+        <main class="container">
+            <form
+                method="POST"
+                action="http://localhost:8090/submit/1234"
+                enctype="multipart/form-data">
+                <label for="email">Your email address</label>
+                <input name="sender" id="email" type="email" value=""/>
+
+                <label for="message">Your message</label>
+                <textarea name="message" id="message"></textarea>
+
+                <label for="avatar">Choose a file</label>
+                <input type="file" id="avatar" name="avatar" accept="image/png, image/jpeg, .pdf" />
+
+                <button type="submit">Send</button>
+            </form>
+
+        </main>
+    </body>
+</html>
