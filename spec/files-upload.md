@@ -94,7 +94,7 @@ We assume that Charlie and Bob will test their form at least once by submitting 
   ```
 
 * There is a link `Read more here` to `https://github.com/jewiet/form-to-mail/`
-* Form to Mail service will log `{:prose "invalid form submitted" :by "alice@example.com" :reason "multipart/form-data encoding is not supported"}`
+* Form to Mail service will log `{:prose "invalid form submitted" :reason "multipart/form-data encoding is not supported"}`
 
   TODO: There should also be an address of the website with the faulty form (referrer)
 
