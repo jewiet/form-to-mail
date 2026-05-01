@@ -89,6 +89,13 @@
    (e/wait-has-text-everywhere @driver text)))
 
 (tbb/implement-step
+ "The webpage contains the following"
+ (fn [{:keys [code_blocks]}]
+   (let [texts (map :value code_blocks)]
+     (doall (for [text texts]
+              (do (tbb/send-text (str "Looking for " text))
+                  (e/wait-has-text-everywhere @driver text)))))))
+(tbb/implement-step
  "Click {0} radio button"
  (fn [field-label _]
    (e/click @driver [{:tag :label :fn/text field-label}])))
