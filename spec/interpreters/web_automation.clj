@@ -85,8 +85,8 @@
 
 (tbb/implement-step
  "The webpage contains {0}"
- (fn [message _]
-   (string/includes? (e/get-element-text @driver {:tag :body}) message)))
+ (fn [text _]
+   (e/wait-has-text-everywhere @driver text)))
 
 (tbb/implement-step
  "Click {0} radio button"
