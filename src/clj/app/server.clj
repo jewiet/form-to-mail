@@ -2,6 +2,7 @@
   (:require
    [app.templates :as templates]
    [clojure.string :as string]
+   [clojure.walk :as walk]
    [io.pedestal.connector :as conn]
    [io.pedestal.environment :refer [dev-mode?]]
    [io.pedestal.http.http-kit :as hk]
@@ -137,6 +138,28 @@
     :leave (fn [context]
              (update context :request dissoc ::raw-body))}))
 
+(def multipart-interceptor
+  (interceptor/interceptor
+   {:name  ::multipart-interceptor
+    :enter (fn [context]
+             (let [raw-headers  (get-in context [:request :headers])
+                   headers      (walk/keywordize-keys raw-headers)
+                   content-type (->  headers
+                                     :content-type
+                                     clojure.string/trim
+                                     clojure.string/lower-case)]
+               (debug :prose        "Checking for multipart encoding"
+                      :raw-headers  raw-headers
+                      :headers      headers
+                      :content-type content-type)
+               (if (clojure.string/starts-with?
+                    content-type
+                    "multipart/form-data")
+                 {:response (spy {:status  422
+                                  :headers {"Content-Type" "text/plain"}
+                                  :body    "Sorry! The form on this website is not set up correctly. As a result the content you submitted won't be delivered."})}
+                 context)))}))
+
 (defn create-connector
   []
   (let [port    (or (:listen-port @configuration)
@@ -145,6 +168,7 @@
                     "0.0.0.0")]
     (-> (conn/default-connector-map address port)
         ;; our interceptor
+        (conn/with-interceptor multipart-interceptor)
         (conn/with-interceptor raw-body-interceptor)
         (conn/with-default-interceptors)
         (conn/with-routes routes
