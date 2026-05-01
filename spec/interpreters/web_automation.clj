@@ -192,6 +192,12 @@
      (tbb/tis string/includes? expected (e/get-element-inner-html @driver {:tag :table}))
      (e/switch-frame-top @driver))))
 
+(tbb/implement-step
+ "Load {0} in the {1} field"
+ (fn [file-path field-label _]
+   (-> (e/get-element-attr @driver [{:tag :label :fn/text field-label}] "for")
+       (#(e/upload-file @driver [{:tag :input :type :file :id %}] file-path)))))
+
 (defn -main [& args]
   (logging/info "Interpreter start")
   (reset! driver (e/firefox))

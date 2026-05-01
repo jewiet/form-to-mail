@@ -67,7 +67,7 @@ We assume that Charlie and Bob will test their form at least once by submitting 
 
 * Type `alice@example.com` in the `Your email address` field
 * Type `Hello Bob! This is my cat.` in the `Your message` field
-* Load `cat.jpeg` in the `Choose a file` field
+* Load `spec/samples/squirrel.png` in the `Choose a file` field
 * Click `Send` button
 * The webpage contains the following
 
