@@ -2,7 +2,6 @@
   (:require
    [app.templates :as templates]
    [clojure.string :as string]
-   [hiccup2.core :as h]
    [io.pedestal.connector :as conn]
    [io.pedestal.environment :refer [dev-mode?]]
    [io.pedestal.http.http-kit :as hk]
