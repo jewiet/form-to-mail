@@ -95,6 +95,13 @@
      (doall (for [text texts]
               (do (tbb/send-text (str "Looking for " text))
                   (e/wait-has-text-everywhere @driver text)))))))
+
+(tbb/implement-step
+ "There is a link {0} to {1}"
+ (fn [label href _] (let [found-href (e/get-element-attr @driver {:tag :a :fn/text label} "href")]
+                      (tbb/send-text (str "Found link to " found-href))
+                      (tbb/tis = found-href href))))
+
 (tbb/implement-step
  "There are no messages in the inbox of {0}"
  (fn [email-address _]
