@@ -99,5 +99,4 @@ We assume that Charlie and Bob will test their form at least once by submitting 
   TODO: There should also be an address of the website with the faulty form (referrer)
 
 * Navigate to `http://localhost:8025/`
-* Open the inbox of `alice@example.com`
-* There are no messages
+* There are no messages in the inbox of `alice@example.com`

@@ -96,6 +96,15 @@
               (do (tbb/send-text (str "Looking for " text))
                   (e/wait-has-text-everywhere @driver text)))))))
 (tbb/implement-step
+ "There are no messages in the inbox of {0}"
+ (fn [email-address _]
+   (e/fill @driver {:tag :input :placeholder "Search mailbox"}
+           (str "to:" email-address) k/enter)
+   (tbb/tis =
+            (str "No results for to:" email-address)
+            (e/get-element-property @driver {:id "message-page"} "innerText"))))
+
+(tbb/implement-step
  "Click {0} radio button"
  (fn [field-label _]
    (e/click @driver [{:tag :label :fn/text field-label}])))
