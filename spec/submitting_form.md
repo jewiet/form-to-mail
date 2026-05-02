@@ -84,7 +84,7 @@ tags: [proof-of-concept, covered]
 ## Order form submission
 
 ``` yaml tbb
-tags: [proof-of-concept, covered, focus]
+tags: [proof-of-concept, covered]
 ```
 
 This scenario simulates a complex form with many different inputs. It's a fictional small carpentry website. Form is used to order a dining room set (a table, number of chairs and number of high chairs).
