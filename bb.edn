@@ -97,4 +97,4 @@
 
   spec:run
   {:doc "Evaluate the system against the specification"
-   :task (shell "tbb" "evaluate" "--only" "scenario:covered")}}}
+   :task (shell "tbb" "evaluate")}}}
