@@ -3,6 +3,33 @@
    [clojure.java.io :as io]
    [hiccup2.core :as hiccup]))
 
+(defn multipart-error-page []
+  (let [html-head              [:head
+                                [:meta {:name "viewport" :content "width=device-width, initial-scale=1"}]
+                                [:link {:type "text/css", :href "/pico.min.css", :rel "stylesheet"}]
+                                [:link {:type "text/css", :href "/style.css", :rel "stylesheet"}]]
+        html-header            [:header.container
+                                [:img#main-logo {:src "/logo.svg" :alt "Form to Mail logo"}]
+                                [:hgroup
+                                 [:h1 "Form to Mail"]
+                                 [:p "Web forms for static websites"]]]
+        html-main              [:main {:class "container"}
+                                [:p "Sorry! The form on this website is not set up correctly. As a result the content you submitted won't be delivered."]
+                                [:h2 "Technical Explanation"]
+                                [:p "The explanation below is for the form developer. If you are trying to submit a form on somebody else's website there is unfortunately nothing you can do. It's not your fault and we are sorry for the inconvenience."]
+                                [:p "The form was submitted using multipart/form-data encoding. Currently Form to Mail only supports URL encoded forms, i.e. application/x-www-form-urlencoded, which is the default. Simply remove the enctype attribute from your form."]
+                                [:p "Are you trying to set up a file upload? This is currently not supported by Form to Mail."]
+                                [:a {:href "https://github.com/jewiet/form-to-mail/"}
+                                 "Read more here"]]
+
+        html-body              [:body
+                                html-header
+                                html-main]]
+    (str (hiccup/raw "<!doctype html>")
+         (hiccup/html [:html {:lang "en" :class "submission app"}
+                       html-head
+                       html-body]))))
+
 (defn submission [email]
   (let [html-head              [:head
                                 [:meta {:name "viewport" :content "width=device-width, initial-scale=1"}]

@@ -7,7 +7,7 @@
    [io.pedestal.environment :refer [dev-mode?]]
    [io.pedestal.http.http-kit :as hk]
    [io.pedestal.interceptor :as interceptor]
-   [io.pedestal.log :refer [debug info spy]]
+   [io.pedestal.log :refer [error debug info spy]]
    [io.pedestal.service.resources :as resources]
    [postal.core :as postal]
    [ring.util.codec :refer [base64-encode]]))
@@ -144,20 +144,22 @@
     :enter (fn [context]
              (let [raw-headers  (get-in context [:request :headers])
                    headers      (walk/keywordize-keys raw-headers)
-                   content-type (->  headers
-                                     :content-type
-                                     clojure.string/trim
-                                     clojure.string/lower-case)]
+                   content-type (:content-type  headers)]
                (debug :prose        "Checking for multipart encoding"
                       :raw-headers  raw-headers
                       :headers      headers
                       :content-type content-type)
-               (if (clojure.string/starts-with?
-                    content-type
-                    "multipart/form-data")
-                 {:response (spy {:status  422
-                                  :headers {"Content-Type" "text/plain"}
-                                  :body    "Sorry! The form on this website is not set up correctly. As a result the content you submitted won't be delivered."})}
+               (if (-> content-type
+                       (or "")
+                       clojure.string/trim
+                       clojure.string/lower-case
+                       (clojure.string/starts-with?
+                        "multipart/form-data"))
+                 (do
+                   (error :prose "invalid form submitted" :reason "multipart/form-data encoding is not supported")
+                   {:response (spy {:status  422
+                                    :headers {"Content-Type" "text/html"}
+                                    :body    (templates/multipart-error-page)})})
                  context)))}))
 
 (defn create-connector
