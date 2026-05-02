@@ -119,18 +119,14 @@
 (tbb/implement-step
  "Open the inbox of {0}"
  (fn [email-address _]
-   (e/fill @driver {:tag :input :placeholder "Search mailbox"} (str "to:" email-address) k/enter)
-   (e/wait @driver 10)
-   (e/click @driver
-            [{:tag :div :id :message-page}
-             {:tag :div :class "list-group my-2"} {:tag :a}])))
+   (e/fill @driver {:tag :input :placeholder "Search mailbox"} (str "to:" email-address) k/enter)))
 
 (tbb/implement-step
  "In the inbox find the message with the subject {0}"
  (fn [subject _]
-   (tbb/tis =
-            subject
-            (e/get-element-inner-html @driver [{:tag :table :class "messageHeaders"} {:tag :strong :class "text-spaces"}]))))
+   (e/click @driver
+            [{:fn/has-class "subject"}
+             {:fn/has-text subject}])))
 
 (tbb/implement-step
  "In the message open the link labeled {0}"
