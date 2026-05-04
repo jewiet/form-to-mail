@@ -68,7 +68,7 @@
 
   release
   {:doc "Release a git tag"
-   :depends [;; TODO git:check-clean
+   :depends [git:check-clean
              spec:run
              git:tag]
    :task
@@ -93,7 +93,21 @@
                              (throw (ex-info "The level can be one of: major, minor or patch" {})))
                new-tag (clojure.string/join "." new-version)]
            ;; TODO: Ask for confirmation (confirm "About to tag current commit as " new-tag)
-           (shell "git" "tag" new-tag))}
+          (shell "git" "tag" new-tag))}
+
+   git:check-clean
+  {:doc "Check git tree for uncommitted changes"
+   :task (let [git-tree-status (->>
+                                (shell {:out :string} "git" "status" "--porcelain")
+                                :out)]
+          (if-not (empty? git-tree-status)
+           (do
+            (shell "echo" "Git tree has uncommitted changes. Please stash or commit the changes before releasing a tag.")
+            (System/exit 1))
+           (do
+            (shell "echo" "Git tree is clean.")
+            git-tree-status)))}
+
 
   spec:run
   {:doc "Evaluate the system against the specification"
