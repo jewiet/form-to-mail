@@ -52,6 +52,16 @@
                       ];
                       env = {
                         PEDESTAL_DEV_MODE = "true";
+                        FAKETIME_UPDATE_TIMESTAMP_FILE = "1";
+                        # Faketime facilities for Linux...
+                        LD_PRELOAD = "${pkgs.libfaketime}/lib/libfaketime.so.1";
+
+                        # ... and MacOS
+                        DYLD_INSERT_LIBRARIES = "${pkgs.libfaketime}/lib/faketime/libfaketime.1.dylib";
+                        DYLD_FORCE_FLAT_NAMESPACE = 1;
+
+                        # Fix for JVM
+                        FAKETIME_DONT_FAKE_MONOTONIC = 1;
                       };
                     }
                   ];

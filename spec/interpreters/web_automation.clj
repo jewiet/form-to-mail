@@ -1,7 +1,7 @@
 (ns web-automation
   (:require
    [babashka.fs :as fs]
-   [babashka.process :as p :refer [destroy-tree process]]
+   [babashka.process :as p :refer [destroy-tree process shell]]
    [clojure.string :as string]
    [common :refer [has-matching? read-log-file wait-for-log]]
    [etaoin.api :as e]
@@ -12,6 +12,9 @@
 (def driver (atom nil))
 
 (def server-log-file (fs/create-temp-file {:prefix "form-to-mail" :suffix ".log"}))
+
+(def extra-env {"FAKETIME_TIMESTAMP_FILE" (fs/create-temp-file {:prefix "form-to-mail"
+                                                                :suffix "faketime"})})
 
 (def form-to-mail-process (atom nil))
 
@@ -29,8 +32,9 @@
      (spit config-file config)
      (reset! form-to-mail-process
              (process {:err :write
-                       :err-file server-log-file}
-                      "bb app:run" config-file))
+                       :err-file server-log-file
+                       :extra-env extra-env}
+                      "clojure -M -m app.core" config-file))
      (wait-for-log {:prose "Starting Form to Mail"}
                    server-log-file))))
 
@@ -40,7 +44,9 @@
    (logging/debug "Serving" {:path path
                              :port port})
    (reset! miniserve-process
-           (process {:err :write :err-file server-log-file}
+           (process {:err :write
+                     :err-file server-log-file
+                     :extra-env extra-env}
                     "miniserve --port" port path))
    (Thread/sleep 1000)))
 
@@ -49,7 +55,9 @@
  (fn [_]
    (logging/debug "Starting mailpit")
    (reset! mailpit-process
-           (process {:err :write :err-file server-log-file}
+           (process {:err :write
+                     :err-file server-log-file
+                     :extra-env extra-env}
                     "mailpit"))))
 
 (tbb/implement-step
@@ -216,17 +224,35 @@
    (-> (e/get-element-attr @driver [{:tag :label :fn/text field-label}] "for")
        (#(e/upload-file @driver [{:tag :input :type :file :id %}] file-path)))))
 
+(tbb/implement-step
+ "Wait {0}"
+ (fn [duration _data]
+   (shell {:extra-env extra-env
+           :out       :string}
+          "date" "--set" (str "+" duration))
+   (Thread/sleep 10000)))
+
+(defn- stop-process [subject]
+  (when subject
+    (logging/info "Stopping the process" (:cmd subject))
+    (destroy-tree subject)
+    (let [zombie (:proc subject)]
+      (when (.isAlive zombie)
+        (logging/warn "It's still alive! Murder!" zombie)
+        (->> zombie
+             .toHandle
+             .pid
+             str
+             (shell "kill" "-9"))))))
+
 (defn -main [& args]
   (logging/info "Interpreter start")
   (reset! driver (e/firefox))
   (tbb/ready)
   (e/quit @driver)
-  (when @form-to-mail-process
-    (destroy-tree @form-to-mail-process))
-  (when @miniserve-process
-    (destroy-tree @miniserve-process))
-  (when @mailpit-process
-    (destroy-tree @mailpit-process))
+  (stop-process @form-to-mail-process)
+  (stop-process @miniserve-process)
+  (stop-process @mailpit-process)
   (logging/info "Interpreter done"))
 
 (when (= *file* (System/getProperty "babashka.file"))
