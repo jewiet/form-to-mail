@@ -120,6 +120,7 @@
 (tbb/implement-step
  "Open the inbox of {0}"
  (fn [email-address _]
+   (e/go @driver "http://localhost:8025/")
    (e/fill @driver {:tag :input :placeholder "Search mailbox"} (str "to:" email-address) k/enter)))
 
 (tbb/implement-step
@@ -133,10 +134,13 @@
 (tbb/implement-step
  "In the message open the link labeled {0}"
  (fn [label _]
-   (e/switch-frame @driver {:id :preview-html})
-   (e/click @driver {:tag :a :class :call-to-action :fn/text label})
-   (e/switch-frame-top @driver)
-   (e/go @driver "http://localhost:8025/")))
+   (let [link  (e/with-frame @driver :preview-html
+                 (e/get-element-attr @driver
+                                     {:tag     :a
+                                      :class   :call-to-action
+                                      :fn/text label}
+                                     :href))]
+     (e/go @driver link))))
 
 (tbb/implement-step
  "There is a {0} element with the following properties"

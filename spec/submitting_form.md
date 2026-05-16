@@ -52,6 +52,12 @@ The tag covered denotes a spec that is expected to be already implemented, or is
 * Click `Send` button
 
 * Form to Mail service will log `{:prose "valid form submitted" :by "alice@example.com"}`
+
+  TODO: Remove the email address from logs!
+
+* The webpage contains `Thank you for sending the form. Before we deliver it we need to verify your email address. We have sent you a link to:`
+* The webpage contains `alice@example.com`
+* The webpage contains `Please follow the verification link in the email to complete the delivery.`
 * Navigate to `http://localhost:8025/`
 * Open the inbox of `alice@example.com`
 * In the inbox find the message with the subject `Form to Mail confirmation`
@@ -143,6 +149,12 @@ This scenario simulates a complex form with many different inputs. It's a fictio
 * Click `Pickup` radio button
 * Click `Send` button
 * Form to Mail service will log `{:prose "valid form submitted" :by "szara@muchu.com"}`
+
+  TODO: Remove the email address from logs!
+
+* The webpage contains `Thank you for sending the form. Before we deliver it we need to verify your email address. We have sent you a link to:`
+* The webpage contains `szara@muchu.com`
+* The webpage contains `Please follow the verification link in the email to complete the delivery.`
 * Navigate to `http://localhost:8025/`
 * Open the inbox of `szara@muchu.com`
 * In the inbox find the message with the subject `Form to Mail confirmation`
