@@ -23,14 +23,14 @@
       "hash": "sha256-i/WnArsFKbDV4G8GS4F4z5H5Ktn+vShl717j0J3I9yM="
     },
     {
-      "mvn-path": "babashka/fs/0.5.30/fs-0.5.30.jar",
+      "mvn-path": "babashka/fs/0.5.31/fs-0.5.31.jar",
       "mvn-repo": "https://repo.clojars.org/",
-      "hash": "sha256-Wf4BeIxSN9FAHd57aFL7OzWjO6lH9XG+BK4MPDs81VI="
+      "hash": "sha256-ZwYfHumyox9uoLs1W3ToGil5ng6jOwGJ4cGMJXFMKQk="
     },
     {
-      "mvn-path": "babashka/fs/0.5.30/fs-0.5.30.pom",
+      "mvn-path": "babashka/fs/0.5.31/fs-0.5.31.pom",
       "mvn-repo": "https://repo.clojars.org/",
-      "hash": "sha256-fCwnSrKop60b0zcqrhvYUSZ7Yk/QOOrRoE8Y/X6k6Ko="
+      "hash": "sha256-SuwUt9C4fV5V8foTb9ZnEkTD+Ezk9oQI9P1IEXzW/K4="
     },
     {
       "mvn-path": "babashka/process/0.6.23/process-0.6.23.jar",
@@ -93,14 +93,14 @@
       "hash": "sha256-6rfCHPBH6Bd77px61lSxH5W2AndbQ3B829pnNDbFrAQ="
     },
     {
-      "mvn-path": "clj-kondo/clj-kondo/2026.01.19/clj-kondo-2026.01.19.jar",
+      "mvn-path": "clj-kondo/clj-kondo/2026.04.15/clj-kondo-2026.04.15.jar",
       "mvn-repo": "https://repo.clojars.org/",
-      "hash": "sha256-CiABC++IGJoJEVqbkG0sPbmjVxc33r7VlTuawLZprGI="
+      "hash": "sha256-lXQ0wMnqlkF4rcYerTLIBw6aU63huM+F7q+4uiAhXIU="
     },
     {
-      "mvn-path": "clj-kondo/clj-kondo/2026.01.19/clj-kondo-2026.01.19.pom",
+      "mvn-path": "clj-kondo/clj-kondo/2026.04.15/clj-kondo-2026.04.15.pom",
       "mvn-repo": "https://repo.clojars.org/",
-      "hash": "sha256-r5ZJM6cxNA950gc9RosCcwj7Alzu7LBXNqZykt7TSHg="
+      "hash": "sha256-Tgxijfxq51P+iPFSbMKdyNHGHybO213PLyv5mxy4kjI="
     },
     {
       "mvn-path": "com/cnuernber/charred/1.037/charred-1.037.jar",
@@ -361,6 +361,36 @@
       "mvn-path": "com/sun/mail/jakarta.mail/1.6.5/jakarta.mail-1.6.5.pom",
       "mvn-repo": "https://repo1.maven.org/maven2/",
       "hash": "sha256-nTLcJTITlEhzTNN6IURwFzvf8vieQNUAiEQqSnO38p0="
+    },
+    {
+      "mvn-path": "com/widdindustries/cljc.java-time/0.1.21/cljc.java-time-0.1.21.jar",
+      "mvn-repo": "https://repo.clojars.org/",
+      "hash": "sha256-lXtJsOVXQReuQtAm7PaC6ELeTXZcn72l75QQEu6erEM="
+    },
+    {
+      "mvn-path": "com/widdindustries/cljc.java-time/0.1.21/cljc.java-time-0.1.21.pom",
+      "mvn-repo": "https://repo.clojars.org/",
+      "hash": "sha256-HD9Nr+ORQQieSFvRnk1QeWdBFxUctkkV9ik+8vH02i4="
+    },
+    {
+      "mvn-path": "com/widdindustries/cljs.java-time/0.1.20/cljs.java-time-0.1.20.jar",
+      "mvn-repo": "https://repo.clojars.org/",
+      "hash": "sha256-+lhxHCnAS3E4G75Ddb05tr3oN7IRY4fut0jbQ8XRi5M="
+    },
+    {
+      "mvn-path": "com/widdindustries/cljs.java-time/0.1.20/cljs.java-time-0.1.20.pom",
+      "mvn-repo": "https://repo.clojars.org/",
+      "hash": "sha256-X3DVgoCEZMZxJn4hpu0t3JdqKy3lj1DC8nyTKrHWdLY="
+    },
+    {
+      "mvn-path": "com/widdindustries/time-literals/0.1.10/time-literals-0.1.10.jar",
+      "mvn-repo": "https://repo.clojars.org/",
+      "hash": "sha256-UbwFzh21r/kPlVMqNF+UvqVbDulEV+OuXVkSfP7wSeQ="
+    },
+    {
+      "mvn-path": "com/widdindustries/time-literals/0.1.10/time-literals-0.1.10.pom",
+      "mvn-repo": "https://repo.clojars.org/",
+      "hash": "sha256-n9ftzldA71tKlhCBdwB2ZpWCqdnQr7r2hmbXQkvZR1g="
     },
     {
       "mvn-path": "commons-codec/commons-codec/1.11/commons-codec-1.11.jar",
@@ -1751,6 +1781,16 @@
       "mvn-path": "slingshot/slingshot/0.12.2/slingshot-0.12.2.pom",
       "mvn-repo": "https://repo.clojars.org/",
       "hash": "sha256-SrxOK5ppxzvTc+gy0/AOWQZ4Q/+DUe/V7rsfOCTbnFE="
+    },
+    {
+      "mvn-path": "tick/tick/1.0/tick-1.0.jar",
+      "mvn-repo": "https://repo.clojars.org/",
+      "hash": "sha256-S13LDZWGaezGIkVwDWu67mXY9f8/vS/5rRqMyTjdPlI="
+    },
+    {
+      "mvn-path": "tick/tick/1.0/tick-1.0.pom",
+      "mvn-repo": "https://repo.clojars.org/",
+      "hash": "sha256-uQRHRaD+ygFtKv08v6vfyZyy+G3nA5qjkQ3/SXnSuok="
     },
     {
       "mvn-path": "tigris/tigris/0.1.2/tigris-0.1.2.jar",
