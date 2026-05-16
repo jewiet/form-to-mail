@@ -10,12 +10,6 @@ This spec covers direct use of HTTP endpoints, i.e. without a web browser.
 
 ## Home page
 
-``` yaml tbb
-tags: 
-  - proof-of-concept 
-  - covered
-```
-
 * Run the app with the following configuration
 
   ``` clojure
@@ -38,12 +32,6 @@ tags:
 
 
 ## Form submission without email
-
-``` yaml tbb
-tags: 
-  - proof-of-concept 
-  - covered
-```
 
 * Run the app with the following configuration
 
