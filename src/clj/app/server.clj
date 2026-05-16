@@ -1,20 +1,35 @@
 (ns app.server
   (:require
    [app.templates :as templates]
+   [clojure.core.async :refer [<! go timeout]]
    [clojure.string :as string]
    [clojure.walk :as walk]
    [io.pedestal.connector :as conn]
    [io.pedestal.environment :refer [dev-mode?]]
    [io.pedestal.http.http-kit :as hk]
    [io.pedestal.interceptor :as interceptor]
-   [io.pedestal.log :refer [error debug info spy]]
+   [io.pedestal.log :refer [debug error info spy]]
    [io.pedestal.service.resources :as resources]
    [postal.core :as postal]
-   [ring.util.codec :refer [base64-encode]]))
+   [ring.util.codec :refer [base64-encode]]
+   [tick.core :as tick]))
 
 (defonce configuration (atom nil))
 
 (defonce submissions (atom {}))
+
+(defn clear-unconfirmed-submissions [duration]
+  (debug :prose "Clearing unconfirmed submissions"
+         :submissions @submissions
+         :instant (str (tick/now)))
+  (swap! submissions (fn [submissions]
+                       (into {}
+                             (filter (fn [[_sub-id submission]]
+                                       (-> submission
+                                           :form-submission-time
+                                           (tick/>> duration)
+                                           (tick/> (tick/now))))
+                                     submissions)))))
 
 (defn- encode-body-part [part]
   (if (= (:type part) :attachment)
@@ -76,8 +91,8 @@
                           "Refresh"      (str "10, url=" (:return-url receiver))}
                 :body    (templates/confirmation (select-keys receiver [:receiver-name :return-url]))}))
         (spy {:status  404
-              :headers {"Content-Type" "text/plain"}
-              :body    "Submission not found"})))
+              :headers {"Content-Type" "text/html"}
+              :body    (templates/submission-not-found)})))
     (spy {:status  422
           :headers {"Content-Type" "text/plain"}
           :body    "Invalid submission uuid"})))
@@ -99,7 +114,8 @@
                  (-> {}
                      (assoc :parsed form-params)
                      (assoc :receiver receiver)
-                     (assoc :raw raw-body)))
+                     (assoc :raw raw-body)
+                     (assoc :form-submission-time (tick/instant))))
           (send-mail nil
                      sender
                      "Form to Mail confirmation"
@@ -179,6 +195,8 @@
         (log-connector)
         (hk/create-connector nil))))
 
+(def clear-unconfirmed-submissions? (atom false))
+
 ;; For interactive development
 (defonce *connector (atom nil))
 
@@ -186,10 +204,19 @@
   (reset! configuration config)
   (reset! *connector
           (conn/start! (create-connector)))
-  (info :prose "Starting Form to Mail" :config (select-keys config [:listen-port :listen-address])))
+  (info :prose "Starting Form to Mail"
+        :config (select-keys config [:listen-port
+                                     :listen-address]))
+  (reset! clear-unconfirmed-submissions? true)
+  (go
+    (while @clear-unconfirmed-submissions?
+      (<! (timeout 1000))
+      (clear-unconfirmed-submissions
+       (tick/new-duration 30 :minutes)))))
 
 (defn stop []
   (conn/stop! @*connector)
+  (reset! clear-unconfirmed-submissions? false)
   (reset! *connector nil))
 
 (defn restart []

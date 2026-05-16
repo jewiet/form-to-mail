@@ -33,7 +33,7 @@ nav hgroup {
     }
 }
 
-html.submission, html.thank-you {
+html.app {
     header {
         display: flex;
         flex-direction: column;

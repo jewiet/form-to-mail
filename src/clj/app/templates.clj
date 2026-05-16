@@ -128,3 +128,30 @@
     :file-name    "form-to-mail-request-body.txt"
     :content-type "application/x-www-form-urlencoded"
     :content      (.getBytes raw)}])
+
+(defn submission-not-found []
+  (let [html-head              [:head
+                                [:meta {:name "viewport" :content "width=device-width, initial-scale=1"}]
+                                [:link {:type "text/css", :href "/pico.min.css", :rel "stylesheet"}]
+                                [:link {:type "text/css", :href "/style.css", :rel "stylesheet"}]]
+        html-header            [:header.container
+                                [:img#main-logo {:src "/logo.svg" :alt "Form to Mail logo"}]
+                                [:hgroup
+                                 [:h1 "Form to Mail"]
+                                 [:p "Web forms for static websites"]]]
+        html-main              [:main {:class "container"}
+                                [:p
+                                 "We can't find this submission. Sorry!"]
+
+                                [:p
+                                 "Perhaps the submission expired. "
+                                 "Did you send the form more than 30 minutes ago? "
+                                 "For privacy reasons we do not store unconfirmed submissions longer than that."]]
+
+        html-body              [:body
+                                html-header
+                                html-main]]
+    (str (hiccup/raw "<!doctype html>")
+         (hiccup/html [:html {:lang "en" :class "submission-not-found app"}
+                       html-head
+                       html-body]))))
