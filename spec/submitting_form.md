@@ -289,10 +289,10 @@ In this scenario we prove that submission won't be verified unless sender knows 
   
 * There is a message `Invalid submission uuid`
 
-
-
-
-
-
-
 ## Port and interface can be changed through config
+
+
+
+
+
+
