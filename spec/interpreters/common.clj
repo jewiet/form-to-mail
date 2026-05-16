@@ -1,12 +1,14 @@
 (ns common
   (:require
    [clojure.string :as string]
+   [tbb]
    [taoensso.timbre :as logging]))
 
 (defn read-log-file [log-file]
   (->> log-file
        str
        slurp
+       (tbb/send-snippet "logs" {:caption (str "Logs from " log-file)})
        string/split-lines
        (keep #(re-find #"\{.*\}" %))
        (map read-string)
@@ -32,6 +34,7 @@
   (not-empty (find-matching small coll)))
 
 (defn wait-for-log [pattern log-file]
+  (tbb/send-link log-file "Log file")
   (loop [iteration 0]
     (logging/debug "Wait iteration" iteration)
 

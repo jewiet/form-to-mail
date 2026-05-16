@@ -86,6 +86,7 @@
 (tbb/implement-step
  "The webpage contains {0}"
  (fn [text _]
+   (tbb/send-text (str "Looking for `" text "` on " (e/get-url @driver)))
    (e/wait-has-text-everywhere @driver text)))
 
 (tbb/implement-step
@@ -124,6 +125,7 @@
 (tbb/implement-step
  "In the inbox find the message with the subject {0}"
  (fn [subject _]
+   (tbb/send-text (str "Looking for the subject `" subject "` at " e/get-url))
    (e/click @driver
             [{:fn/has-class "subject"}
              {:fn/has-text subject}])))

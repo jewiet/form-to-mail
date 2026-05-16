@@ -54,6 +54,7 @@
 (tbb/implement-step
  "The response body is {0}."
  (fn [body _]
+   (tbb/send-text (str "the response body " body))
    (tbb/tis = body (:body @response))))
 
 (tbb/implement-step

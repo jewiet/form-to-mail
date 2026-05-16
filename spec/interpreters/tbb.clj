@@ -85,6 +85,19 @@
                                    :label label}))
    url))
 
+(defn send-snippet
+  ([language {:keys [meta caption transform]
+              :or {meta "", transform identity}} content]
+   (println (json/generate-string {:type     "Snippet"
+                                   :content  (transform content)
+                                   :language language
+                                   :caption  caption
+                                   :meta     meta}))
+   content)
+
+  ([language content]
+   (send-snippet language {} content)))
+
 (defn table->maps [table]
   ;; Each column in a table becomes a map in an array. Keys are derived from the first row.
   (let [[header & rows] table
