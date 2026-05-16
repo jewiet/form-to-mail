@@ -24,8 +24,8 @@ tags:
    :listen-address "127.0.0.1"
    :listen-port    8080
    :receivers
-    {"1234" {:receiver-name "Publisher One"
-             :email-addresses ["publisher-one@example.com"]
+    {"1234" {:receiver-name "Alice Enterprises"
+             :email-addresses ["hello@alice.org"]
              :return-url "http://localhost:8080/thank-you"}}}
   ```
 
@@ -53,8 +53,8 @@ tags:
    :listen-address "127.0.0.1"
    :listen-port    8080
    :receivers
-    {"something-else" {:receiver-name "Publisher One"
-                       :email-addresses ["publisher-one@example.com"]
+    {"something-else" {:receiver-name "Bobs Corp"
+                       :email-addresses ["info@bobs.com"]
                        :return-url "http://localhost:1234/thank-you"}}}
   ```
 

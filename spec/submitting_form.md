@@ -26,8 +26,8 @@ tags: [proof-of-concept, covered]
    :listen-address "127.0.0.1"
    :listen-port    8090
    :receivers
-    {"1234" {:receiver-name "Publisher One"
-             :email-addresses ["publisher-one@example.com"]
+    {"1234" {:receiver-name "Bobby Bob"
+             :email-addresses ["bob@example.com"]
              :return-url "http://localhost:1234/thank-you"}}}
   ```
  
@@ -51,25 +51,25 @@ tags: [proof-of-concept, covered]
   | Your email address | sender  | email    |
   | Your message       | message | textarea |
 
-* Type `user-one@example.com` in the `Your email address` field
+* Type `alice@example.com` in the `Your email address` field
 * Type `Hello dear receiver!` in the `Your message` field
 * Click `Send` button
 
-* Form to Mail service will log `{:prose "valid form submitted" :by "user-one@example.com"}`
+* Form to Mail service will log `{:prose "valid form submitted" :by "alice@example.com"}`
 * Navigate to `http://localhost:8025/`
-* Open the inbox of `user-one@example.com`
+* Open the inbox of `alice@example.com`
 * In the inbox find the message with the subject `Form to Mail confirmation`
 * The webpage contains `Before we deliver your form we need to confirm your email address.` 
 * In the message open the link labeled `Confirm your submission`
-* Open the inbox of `publisher-one@example.com`
+* Open the inbox of `bob@example.com`
 * In the inbox find the message with the subject `Form to Mail message`
-* The message has reply-to header `user-one@example.com`
+* The message has reply-to header `alice@example.com`
 * The `text/html` body of the message contains
 
   <!-- TODO: Format the HTML code and make the interpreter accept it. -->
 
   ``` html
-  <tbody><tr><th scope="row">sender</th><td><ul><li>user-one@example.com</li></ul></td></tr><tr><th scope="row">message</th><td><ul><li>Hello dear receiver!</li></ul></td></tr></tbody>
+  <tbody><tr><th scope="row">sender</th><td><ul><li>alice@example.com</li></ul></td></tr><tr><th scope="row">message</th><td><ul><li>Hello dear receiver!</li></ul></td></tr></tbody>
    ```
   
 * The message contains an application/x-www-form-urlencoded encoded attachment with the following fields
@@ -77,7 +77,7 @@ tags: [proof-of-concept, covered]
 
   | key     | value                |
   |---------|----------------------|
-  | sender  | user-one@example.com |
+  | sender  | alice@example.com |
   | message | Hello dear receiver! |
 
 
@@ -100,8 +100,8 @@ This scenario simulates a complex form with many different inputs. It's a fictio
    :base-url       "http://localhost:8090"
    :listen-address "127.0.0.1"
    :listen-port    8090
-   :receivers      {"2345" {:receiver-name "Publisher Two"
-                            :email-addresses ["publisher-two@example.com"]
+   :receivers      {"2345" {:receiver-name "Charlie Charles"
+                            :email-addresses ["charlie@example.com"]
                             :return-url "http://localhost:1234/thank-you"}}}
   ```
 
@@ -156,7 +156,7 @@ This scenario simulates a complex form with many different inputs. It's a fictio
 * In the inbox find the message with the subject `Form to Mail confirmation`
 * The webpage contains `Before we deliver your form we need to confirm your email address.`
 * In the message open the link labeled `Confirm your submission`
-* Open the inbox of `publisher-two@example.com`
+* Open the inbox of `charlie@example.com`
 * In the inbox find the message with the subject `Form to Mail message`
 * The message has reply-to header `szara@muchu.com`
 * The `text/html` body of the message contains
@@ -204,8 +204,8 @@ The sender field is the only required field. Submission without sender should be
    :listen-address "127.0.0.1"
    :listen-port    8090
    :receivers
-    {"1234" {:receiver-name "Publisher One"
-             :email-addresses ["publisher-one@example.com"]
+    {"1234" {:receiver-name "Bobby Bob"
+             :email-addresses ["bob@example.com"]
              :return-url "http://localhost:1234/thank-you"}}}
   
   ```
@@ -254,8 +254,8 @@ In this scenario we prove that submission won't be verified unless sender knows 
    :listen-address "127.0.0.1"
    :listen-port    8090
    :receivers
-    {"1234" {:receiver-name "Publisher One"
-             :email-addresses ["publisher-one@example.com"]
+    {"1234" {:receiver-name "Bobby Bob"
+             :email-addresses ["bob@example.com"]
              :return-url "http://localhost:1234/thank-you"}}}
   ```
 
@@ -287,8 +287,8 @@ In this scenario we prove that submission won't be verified unless sender knows 
    :listen-address "127.0.0.1"
    :listen-port    8090
    :receivers
-    {"1234" {:receiver-name "Publisher One"
-             :email-addresses ["publisher-one@example.com"]
+    {"1234" {:receiver-name "Bobby Bob"
+             :email-addresses ["bob@example.com"]
              :return-url "http://localhost:1234/thank-you"}}}
   ```
 
@@ -298,26 +298,10 @@ In this scenario we prove that submission won't be verified unless sender knows 
   
 * There is a message `Invalid submission uuid`
 
-<!-- 
 
-## Successful form submission
 
-tags: not-implemented
 
-This is how the form submission should work once the project is complete.
 
-- Given that the form is registered by `publisher-one@example.com` with ID `:uuid`.
-- Navigate to `https://publisher-one.com/contact-us`.
-- Enter `user-one@example.com` into the `Email Address` input field of type `email`.
-- Enter `Renew subscription` in to the `Subject` input field of type `text`.
-- Enter `My current plan expires...` in to the `Message` input field of type `text` .
-- Click the `Submit` button.
-- There is a message `Thank you for contacting us! We have sent an email to user-one@example.com for confirmation`.
-- User receives an email at `user-one@example.com` with a link labeled `Confirm`.
-- Click the `Confirm` link..
-- There is a message `Thank you for confirmation, your email is being delivered to Publisher One`.
-- Publisher receives an email at `publisher-one@example.com` with a subject `Renew subscription` from `user-one@example.com` with a message `My current plan expires...`. 
 
- -->
 
 ## Port and interface can be changed through config
